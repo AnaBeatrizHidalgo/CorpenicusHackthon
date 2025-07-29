@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> NAIA
+    </title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2444 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: rgba(26, 36, 68, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 124, 51, 0.2);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60%;
+            height: 3px;
+            background: #FF7C33;
+            border-radius: 2px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 124, 51, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px 30px;
+            height: calc(100vh - 100px);
+        }
+
+        /* Map Section */
+        .map-section {
+            background: rgba(26, 36, 68, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 124, 51, 0.2);
+            position: relative;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .map-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            background: #FF7C33;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            top: 70px;
+            left: 30px;
+            background: rgba(26, 36, 68, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1001; /* Aumentado para ficar sempre acima do mapa */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 124, 51, 0.3);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .high-risk { background: #FF7C33; }
+        .moderate-risk { background: #FFB366; }
+        .dengue-focus { background: #FF1744; }
+
+        #map {
+            height: calc(100% - 80px);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(26, 36, 68, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 124, 51, 0.3);
+            z-index: 1001; /* Aumentado */
+        }
+
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #FF7C33;
+            margin: 0;
+        }
+
+        .stats-label {
+            font-size: 1rem;
+            color: #cccccc;
+            margin: 5px 0 0 0;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1001; /* Aumentado */
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #FF7C33 0%, #FF5722 100%);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 124, 51, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 124, 51, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 124, 51, 0.5);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-panel {
+            background: rgba(26, 36, 68, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 124, 51, 0.2);
+        }
+
+        .panel-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .sentinel-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 124, 51, 0.3);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sentinel-btn:hover {
+            background: rgba(255, 124, 51, 0.1);
+            border-color: #FF7C33;
+            transform: translateX(5px);
+        }
+
+        .sentinel-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .sentinel-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        .sentinel-text {
+            flex-grow: 1;
+        }
+
+        .sentinel-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .sentinel-subtitle {
+            font-size: 0.85rem;
+            color: #cccccc;
+        }
+
+        /* Community Updates */
+        .community-section {
+            flex-grow: 1;
+        }
+
+        .chart-container {
+            height: 120px;
+            background: rgba(255, 124, 51, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-placeholder {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: linear-gradient(45deg, 
+                transparent 20%, 
+                rgba(255, 124, 51, 0.3) 40%, 
+                rgba(255, 124, 51, 0.5) 60%, 
+                rgba(255, 124, 51, 0.7) 80%);
+            clip-path: polygon(0 100%, 15% 85%, 30% 90%, 50% 70%, 70% 75%, 85% 50%, 100% 40%, 100% 100%);
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .sidebar-panel {
+                min-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .container {
+                padding: 15px 20px;
+                gap: 15px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .sidebar {
+                flex-direction: column;
+            }
+            
+            .sidebar-panel {
+                min-width: unset;
+            }
+            
+            .action-buttons {
+                position: relative; /* Troque para relative para manter acima do mapa no mobile */
+                justify-content: center;
+                margin-top: 20px;
+                z-index: 30;
+            }
+            
+            .stats-section {
+                position: relative; /* Troque para relative para manter acima do mapa no mobile */
+                margin-top: 20px;
+                z-index: 30;
+            }
+
+            .legend {
+                position: relative; /* Troque para relative para manter acima do mapa no mobile */
+                margin-bottom: 20px;
+                z-index: 30;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo"> 
+      <img src="assets/Naia-Logo.svg" alt="LOGO" width="100" > 
+
+        </div>
+        <div class="header-controls">
+            <button class="header-btn" title="Buscar">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="header-btn" title="Configurações">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="header-btn" title="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="map-header">
+                <h2 class="map-title">NAIA Vector Risk Score 0-100</h2>
+                <div class="risk-badge">Dados Atualizado</div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color high-risk"></div>
+                    <span>High Risk</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color moderate-risk"></div>
+                    <span>Moderate Risk</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color dengue-focus"></div>
+                    <span>Foco de Dengue Encontrado</span>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div id="map"></div>
+
+            <!-- Statistics -->
+            <div class="stats-section">
+                <div class="stats-number">247</div>
+                <div class="stats-label">casos confirmados em Campinas 2025</div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn">Visualize</button>
+                <button class="action-btn secondary">Analyze</button>
+                <button class="action-btn">Act</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sopernilcus Panel -->
+            <div class="sidebar-panel">
+                <h3 class="panel-title">Copernicus</h3>
+                <div class="panel-subtitle" style="color: #cccccc; margin-bottom: 20px; font-size: 0.9rem;">Dados de satelites</div>
+                
+                <button class="sentinel-btn">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-tint" style="color: #4A90E2; margin-right: 12px;"></i>
+                        <div class="sentinel-text">
+                            <div class="sentinel-title">Sentinel-1</div>
+                            <div class="sentinel-subtitle">Water detection</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+
+                <button class="sentinel-btn">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-leaf" style="color: #7CB342; margin-right: 12px;"></i>
+                        <div class="sentinel-text">
+                            <div class="sentinel-title">Sentinel-2</div>
+                            <div class="sentinel-subtitle">NDVI</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+
+                <button class="sentinel-btn">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-thermometer-half" style="color: #FF7043; margin-right: 12px;"></i>
+                        <div class="sentinel-text">
+                            <div class="sentinel-title">Sentinel-3</div>
+                            <div class="sentinel-subtitle">Temperature</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+
+            <!-- Community Updates Panel -->
+            <div class="sidebar-panel community-section">
+                <h3 class="panel-title">Community updates</h3>
+                
+                <div class="chart-container">
+                    <div class="chart-placeholder"></div>
+                </div>
+
+                <button class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp
+                    <small style="margin-left: 5px;">WrtsApp</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Inicializa o mapa centrado em Campinas, SP
+        var map = L.map('map', {
+            zoomControl: false
+        }).setView([-22.9056, -47.0608], 12);
+
+        // Adiciona controle de zoom personalizado
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
+
+        // Adiciona camada de tiles dark theme
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }).addTo(map);
+
+        // Simula dados de risco vetorial para bairros de Campinas
+        var campinasRiskData = [
+            // Bairros com diferentes níveis de risco
+            // Alto Risco
+            { lat: -22.8950, lng: -47.0456, score: 85, area: "Jardim do Lago", type: "high_risk", population: 1200 },
+            { lat: -22.9120, lng: -47.0789, score: 82, area: "Vila Industrial", type: "high_risk", population: 950 },
+            { lat: -22.8876, lng: -47.0234, score: 88, area: "Parque Itália", type: "high_risk", population: 1800 },
+            { lat: -22.9234, lng: -47.0445, score: 80, area: "Jardim Campos Elíseos", type: "high_risk", population: 2100 },
+            
+            // Risco Moderado
+            { lat: -22.9089, lng: -47.0345, score: 65, area: "Centro", type: "moderate_risk", population: 3200 },
+            { lat: -22.8989, lng: -47.0678, score: 62, area: "Cambuí", type: "moderate_risk", population: 2800 },
+            { lat: -22.9156, lng: -47.0598, score: 68, area: "Guanabara", type: "moderate_risk", population: 1600 },
+            { lat: -22.8834, lng: -47.0567, score: 58, area: "Nova Campinas", type: "moderate_risk", population: 2400 },
+            { lat: -22.9278, lng: -47.0712, score: 64, area: "São Bernardo", type: "moderate_risk", population: 1400 },
+            { lat: -22.8723, lng: -47.0423, score: 60, area: "Jardim Guanabara", type: "moderate_risk", population: 1100 },
+            
+            // Focos de Dengue Confirmados
+            { lat: -22.9023, lng: -47.0512, area: "Rua das Palmeiras, 245", type: "dengue_focus", cases: 8, status: "Ativo" },
+            { lat: -22.8967, lng: -47.0389, area: "Av. Norte Sul, 1523", type: "dengue_focus", cases: 12, status: "Em Tratamento" },
+            { lat: -22.9145, lng: -47.0634, area: "Rua Coronel Quirino, 89", type: "dengue_focus", cases: 5, status: "Ativo" },
+            { lat: -22.8889, lng: -47.0298, area: "Praça Carlos Gomes", type: "dengue_focus", cases: 15, status: "Crítico" },
+            { lat: -22.9089, lng: -47.0456, area: "Rua Barreto Leme, 456", type: "dengue_focus", cases: 7, status: "Ativo" },
+            { lat: -22.9203, lng: -47.0589, area: "Av. John Boyd Dunlop, 987", type: "dengue_focus", cases: 9, status: "Em Tratamento" },
+            { lat: -22.8756, lng: -47.0445, area: "Rua Dr. Mascarenhas, 123", type: "dengue_focus", cases: 4, status: "Monitorado" }
+        ];
+
+        // Adiciona marcadores de risco e focos de dengue
+        campinasRiskData.forEach(area => {
+            var color, fillColor, risk_level, marker;
+            
+            if (area.type === 'dengue_focus') {
+                // Foco de Dengue - Marcador especial
+                var icon = L.divIcon({
+                    className: 'dengue-focus-marker',
+                    html: '<div style="background: #FF1744; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; border: 3px solid white; box-shadow: 0 2px 10px rgba(255, 23, 68, 0.5);"><i class="fas fa-exclamation" style="font-size: 16px;"></i></div>',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15]
+                });
+                
+                marker = L.marker([area.lat, area.lng], {icon: icon}).addTo(map);
+                
+                marker.bindPopup(`
+                    <div style="color: #333; padding: 15px; min-width: 250px;">
+                        <h4 style="margin: 0 0 10px 0; color: #FF1744; display: flex; align-items: center;">
+                            <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                            Foco de Dengue
+                        </h4>
+                        <p style="margin: 5px 0;"><strong>Local:</strong> ${area.area}</p>
+                        <p style="margin: 5px 0;"><strong>Casos Confirmados:</strong> ${area.cases}</p>
+                        <p style="margin: 5px 0;"><strong>Status:</strong> 
+                            <span style="padding: 2px 8px; border-radius: 12px; font-size: 12px; background: ${area.status === 'Crítico' ? '#FF1744' : area.status === 'Ativo' ? '#FF5722' : area.status === 'Em Tratamento' ? '#FF9800' : '#4CAF50'}; color: white;">
+                                ${area.status}
+                            </span>
+                        </p>
+                        <hr style="margin: 15px 0;">
+                        <p style="margin: 0; font-size: 12px; color: #666;">
+                            <i class="fas fa-clock" style="margin-right: 5px;"></i>
+                            Última atualização: hoje às 14:30
+                        </p>
+                    </div>
+                `);
+                
+            } else if (area.type === 'high_risk') {
+                color = '#FF7C33';
+                fillColor = '#FF7C33';
+                risk_level = 'Alto Risco';
+                
+                // Cria polígono irregular para simular área do bairro
+                var polygon = createNeighborhoodPolygon(area.lat, area.lng, 0.006);
+                
+                marker = L.polygon(polygon, {
+                    color: color,
+                    fillColor: fillColor,
+                    fillOpacity: 0.4,
+                    weight: 2,
+                    opacity: 0.8
+                }).addTo(map);
+                
+            } else if (area.type === 'moderate_risk') {
+                color = '#FFB366';
+                fillColor = '#FFB366';
+                risk_level = 'Risco Moderado';
+                
+                // Cria polígono irregular para simular área do bairro
+                var polygon = createNeighborhoodPolygon(area.lat, area.lng, 0.005);
+                
+                marker = L.polygon(polygon, {
+                    color: color,
+                    fillColor: fillColor,
+                    fillOpacity: 0.3,
+                    weight: 2,
+                    opacity: 0.7
+                }).addTo(map);
+            }
+
+            // Popup para áreas de risco
+            if (area.type !== 'dengue_focus') {
+                marker.bindPopup(`
+                    <div style="color: #333; padding: 15px; min-width: 250px;">
+                        <h4 style="margin: 0 0 10px 0; color: ${color};">${area.area}</h4>
+                        <p style="margin: 5px 0;"><strong>Score de Risco:</strong> ${area.score}%</p>
+                        <p style="margin: 5px 0;"><strong>Nível:</strong> ${risk_level}</p>
+                        <p style="margin: 5px 0;"><strong>População Estimada:</strong> ${area.population.toLocaleString()} hab.</p>
+                        <p style="margin: 5px 0;"><strong>Fatores:</strong> Clima favorável, presença de água parada</p>
+                        <hr style="margin: 15px 0;">
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="alert('Agendando inspeção para ${area.area}')" style="background: #FF7C33; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                Agendar Inspeção
+                            </button>
+                            <button onclick="alert('Enviando alerta para moradores de ${area.area}')" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                Enviar Alerta
+                            </button>
+                        </div>
+                    </div>
+                `);
+            }
+
+            // Adiciona efeito hover
+            marker.on('mouseover', function(e) {
+                if (area.type !== 'dengue_focus') {
+                    this.setStyle({
+                        weight: 4,
+                        opacity: 1,
+                        fillOpacity: 0.6
+                    });
+                }
+            });
+
+            marker.on('mouseout', function(e) {
+                if (area.type !== 'dengue_focus') {
+                    this.setStyle({
+                        weight: 2,
+                        opacity: area.type === 'high_risk' ? 0.8 : 0.7,
+                        fillOpacity: area.type === 'high_risk' ? 0.4 : 0.3
+                    });
+                }
+            });
+        });
+
+        // Função para criar polígonos irregulares que simulam bairros
+        function createNeighborhoodPolygon(centerLat, centerLng, size) {
+            var points = [];
+            var numPoints = 8 + Math.floor(Math.random() * 4); // 8-12 pontos
+            
+            for (var i = 0; i < numPoints; i++) {
+                var angle = (i / numPoints) * 2 * Math.PI;
+                var radius = size * (0.7 + Math.random() * 0.6); // Variação no raio
+                var lat = centerLat + radius * Math.cos(angle);
+                var lng = centerLng + radius * Math.sin(angle);
+                points.push([lat, lng]);
+            }
+            
+            return points;
+        }
+
+        // Adiciona interatividade aos botões
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.textContent;
+                alert(`Funcionalidade "${action}" será implementada em breve!`);
+            });
+        });
+
+        document.querySelectorAll('.sentinel-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Toggle do chevron
+                const chevron = this.querySelector('.fa-chevron-up');
+                chevron.style.transform = chevron.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
+                
+                // Feedback visual
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+
+        document.querySelector('.whatsapp-btn').addEventListener('click', function() {
+            alert('Conectando com a comunidade via WhatsApp...');
+        });
+
+        // Adiciona loading animation inicial
+        document.querySelector('#map').classList.add('loading');
+        setTimeout(() => {
+            document.querySelector('#map').classList.remove('loading');
+        }, 2000);
+
+        // Responsive map resize
+        window.addEventListener('resize', function() {
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

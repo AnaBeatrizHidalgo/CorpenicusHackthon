@@ -1,0 +1,8 @@
+sentinelhub==3.10.2
+rasterio==1.3.10
+numpy==1.26.4
+matplotlib==3.8.4
+geopandas==0.14.4
+requests==2.32.3
+load_dotenv
+opencv-python
