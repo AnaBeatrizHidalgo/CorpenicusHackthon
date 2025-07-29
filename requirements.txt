@@ -6,3 +6,4 @@ geopandas==0.14.4
 requests==2.32.3
 load_dotenv
 opencv-python
+torch

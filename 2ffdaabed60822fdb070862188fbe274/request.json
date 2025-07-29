@@ -1,0 +1,67 @@
+{
+    "request": {
+        "headers": {
+            "accept": "image/tiff",
+            "content-type": "application/json"
+        },
+        "payload": {
+            "evalscript": "\n//VERSION=3\nfunction setup() {\n  return {\n    input: [\"VV\"],\n    output: { bands: 1 }\n  };\n}\n\nfunction evaluatePixel(sample) {\n  return [sample.VV];\n}\n",
+            "input": {
+                "bounds": {
+                    "bbox": [
+                        -60.5,
+                        -3.5,
+                        -59.5,
+                        -2.5
+                    ],
+                    "properties": {
+                        "crs": "http://www.opengis.net/def/crs/EPSG/0/4326"
+                    }
+                },
+                "data": [
+                    {
+                        "dataFilter": {
+                            "acquisitionMode": "IW",
+                            "polarization": "DV",
+                            "resolution": "HIGH",
+                            "timeRange": {
+                                "from": "2025-07-01T00:00:00Z",
+                                "to": "2025-07-15T23:59:59Z"
+                            }
+                        },
+                        "type": "sentinel-1-grd"
+                    }
+                ]
+            },
+            "output": {
+                "height": 512,
+                "responses": [
+                    {
+                        "format": {
+                            "type": "image/tiff"
+                        },
+                        "identifier": "default"
+                    }
+                ],
+                "width": 512
+            }
+        },
+        "timestamp": "2025-07-29T14:51:55.922584",
+        "url": "https://sh.dataspace.copernicus.eu/api/v1/process"
+    },
+    "response": {
+        "elapsed": 1.521823,
+        "headers": {
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "origin,content-type,accept,accept-crs,authorization,cache-control",
+            "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH",
+            "access-control-allow-origin": "*",
+            "access-control-max-age": "3600",
+            "content-type": "image/tiff",
+            "date": "Tue, 29 Jul 2025 17:51:54 GMT",
+            "transfer-encoding": "chunked",
+            "x-processingunits-spent": "0.3333333432674408"
+        },
+        "status_code": 200
+    }
+}
