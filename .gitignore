@@ -1,3 +1,30 @@
 .env
 naia-env/
 dados geologicos/Dados IBGE/
+# Dados sensíveis
+data/raw/
+data/processed/
+*.tiff
+*.nc
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+naia-env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Outputs
+output/
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
