@@ -1,0 +1,65 @@
+{
+    "request": {
+        "headers": {
+            "accept": "image/tiff",
+            "content-type": "application/json"
+        },
+        "payload": {
+            "evalscript": "\n    //VERSION=3\n    function setup() {\n        return { input: ['B02', 'B03', 'B04', 'B08'], output: { bands: 4 } };\n    }\n    function evaluatePixel(sample) {\n        return [sample.B04, sample.B03, sample.B02, sample.B08];\n    }\n    ",
+            "input": {
+                "bounds": {
+                    "bbox": [
+                        -47.1,
+                        -22.85,
+                        -47.03,
+                        -22.78
+                    ],
+                    "properties": {
+                        "crs": "http://www.opengis.net/def/crs/EPSG/0/4326"
+                    }
+                },
+                "data": [
+                    {
+                        "dataFilter": {
+                            "mosaickingOrder": "leastCC",
+                            "timeRange": {
+                                "from": "2024-06-29T00:00:00Z",
+                                "to": "2024-07-29T23:59:59Z"
+                            }
+                        },
+                        "type": "sentinel-2-l2a"
+                    }
+                ]
+            },
+            "output": {
+                "height": 512,
+                "responses": [
+                    {
+                        "format": {
+                            "type": "image/tiff"
+                        },
+                        "identifier": "default"
+                    }
+                ],
+                "width": 512
+            }
+        },
+        "timestamp": "2025-07-29T20:18:52.087482",
+        "url": "https://sh.dataspace.copernicus.eu/api/v1/process"
+    },
+    "response": {
+        "elapsed": 1.393467,
+        "headers": {
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "origin,content-type,accept,accept-crs,authorization,cache-control",
+            "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH",
+            "access-control-allow-origin": "*",
+            "access-control-max-age": "3600",
+            "content-type": "image/tiff",
+            "date": "Tue, 29 Jul 2025 23:18:50 GMT",
+            "transfer-encoding": "chunked",
+            "x-processingunits-spent": "1.3333333730697632"
+        },
+        "status_code": 200
+    }
+}
