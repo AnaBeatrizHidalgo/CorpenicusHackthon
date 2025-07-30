@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_9b75e20f76bbe503969285c9b3e1243a {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+        <div style="position: fixed; 
+                    top: 10px; left: 50px; width: 200px; height: 80px; 
+                    background-color: white; border:2px solid grey; z-index:9999; 
+                    font-size:14px; padding: 10px">
+        <b>NAIÁ - Detecções:</b><br>
+        🟢 Piscinas normais: 3<br>
+        🔴 Piscinas suspeitas: 3<br>
+        📊 Total: 6
+        </div>
+        
+    
+            <div class="folium-map" id="map_9b75e20f76bbe503969285c9b3e1243a" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_9b75e20f76bbe503969285c9b3e1243a = L.map(
+                "map_9b75e20f76bbe503969285c9b3e1243a",
+                {
+                    center: [-22.825, -47.075],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_56ccf33548ed6f8b248721b18c9b6a12 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_56ccf33548ed6f8b248721b18c9b6a12.addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var tile_layer_a837e2e09b284ba29897ddc2c40bbb0e = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Esri",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a837e2e09b284ba29897ddc2c40bbb0e.addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var marker_7a3e6d8635e9a5b967bb17a49c773022 = L.marker(
+                [-22.829272460937503, -47.0927001953125],
+                {
+}
+            ).addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var icon_8a012056a76dd057a1a94969bea782a6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f673bddef547386b0a0e370ddc4daac5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_70b5f92f15e342ac32d7a5df807ed50b = $(`<div id="html_70b5f92f15e342ac32d7a5df807ed50b" style="width: 100.0%; height: 100.0%;">             <b>Piscina pool_3019</b><br>             <b>Status:</b> 🚨 SUSPEITA<br>             <b>Score de Risco:</b> 0.70<br>             <b>Área:</b> 1532 pixels<br>             <b>Circularidade:</b> 0.67<br>             <b>NDWI:</b> 0.51<br>             <b>Turbidez:</b> 2.47<br>             <b>Vegetação ao redor:</b> 0.16             </div>`)[0];
+                popup_f673bddef547386b0a0e370ddc4daac5.setContent(html_70b5f92f15e342ac32d7a5df807ed50b);
+            
+        
+
+        marker_7a3e6d8635e9a5b967bb17a49c773022.bindPopup(popup_f673bddef547386b0a0e370ddc4daac5)
+        ;
+
+        
+    
+    
+            marker_7a3e6d8635e9a5b967bb17a49c773022.bindTooltip(
+                `<div>
+                     Piscina pool_3019 (Suspeita)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7a3e6d8635e9a5b967bb17a49c773022.setIcon(icon_8a012056a76dd057a1a94969bea782a6);
+            
+    
+            var marker_b805a03c5475cc5999219d910d15ea65 = L.marker(
+                [-22.8244140625, -47.0853759765625],
+                {
+}
+            ).addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var icon_7d81c04f77ac6208e36bc3ae1667c8cb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_483226e550ae2353a1877def08824274 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c764088f29259608584e7c0df45a6ebf = $(`<div id="html_c764088f29259608584e7c0df45a6ebf" style="width: 100.0%; height: 100.0%;">             <b>Piscina pool_3743</b><br>             <b>Status:</b> 🚨 SUSPEITA<br>             <b>Score de Risco:</b> 0.70<br>             <b>Área:</b> 2813 pixels<br>             <b>Circularidade:</b> 0.71<br>             <b>NDWI:</b> 0.52<br>             <b>Turbidez:</b> 2.48<br>             <b>Vegetação ao redor:</b> 0.05             </div>`)[0];
+                popup_483226e550ae2353a1877def08824274.setContent(html_c764088f29259608584e7c0df45a6ebf);
+            
+        
+
+        marker_b805a03c5475cc5999219d910d15ea65.bindPopup(popup_483226e550ae2353a1877def08824274)
+        ;
+
+        
+    
+    
+            marker_b805a03c5475cc5999219d910d15ea65.bindTooltip(
+                `<div>
+                     Piscina pool_3743 (Suspeita)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b805a03c5475cc5999219d910d15ea65.setIcon(icon_7d81c04f77ac6208e36bc3ae1667c8cb);
+            
+    
+            var marker_6af6d8e64ad669df45d4c036b7f11c84 = L.marker(
+                [-22.8195068359375, -47.063403320312496],
+                {
+}
+            ).addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var icon_05da6fe8cbb8cadc51bfe6f59c14610b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_de2407cc019a5a83c9fcc8ed6586c814 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d25052f33c667269a029838a9c55da52 = $(`<div id="html_d25052f33c667269a029838a9c55da52" style="width: 100.0%; height: 100.0%;">             <b>Piscina pool_4399</b><br>             <b>Status:</b> ✅ Normal<br>             <b>Score de Risco:</b> 0.15<br>             <b>Área:</b> 992 pixels<br>             <b>Circularidade:</b> 0.59<br>             <b>NDWI:</b> 0.49<br>             <b>Turbidez:</b> 0.46<br>             <b>Vegetação ao redor:</b> 0.24             </div>`)[0];
+                popup_de2407cc019a5a83c9fcc8ed6586c814.setContent(html_d25052f33c667269a029838a9c55da52);
+            
+        
+
+        marker_6af6d8e64ad669df45d4c036b7f11c84.bindPopup(popup_de2407cc019a5a83c9fcc8ed6586c814)
+        ;
+
+        
+    
+    
+            marker_6af6d8e64ad669df45d4c036b7f11c84.bindTooltip(
+                `<div>
+                     Piscina pool_4399 (Normal)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6af6d8e64ad669df45d4c036b7f11c84.setIcon(icon_05da6fe8cbb8cadc51bfe6f59c14610b);
+            
+    
+            var marker_29c5f8726c28524e6dbd9ef87c66a6c2 = L.marker(
+                [-22.8146484375, -47.08046875],
+                {
+}
+            ).addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var icon_9a25f9fcbe494ec66c79032910e3cbc7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a5cb2e61432e77d948cd892df5d7ff9e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c72e04ab8448b51a55dfecb7744ffa2c = $(`<div id="html_c72e04ab8448b51a55dfecb7744ffa2c" style="width: 100.0%; height: 100.0%;">             <b>Piscina pool_5121</b><br>             <b>Status:</b> 🚨 SUSPEITA<br>             <b>Score de Risco:</b> 0.70<br>             <b>Área:</b> 1952 pixels<br>             <b>Circularidade:</b> 0.66<br>             <b>NDWI:</b> 0.52<br>             <b>Turbidez:</b> 2.48<br>             <b>Vegetação ao redor:</b> 0.12             </div>`)[0];
+                popup_a5cb2e61432e77d948cd892df5d7ff9e.setContent(html_c72e04ab8448b51a55dfecb7744ffa2c);
+            
+        
+
+        marker_29c5f8726c28524e6dbd9ef87c66a6c2.bindPopup(popup_a5cb2e61432e77d948cd892df5d7ff9e)
+        ;
+
+        
+    
+    
+            marker_29c5f8726c28524e6dbd9ef87c66a6c2.bindTooltip(
+                `<div>
+                     Piscina pool_5121 (Suspeita)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_29c5f8726c28524e6dbd9ef87c66a6c2.setIcon(icon_9a25f9fcbe494ec66c79032910e3cbc7);
+            
+    
+            var marker_961223ce1e1866917ee3528991f975bf = L.marker(
+                [-22.8097412109375, -47.070727539062496],
+                {
+}
+            ).addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var icon_e20f2d8ba8d95a0b814cdc73cfe41b20 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_30bc99c796f93a451f3b6a8ec7e35c55 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e3a762d8a529cb8315c3ce2c6c7ea464 = $(`<div id="html_e3a762d8a529cb8315c3ce2c6c7ea464" style="width: 100.0%; height: 100.0%;">             <b>Piscina pool_5806</b><br>             <b>Status:</b> ✅ Normal<br>             <b>Score de Risco:</b> 0.15<br>             <b>Área:</b> 694 pixels<br>             <b>Circularidade:</b> 0.73<br>             <b>NDWI:</b> 0.48<br>             <b>Turbidez:</b> 0.45<br>             <b>Vegetação ao redor:</b> 0.25             </div>`)[0];
+                popup_30bc99c796f93a451f3b6a8ec7e35c55.setContent(html_e3a762d8a529cb8315c3ce2c6c7ea464);
+            
+        
+
+        marker_961223ce1e1866917ee3528991f975bf.bindPopup(popup_30bc99c796f93a451f3b6a8ec7e35c55)
+        ;
+
+        
+    
+    
+            marker_961223ce1e1866917ee3528991f975bf.bindTooltip(
+                `<div>
+                     Piscina pool_5806 (Normal)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_961223ce1e1866917ee3528991f975bf.setIcon(icon_e20f2d8ba8d95a0b814cdc73cfe41b20);
+            
+    
+            var marker_5e2527790a8540105061f8961ca27ea2 = L.marker(
+                [-22.80732421875, -47.0902587890625],
+                {
+}
+            ).addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+        
+    
+            var icon_cd5c778ce0590f7467ccbdde3c3c471b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c50d54b4054ed08d977001f3c163ea91 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ba520387e88fa6bcffb1640054d183d5 = $(`<div id="html_ba520387e88fa6bcffb1640054d183d5" style="width: 100.0%; height: 100.0%;">             <b>Piscina pool_6162</b><br>             <b>Status:</b> ✅ Normal<br>             <b>Score de Risco:</b> 0.15<br>             <b>Área:</b> 1253 pixels<br>             <b>Circularidade:</b> 0.70<br>             <b>NDWI:</b> 0.48<br>             <b>Turbidez:</b> 0.44<br>             <b>Vegetação ao redor:</b> 0.23             </div>`)[0];
+                popup_c50d54b4054ed08d977001f3c163ea91.setContent(html_ba520387e88fa6bcffb1640054d183d5);
+            
+        
+
+        marker_5e2527790a8540105061f8961ca27ea2.bindPopup(popup_c50d54b4054ed08d977001f3c163ea91)
+        ;
+
+        
+    
+    
+            marker_5e2527790a8540105061f8961ca27ea2.bindTooltip(
+                `<div>
+                     Piscina pool_6162 (Normal)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5e2527790a8540105061f8961ca27ea2.setIcon(icon_cd5c778ce0590f7467ccbdde3c3c471b);
+            
+    
+            var layer_control_43b461296875e8f4b291146fca941e3f_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_56ccf33548ed6f8b248721b18c9b6a12,
+                    "Satellite" : tile_layer_a837e2e09b284ba29897ddc2c40bbb0e,
+                },
+                overlays :  {
+                },
+            };
+            let layer_control_43b461296875e8f4b291146fca941e3f = L.control.layers(
+                layer_control_43b461296875e8f4b291146fca941e3f_layers.base_layers,
+                layer_control_43b461296875e8f4b291146fca941e3f_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_9b75e20f76bbe503969285c9b3e1243a);
+
+        
+</script>
+</html>
