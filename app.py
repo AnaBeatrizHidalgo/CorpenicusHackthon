@@ -1,17 +1,55 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from threading import Thread
 import run_analysis
 import time
 import os
 import traceback
+from pathlib import Path
 
-# Serve a pasta raiz do projeto como estática
-app = Flask(__name__, static_url_path='', static_folder=os.getcwd())
+# Configuração correta para servir arquivos estáticos
+app = Flask(__name__, 
+            static_url_path='/static',  # URL prefix para arquivos estáticos
+            static_folder='static',     # Pasta para arquivos estáticos
+            template_folder='templates') # Pasta para templates
+
 analysis_status = {}
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/health')
+def health_check():
+    """Endpoint de verificação de saúde do servidor"""
+    active_jobs = len([job for job in analysis_status.values() if job.get('status') == 'running'])
+    return jsonify({
+        "status": "online",
+        "active_jobs": active_jobs,
+        "total_jobs": len(analysis_status)
+    })
+
+# NOVA ROTA: Serve arquivos da pasta output
+@app.route('/output/<path:filename>')
+def serve_output_files(filename):
+    """Serve arquivos gerados na pasta output"""
+    try:
+        output_dir = Path('output')
+        if not output_dir.exists():
+            return "Output directory not found", 404
+        
+        return send_from_directory(output_dir, filename)
+    except Exception as e:
+        print(f"[SERVER] Erro ao servir arquivo de output {filename}: {str(e)}")
+        return "File not found", 404
+
+# Rota adicional para servir arquivos da raiz (como CSS, assets, etc.)
+@app.route('/<path:filename>')
+def serve_root_files(filename):
+    """Serve arquivos da raiz do projeto"""
+    try:
+        return app.send_static_file(f'../{filename}')
+    except:
+        return "File not found", 404
 
 @app.route('/run', methods=['POST'])
 def run_analysis_endpoint():

@@ -1,6 +1,6 @@
 # src/analysis/map_generator.py
 """
-Módulo para gerar mapas interativos de risco e detecções - Versão Corrigida.
+Módulo para gerar mapas interativos de risco e detecções - Versão Redesenhada.
 """
 import logging
 import folium
@@ -126,17 +126,81 @@ def prepare_pools_data(pools_gdf):
     logger.info(f"Dados das piscinas preparados. Total: {len(clean_pools)}")
     return clean_pools
 
+def get_risk_color(risk_level, risk_score):
+    """Retorna cores baseadas no nível de risco"""
+    color_map = {
+        'Baixo': '#4CAF50',      # Verde
+        'Médio': '#FF9800',      # Laranja
+        'Alto': '#FF5722',       # Vermelho
+        'Crítico': '#D32F2F'     # Vermelho escuro
+    }
+    return color_map.get(risk_level, '#2196F3')  # Azul como fallback
+
+def create_modern_popup(title, data_dict, color="#FF7C33"):
+    """Cria popup moderno com estilo similar ao index_old.html"""
+    data_rows = ""
+    for key, value in data_dict.items():
+        data_rows += f"<p style='margin: 5px 0;'><strong>{key}:</strong> {value}</p>"
+    
+    popup_html = f"""
+    <div style="
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, rgba(26, 36, 68, 0.95) 0%, rgba(10, 22, 40, 0.95) 100%);
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 15px;
+        min-width: 280px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 124, 51, 0.3);
+    ">
+        <h4 style="
+            margin: 0 0 15px 0; 
+            color: {color}; 
+            display: flex; 
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        ">
+            {title}
+        </h4>
+        <hr style="
+            margin: 15px 0; 
+            border: none; 
+            height: 1px; 
+            background: rgba(255, 124, 51, 0.3);
+        ">
+        {data_rows}
+        <hr style="
+            margin: 15px 0; 
+            border: none; 
+            height: 1px; 
+            background: rgba(255, 124, 51, 0.3);
+        ">
+        <p style="
+            margin: 0; 
+            font-size: 11px; 
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+        ">
+            <i class="fas fa-clock" style="margin-right: 5px;"></i>
+            Dados atualizados em tempo real
+        </p>
+    </div>
+    """
+    return popup_html
+
 def create_priority_map(
     sectors_risk_gdf: gpd.GeoDataFrame,
     dirty_pools_gdf: gpd.GeoDataFrame | None,
     output_html_path: Path
 ):
     """
-    Cria um mapa interativo com camadas de risco por setor e pontos de piscinas sujas.
-    Versão robusta com melhor tratamento de erros.
+    Cria um mapa interativo com design moderno e elegante.
     """
     logger = logging.getLogger(__name__)
-    logger.info(f"Gerando mapa de priorização para {output_html_path.name}...")
+    logger.info(f"Gerando mapa de priorização redesenhado para {output_html_path.name}...")
     
     try:
         # Prepara dados dos setores
@@ -159,73 +223,111 @@ def create_priority_map(
             logger.warning(f"Erro ao calcular centro do mapa: {e}. Usando centro padrão.")
             map_center = [-22.818, -47.069]
         
-        # Cria o mapa base
+        # Cria o mapa base com tema dark
         m = folium.Map(
             location=map_center, 
             zoom_start=15, 
-            tiles="CartoDB positron"
+            tiles=None  # Vamos adicionar tiles customizados
         )
         
-        # --- Camada 1: Risco por Setor (Choropleth) ---
+        # Adiciona tile layer dark similar ao index_old.html
+        folium.TileLayer(
+            'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+            attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            name='Dark Theme',
+            overlay=False,
+            control=True
+        ).add_to(m)
+        
+        # --- Camada 1: Risco por Setor (APENAS CORES, SEM MARCADORES) ---
         try:
-            logger.info("Adicionando camada choropleth...")
-            
-            # Prepara dados para choropleth
-            choropleth_data = clean_sectors[['CD_SETOR', 'risk_score']].copy()
-            choropleth_data['CD_SETOR'] = choropleth_data['CD_SETOR'].astype(str)
+            logger.info("Adicionando camada de setores...")
             
             # Verifica se há variação nos dados
-            if choropleth_data['risk_score'].nunique() <= 1:
-                logger.warning("Todos os valores de risk_score são iguais. Usando mapa simples.")
-                # Usa GeoJson simples em vez de Choropleth
-                folium.GeoJson(
-                    clean_sectors.to_json(),
-                    name='Setores Censitários',
-                    style_function=lambda x: {
-                        'fillColor': 'orange',
-                        'color': 'black',
-                        'weight': 1,
-                        'fillOpacity': 0.6,
-                    },
-                    popup=folium.GeoJsonPopup(
-                        fields=['CD_SETOR', 'final_risk_level', 'dirty_pool_count'],
-                        labels=['Setor:', 'Nível de Risco:', 'Piscinas:'],
-                        style="background-color: white; color: black; font-family: arial; font-size: 12px; padding: 10px;"
-                    )
-                ).add_to(m)
+            if clean_sectors['risk_score'].nunique() <= 1:
+                logger.warning("Todos os valores de risk_score são iguais. Usando cores uniformes.")
+                # Usa cores baseadas no nível de risco
+                for idx, row in clean_sectors.iterrows():
+                    try:
+                        risk_color = get_risk_color(row['final_risk_level'], row['risk_score'])
+                        
+                        # Popup moderno
+                        popup_data = {
+                            'Setor': row['CD_SETOR'],
+                            'Nível de Risco': f"<span style='color: {risk_color}; font-weight: bold;'>{row['final_risk_level']}</span>",
+                            'Score de Risco': f"{row['risk_score']:.3f}",
+                            'Piscinas Detectadas': f"{int(row['dirty_pool_count'])}"
+                        }
+                        popup_html = create_modern_popup(
+                            f"📍 Setor Censitário", 
+                            popup_data, 
+                            risk_color
+                        )
+                        
+                        # Adiciona apenas o polígono colorido (SEM marcador)
+                        folium.GeoJson(
+                            row.geometry,
+                            style_function=lambda x, color=risk_color: {
+                                'fillColor': color,
+                                'color': color,
+                                'weight': 2,
+                                'fillOpacity': 0.6,
+                                'opacity': 0.8
+                            },
+                            popup=folium.Popup(popup_html, max_width=350),
+                            tooltip=f"Setor {row['CD_SETOR']} - {row['final_risk_level']}"
+                        ).add_to(m)
+                        
+                    except Exception as e:
+                        logger.warning(f"Erro ao processar setor {row.get('CD_SETOR', 'unknown')}: {e}")
+                        continue
             else:
-                # Usa Choropleth normal
+                # Usa Choropleth para variação de cores
+                choropleth_data = clean_sectors[['CD_SETOR', 'risk_score']].copy()
+                choropleth_data['CD_SETOR'] = choropleth_data['CD_SETOR'].astype(str)
+                
                 folium.Choropleth(
                     geo_data=clean_sectors.to_json(),
-                    name='Risco por Setor Censitário',
+                    name='Mapa de Risco Ambiental',
                     data=choropleth_data,
                     columns=['CD_SETOR', 'risk_score'],
                     key_on='feature.properties.CD_SETOR',
                     fill_color='YlOrRd',
-                    fill_opacity=0.6,
-                    line_opacity=0.2,
-                    legend_name='Score de Risco Ambiental',
+                    fill_opacity=0.7,
+                    line_opacity=0.8,
+                    line_weight=2,
+                    legend_name='Score de Risco (0-1)',
                     highlight=True
                 ).add_to(m)
                 
-                # Adiciona popups informativos
+                # Adiciona APENAS popups (SEM marcadores de ícone)
                 for idx, row in clean_sectors.iterrows():
                     try:
                         centroid = row.geometry.centroid
-                        popup_html = f"""
-                        <div style="font-family: Arial, sans-serif; min-width: 200px;">
-                            <h4 style="margin: 0; color: #d73027;">📍 Setor {row['CD_SETOR']}</h4>
-                            <hr style="margin: 5px 0;">
-                            <p><b>Nível de Risco:</b> <span style="color: #d73027;">{row['final_risk_level']}</span></p>
-                            <p><b>Score de Risco:</b> {row['risk_score']:.3f}</p>
-                            <p><b>Piscinas Detectadas:</b> {int(row['dirty_pool_count'])}</p>
-                        </div>
-                        """
-                        folium.Marker(
+                        risk_color = get_risk_color(row['final_risk_level'], row['risk_score'])
+                        
+                        popup_data = {
+                            'Setor': row['CD_SETOR'],
+                            'Nível de Risco': f"<span style='color: {risk_color}; font-weight: bold;'>{row['final_risk_level']}</span>",
+                            'Score de Risco': f"{row['risk_score']:.3f}",
+                            'Piscinas Detectadas': f"{int(row['dirty_pool_count'])}"
+                        }
+                        popup_html = create_modern_popup(
+                            f"📍 Setor Censitário", 
+                            popup_data, 
+                            risk_color
+                        )
+                        
+                        # Marcador invisível apenas para o popup
+                        folium.CircleMarker(
                             location=[centroid.y, centroid.x],
-                            popup=folium.Popup(popup_html, max_width=300),
-                            icon=folium.Icon(color='red', icon='info-sign', prefix='glyphicon')
+                            radius=0.1,  # Muito pequeno, quase invisível
+                            color='transparent',
+                            fill=False,
+                            popup=folium.Popup(popup_html, max_width=350),
+                            tooltip=f"Setor {row['CD_SETOR']}"
                         ).add_to(m)
+                        
                     except Exception as e:
                         logger.warning(f"Erro ao adicionar popup para setor {row.get('CD_SETOR', 'unknown')}: {e}")
                         continue
@@ -234,33 +336,34 @@ def create_priority_map(
             
         except Exception as e:
             logger.error(f"Erro ao adicionar camada de setores: {e}")
-            # Fallback: adiciona apenas as geometrias
+            # Fallback simples
             try:
                 folium.GeoJson(
                     clean_sectors.to_json(),
                     name='Setores (Fallback)',
                     style_function=lambda x: {
-                        'fillColor': 'blue',
-                        'color': 'black',
-                        'weight': 1,
-                        'fillOpacity': 0.3,
+                        'fillColor': '#FF7C33',
+                        'color': '#FF7C33',
+                        'weight': 2,
+                        'fillOpacity': 0.5,
+                        'opacity': 0.8
                     }
                 ).add_to(m)
                 logger.info("Camada fallback adicionada")
             except Exception as e2:
                 logger.error(f"Falha também no fallback: {e2}")
         
-        # --- Camada 2: Piscinas Sujas Detectadas ---
+        # --- Camada 2: Piscinas com Design Moderno (Similar aos Focos de Dengue) ---
         if clean_pools is not None and not clean_pools.empty:
             try:
-                logger.info(f"Adicionando {len(clean_pools)} piscinas ao mapa...")
+                logger.info(f"Adicionando {len(clean_pools)} piscinas com design moderno...")
                 
-                pools_layer = folium.FeatureGroup(name='Piscinas Sujas Detectadas')
+                pools_layer = folium.FeatureGroup(name='🏊 Piscinas de Risco Detectadas')
                 
                 added_pools = 0
                 for idx, pool in clean_pools.iterrows():
                     try:
-                        # Extrai coordenadas de forma segura
+                        # Extrai coordenadas
                         if hasattr(pool.geometry, 'y') and hasattr(pool.geometry, 'x'):
                             lat, lon = pool.geometry.y, pool.geometry.x
                         else:
@@ -272,10 +375,13 @@ def create_priority_map(
                             logger.warning(f"Coordenadas inválidas para piscina: lat={lat}, lon={lon}")
                             continue
                         
-                        # Extrai atributos de forma segura
+                        # Extrai atributos
                         sector_id = str(pool.get('sector_id', 'N/A'))
-                        risk_level = str(pool.get('risk_level', 'N/A'))
+                        risk_level = str(pool.get('risk_level', 'Médio'))
                         confidence = pool.get('pool_confidence', 0.5)
+                        
+                        # Define cor baseada no risco
+                        risk_color = get_risk_color(risk_level, 0)
                         
                         # Formata confiança
                         if isinstance(confidence, (int, float)):
@@ -283,34 +389,67 @@ def create_priority_map(
                         else:
                             confidence_str = str(confidence)
                         
-                        # Define cor baseada no nível de risco
-                        color_map = {
-                            'Baixo': 'green',
-                            'Médio': 'orange', 
-                            'Alto': 'red',
-                            'Crítico': 'darkred'
+                        # Determina status baseado no risco
+                        status_map = {
+                            'Baixo': 'Monitorado',
+                            'Médio': 'Ativo', 
+                            'Alto': 'Em Tratamento',
+                            'Crítico': 'Crítico'
                         }
-                        marker_color = color_map.get(risk_level, 'blue')
+                        status = status_map.get(risk_level, 'Ativo')
                         
-                        popup_html = f"""
-                        <div style="font-family: Arial, sans-serif; min-width: 200px;">
-                            <h4 style="margin: 0; color: {marker_color};">🏊 Piscina de Risco</h4>
-                            <hr style="margin: 5px 0;">
-                            <p><b>Setor:</b> {sector_id}</p>
-                            <p><b>Nível de Risco do Setor:</b> <span style="color: {marker_color};">{risk_level}</span></p>
-                            <p><b>Confiança da Detecção:</b> {confidence_str}</p>
-                            <p><small><i>Coordenadas: {lat:.4f}, {lon:.4f}</i></small></p>
-                        </div>
-                        """
+                        # Popup moderno similar ao foco de dengue
+                        popup_data = {
+                            'Localização': f"Setor {sector_id}",
+                            'Confiança da Detecção': confidence_str,
+                            'Nível de Risco do Setor': f"<span style='color: {risk_color}; font-weight: bold;'>{risk_level}</span>",
+                            'Status': f"""<span style="
+                                padding: 3px 10px; 
+                                border-radius: 12px; 
+                                font-size: 12px; 
+                                background: {risk_color}; 
+                                color: white;
+                                font-weight: bold;
+                            ">{status}</span>""",
+                            'Coordenadas': f"{lat:.4f}, {lon:.4f}"
+                        }
                         
-                        folium.CircleMarker(
+                        popup_html = create_modern_popup(
+                            "🏊 Piscina de Risco Detectada", 
+                            popup_data, 
+                            risk_color
+                        )
+                        
+                        # Cria marcador customizado similar ao foco de dengue
+                        # Usando DivIcon para controle total do estilo
+                        custom_icon = folium.DivIcon(
+                            html=f"""
+                            <div style="
+                                background: {risk_color}; 
+                                color: white; 
+                                border-radius: 50%; 
+                                width: 30px; 
+                                height: 30px; 
+                                display: flex; 
+                                align-items: center; 
+                                justify-content: center; 
+                                font-weight: bold; 
+                                font-size: 14px; 
+                                border: 3px solid white; 
+                                box-shadow: 0 4px 15px rgba({int(risk_color[1:3], 16)}, {int(risk_color[3:5], 16)}, {int(risk_color[5:7], 16)}, 0.5);
+                                font-family: 'Font Awesome 5 Free';
+                            ">
+                                🏊
+                            </div>
+                            """,
+                            icon_size=(30, 30),
+                            icon_anchor=(15, 15)
+                        )
+                        
+                        folium.Marker(
                             location=[lat, lon],
-                            radius=8,
-                            color=marker_color,
-                            fill=True,
-                            fill_color=marker_color,
-                            fill_opacity=0.8,
-                            popup=folium.Popup(popup_html, max_width=300),
+                            icon=custom_icon,
+                            popup=folium.Popup(popup_html, max_width=350),
                             tooltip=f"Piscina - Setor {sector_id} ({risk_level})"
                         ).add_to(pools_layer)
                         
@@ -331,23 +470,60 @@ def create_priority_map(
         
         # Adiciona controle de camadas
         try:
-            folium.LayerControl().add_to(m)
+            folium.LayerControl(position='topright').add_to(m)
         except Exception as e:
             logger.warning(f"Erro ao adicionar controle de camadas: {e}")
         
         # Adiciona mini mapa
         try:
             from folium.plugins import MiniMap
-            minimap = MiniMap(toggle_display=True)
+            minimap = MiniMap(
+                tile_layer='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                toggle_display=True,
+                width=150,
+                height=150
+            )
             m.add_child(minimap)
         except Exception as e:
             logger.info(f"Mini mapa não disponível: {e}")
+        
+        # Adiciona CSS customizado para melhorar o visual
+        custom_css = """
+        <style>
+        .leaflet-popup-content-wrapper {
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 15px !important;
+        }
+        .leaflet-popup-content {
+            margin: 0 !important;
+            line-height: 1.4 !important;
+        }
+        .leaflet-popup-tip {
+            background: rgba(26, 36, 68, 0.95) !important;
+            border: 1px solid rgba(255, 124, 51, 0.3) !important;
+        }
+        .leaflet-control-layers {
+            background: rgba(26, 36, 68, 0.9) !important;
+            color: white !important;
+            border-radius: 10px !important;
+            backdrop-filter: blur(10px) !important;
+        }
+        .leaflet-control-layers-expanded {
+            padding: 15px !important;
+        }
+        .leaflet-control-layers label {
+            color: white !important;
+        }
+        </style>
+        """
+        m.get_root().html.add_child(folium.Element(custom_css))
         
         # Salva o mapa
         try:
             output_html_path.parent.mkdir(parents=True, exist_ok=True)
             m.save(str(output_html_path))
-            logger.info(f"✅ Mapa interativo salvo com sucesso em: {output_html_path}")
+            logger.info(f"✅ Mapa redesenhado salvo com sucesso em: {output_html_path}")
             return True
             
         except Exception as e:
@@ -369,17 +545,25 @@ def create_simple_map(sectors_gdf: gpd.GeoDataFrame, output_path: Path):
         bounds = sectors_gdf.total_bounds
         center = [(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2]
         
-        # Cria mapa básico
-        m = folium.Map(location=center, zoom_start=15)
+        # Cria mapa básico com tema dark
+        m = folium.Map(location=center, zoom_start=15, tiles=None)
+        
+        # Adiciona tema dark
+        folium.TileLayer(
+            'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+            attr='&copy; OpenStreetMap &copy; CARTO',
+            name='Dark Theme'
+        ).add_to(m)
         
         # Adiciona setores
         folium.GeoJson(
             sectors_gdf.to_json(),
             style_function=lambda x: {
-                'fillColor': 'lightblue',
-                'color': 'black',
-                'weight': 1,
-                'fillOpacity': 0.5,
+                'fillColor': '#FF7C33',
+                'color': '#FF7C33',
+                'weight': 2,
+                'fillOpacity': 0.6,
+                'opacity': 0.8
             }
         ).add_to(m)
         
