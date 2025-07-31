@@ -1,19 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
+# src/data/sentinel_downloader.py (Refatorado a partir do seu código original)
 """
-Downloader de dados Sentinel-1/2 para monitoramento de focos de dengue
-Versão ajustada para uso com configurações centralizadas
+Módulo para download de dados Sentinel-1 e Sentinel-2, adaptado para
+a arquitetura modular do projeto NAIÁ.
 """
-
+import logging
 import os
-import glob
-import requests
-import rasterio
 from pathlib import Path
-from datetime import datetime
-from dotenv import load_dotenv
-import matplotlib.pyplot as plt
+import glob
+
 from sentinelhub import (
     SHConfig,
     BBox,
@@ -23,236 +17,168 @@ from sentinelhub import (
     SentinelHubRequest
 )
 
-# Configurações do projeto
-from src.config.settings import (
-    DATA_DIR,
-    RAW_DIR,
-    PROCESSED_DIR,
-    STUDY_AREA,
-    AUTH,
-    FILE_NAMES,
-    DATA_RANGES,
-    DATA_SOURCES
-)
-
-# Debug: Mostra configurações carregadas
-print("\n🔧 [DEBUG] Configurações carregadas:")
-print(f" - DATA_DIR: {DATA_DIR}")
-print(f" - RAW_DIR: {RAW_DIR}")
-print(f" - PROCESSED_DIR: {PROCESSED_DIR}")
-print(f" - Período padrão: {DATA_RANGES['default']['start']} a {DATA_RANGES['default']['end']}")
-print(f" - Bands S1: {DATA_SOURCES['sentinel1']['bands']}")
-print(f" - Bands S2: {DATA_SOURCES['sentinel2']['bands']}\n")
-
-# Setup de diretórios
-os.makedirs(RAW_DIR, exist_ok=True)
-os.makedirs(PROCESSED_DIR, exist_ok=True)
-
-# Autenticação
-load_dotenv()
-client_id = os.getenv('CLIENT_ID')
-client_secret = os.getenv('CLIENT_SECRET_ID')
-
-if not all([client_id, client_secret]):
-    raise ValueError("❌ Credenciais não encontradas no .env")
-
-def setup_sentinelhub_config():
-    """Configura autenticação no Copernicus CDSE com debug"""
-    print("🔑 [DEBUG] Configurando autenticação...")
+def _setup_config(client_id: str, client_secret: str) -> SHConfig:
+    """Configura e autentica no Copernicus Data Space Ecosystem."""
     config = SHConfig()
-    config.sh_client_id = client_id.strip()
-    config.sh_client_secret = client_secret.strip()
-    config.sh_token_url = AUTH['copernicus']['token_url']
-    config.sh_base_url = AUTH['copernicus']['base_url']
+    if not all([client_id, client_secret]):
+        logging.error("Credenciais do Sentinel Hub não foram fornecidas.")
+        raise ValueError("SH_CLIENT_ID e SH_CLIENT_SECRET devem ser definidos.")
+
+    config.sh_client_id = client_id
+    config.sh_client_secret = client_secret
+    config.sh_token_url = 'https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token'
+    config.sh_base_url = 'https://sh.dataspace.copernicus.eu'
     
-    # Debug: Mostra configuração resumida
-    print(f"  - Client ID: {config.sh_client_id[:8]}...")
-    print(f"  - Base URL: {config.sh_base_url}")
-    
+    logging.info("Configuração do Sentinel Hub pronta.")
     return config
 
-config = setup_sentinelhub_config()
-
-def test_authentication(config):
-    """Testa conexão com API com verificação detalhada"""
-    print("\n🔐 [DEBUG] Testando autenticação...")
-    try:
-        response = requests.post(
-            config.sh_token_url,
-            data={
-                'grant_type': 'client_credentials',
-                'client_id': config.sh_client_id,
-                'client_secret': config.sh_client_secret
-            },
-            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            timeout=30
-        )
-        
-        # Debug detalhado
-        print(f"  - Status Code: {response.status_code}")
-        if response.status_code == 200:
-            print("  - Token obtido com sucesso!")
-            return True
-        else:
-            print(f"  - Erro na resposta: {response.text[:200]}...")
-            return False
-            
-    except Exception as e:
-        print(f"❌ [DEBUG] Falha na autenticação: {type(e).__name__}: {str(e)}")
-        return False
-
-auth_success = test_authentication(config)
-
-def _generate_evalscript(bands: list):
-    """Gera evalscript dinamicamente com debug"""
-    print(f"\n📜 [DEBUG] Gerando evalscript para bands: {bands}")
-    bands_str = ", ".join([f"'{band}'" for band in bands])
-    evalscript = f"""
-    //VERSION=3
-    function setup() {{
-        return {{ input: [{bands_str}], output: {{ bands: {len(bands)} }} }};
-    }}
-    function evaluatePixel(sample) {{
-        return [{', '.join([f'sample.{band}' for band in bands])}];
-    }}
+def download_and_save_sentinel_data(
+    sensor: str,
+    auth_config: dict,
+    bbox: list,
+    time_interval: tuple,
+    output_path: Path,
+    image_size: tuple = (512, 512)
+):
     """
-    print(f"  - Evalscript gerado ({len(evalscript.splitlines())} linhas)")
-    return evalscript
+    Baixa dados de um sensor Sentinel, salva e renomeia o arquivo.
 
-def download_sentinel_data(sensor_type: str):
-    """Download unificado para Sentinel-1/2 com logging detalhado"""
-    if not auth_success:
-        print(f"❌ Pulando download {sensor_type} (falha na autenticação)")
-        return None
+    Args:
+        sensor (str): O sensor a ser usado ('S1' ou 'S2').
+        auth_config (dict): Dicionário com 'client_id' e 'client_secret'.
+        bbox (list): Bounding box da área de estudo.
+        time_interval (tuple): Intervalo de tempo (data_inicio, data_fim).
+        output_path (Path): Caminho completo (incluindo nome) para salvar o arquivo final.
+        image_size (tuple): Tamanho da imagem em pixels.
+    """
+    logging.info(f"--- Iniciando download para o sensor: {sensor} ---")
+    
+    try:
+        config = _setup_config(
+            auth_config['client_id'], 
+            auth_config['client_secret']
+        )
+    except ValueError as e:
+        logging.error(f"Não foi possível configurar a autenticação: {e}")
+        return
 
-    sensor_config = DATA_SOURCES.get(sensor_type)
-    if not sensor_config:
-        print(f"❌ Configuração não encontrada para {sensor_type}")
-        return None
+    study_area_bbox = BBox(bbox, crs=CRS.WGS84)
+    cache_folder = output_path.parent / ".sh_cache" # Pasta para cache
+    cache_folder.mkdir(exist_ok=True)
 
-    date_range = DATA_RANGES["default"]
-    print(f"\n📡 [DEBUG] Iniciando download {sensor_type.upper()}")
-    print(f"  - Período: {date_range['start']} a {date_range['end']}")
-    print(f"  - Bands: {sensor_config['bands']}")
+    # --- Configurações específicas por sensor ---
+    if sensor.upper() == 'S1':
+        evalscript = """
+            //VERSION=3
+            function setup() { return { input: ['VV', 'VH'], output: { bands: 2 } }; }
+            function evaluatePixel(sample) { return [sample.VV, sample.VH]; }
+        """
+        data_collection = DataCollection.SENTINEL1_IW
+    elif sensor.upper() == 'S2':
+        evalscript = """
+            //VERSION=3
+            function setup() { return { input: ['B04', 'B03', 'B02', 'B08'], output: { bands: 4 } }; }
+            function evaluatePixel(sample) { return [sample.B04, sample.B03, sample.B02, sample.B08]; }
+        """
+        data_collection = DataCollection.SENTINEL2_L2A
+    else:
+        logging.error(f"Sensor '{sensor}' não suportado. Use 'S1' ou 'S2'.")
+        return
+
+    # --- Criação e execução da requisição ---
+    request = SentinelHubRequest(
+        data_folder=str(cache_folder),
+        evalscript=evalscript,
+        input_data=[
+            SentinelHubRequest.input_data(
+                data_collection=data_collection.define_from(
+                    name=f'{sensor.upper()}_CUSTOM', service_url=config.sh_base_url
+                ),
+                time_interval=time_interval,
+                mosaicking_order='leastCC' if sensor.upper() == 'S2' else None
+            )
+        ],
+        responses=[SentinelHubRequest.output_response('default', MimeType.TIFF)],
+        bbox=study_area_bbox,
+        size=image_size,
+        config=config
+    )
 
     try:
-        request = SentinelHubRequest(
-            data_folder=str(RAW_DIR),
-            evalscript=_generate_evalscript(sensor_config["bands"]),
-            input_data=[
-                SentinelHubRequest.input_data(
-                    data_collection=DataCollection[sensor_config["collection"]].define_from(
-                        name=f'CUSTOM_{sensor_type.upper()}',
-                        service_url=AUTH['copernicus']['base_url']
-                    ),
-                    time_interval=(date_range["start"], date_range["end"]),
-                    mosaicking_order='leastCC' if sensor_type == "sentinel2" else None,
-                    maxcc=sensor_config.get("max_cloud_cover", None)
-                )
-            ],
-            responses=[SentinelHubRequest.output_response('default', MimeType.TIFF)],
-            bbox=BBox(bbox=STUDY_AREA['bbox'], crs=CRS.WGS84),
-            size=(STUDY_AREA['tile_size'], STUDY_AREA['tile_size']),
-            config=config
-        )
-
-        print("  - Request configurado, iniciando download...")
+        logging.info(f"Enviando requisição para {sensor} no período {time_interval}.")
         request.save_data()
-
-        # Pós-download
+        
+        # Encontra o arquivo 'response.tiff' mais recente na pasta de cache
         tiff_files = sorted(
-            glob.glob(f'{RAW_DIR}/**/response.tiff', recursive=True),
+            glob.glob(str(cache_folder / '**' / 'response.tiff'), recursive=True), 
             key=os.path.getmtime, 
             reverse=True
         )
-
-        if not tiff_files:
-            print("❌ Download completo mas nenhum arquivo encontrado")
-            return None
-
-        output_filename = FILE_NAMES[sensor_type].format(
-            date=datetime.now().strftime("%Y%m%d")
-        )
-        output_path = str(PROCESSED_DIR / output_filename)
         
-        print(f"  - Movendo para: {output_path}")
-        os.rename(tiff_files[0], output_path)
-        
-        # Verificação pós-move
-        if not os.path.exists(output_path):
-            print(f"❌ Arquivo não movido para {output_path}")
-            return None
-            
-        print(f"✓ Download {sensor_type.upper()} concluído")
-        return output_path
+        if tiff_files:
+            latest_tiff = tiff_files[0]
+            # Renomeia (move) o arquivo para o caminho de saída final
+            os.rename(latest_tiff, output_path)
+            logging.info(f"Download concluído com sucesso. Arquivo salvo em: {output_path}")
+        else:
+            logging.error("Download parece ter ocorrido, mas o arquivo response.tiff não foi encontrado.")
 
     except Exception as e:
-        print(f"❌ Erro no download {sensor_type}: {type(e).__name__}: {str(e)}")
-        return None
+        logging.error(f"Falha durante o download para {sensor}: {e}", exc_info=True)
+        raise
 
-def visualize_sentinel_image(data_path, title, output_file):
-    """Visualização com debug de metadados"""
-    print(f"\n🎨 [DEBUG] Gerando visualização para {data_path}")
-    
-    if not data_path or not Path(data_path).exists():
-        print(f"❌ Arquivo não encontrado: {data_path}")
-        return
+# --- Bloco de Teste ---
+if __name__ == '__main__':
+    # Configuração de logging para o teste
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     try:
-        with rasterio.open(data_path) as src:
-            print(f"  - Metadados: {src.meta}")
-            image = src.read()
-            
-            print(f"  - Shape: {image.shape}")
-            print(f"  - Valores: min={image.min():.2f}, max={image.max():.2f}")
-            
-            fig, axes = plt.subplots(1, len(image), figsize=(10 * len(image), 8))
-            if len(image) == 1:
-                axes = [axes]
+        from dotenv import load_dotenv
+    except ImportError:
+        logging.error("Para testar, instale 'python-dotenv': pip install python-dotenv")
+        exit()
 
-            for i, band in enumerate(image):
-                axes[i].imshow(band, cmap='gray')
-                axes[i].set_title(f'{title} - Band {i+1}', fontsize=12)
-                plt.colorbar(axes[i].imshow(band, cmap='gray'), ax=axes[i])
+    # Carrega as variáveis de ambiente do arquivo .env na raiz do projeto
+    dotenv_path = Path(__file__).resolve().parent.parent.parent / '.env'
+    load_dotenv(dotenv_path=dotenv_path)
+    
+    # Configurações para o teste
+    TEST_AUTH_CONFIG = {
+        "client_id": os.getenv("CLIENT_ID"),
+        "client_secret": os.getenv("CLIENT_SECRET_ID"),
+    }
+    
+    TEST_BBOX = [-47.10, -22.85, -47.03, -22.78]  # Barão Geraldo
+    TEST_TIME_INTERVAL = ("2024-07-01", "2024-07-30")
+    
+    # Define o caminho de saída para os arquivos de teste
+    output_dir = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "sentinel"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    s1_output_file = output_dir / f"s1_test_{TEST_TIME_INTERVAL[0]}_{TEST_TIME_INTERVAL[1]}.tiff"
+    s2_output_file = output_dir / f"s2_test_{TEST_TIME_INTERVAL[0]}_{TEST_TIME_INTERVAL[1]}.tiff"
+    
+    logging.info("--- INICIANDO TESTE DO MÓDULO DE DOWNLOAD ---")
 
-            plt.tight_layout()
-            plt.savefig(output_file, dpi=300, bbox_inches='tight')
-            print(f"✓ Visualização salva em {output_file}")
-
+    try:
+        # Teste para Sentinel-1
+        download_and_save_sentinel_data(
+            sensor='S1',
+            auth_config=TEST_AUTH_CONFIG,
+            bbox=TEST_BBOX,
+            time_interval=TEST_TIME_INTERVAL,
+            output_path=s1_output_file
+        )
+        
+        # Teste para Sentinel-2
+        download_and_save_sentinel_data(
+            sensor='S2',
+            auth_config=TEST_AUTH_CONFIG,
+            bbox=TEST_BBOX,
+            time_interval=TEST_TIME_INTERVAL,
+            output_path=s2_output_file
+        )
+        logging.info("--- TESTE DO MÓDULO CONCLUÍDO COM SUCESSO ---")
+        
     except Exception as e:
-        print(f"❌ Erro na visualização: {type(e).__name__}: {str(e)}")
-
-# Execução principal
-if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("🛰️  INICIANDO DOWNLOAD DE DADOS SENTINEL")
-    print("="*60)
-
-    # Download dos dados
-    s1_path = download_sentinel_data("sentinel1")
-    s2_path = download_sentinel_data("sentinel2")
-
-    # Geração de visualizações
-    if s1_path:
-        visualize_sentinel_image(
-            s1_path,
-            "Sentinel-1",
-            str(PROCESSED_DIR / FILE_NAMES["s1_preview"])
-        )
-
-    if s2_path:
-        visualize_sentinel_image(
-            s2_path,
-            "Sentinel-2",
-            str(PROCESSED_DIR / FILE_NAMES["s2_preview"])
-        )
-
-    # Resumo final
-    print("\n" + "="*60)
-    print("📋 RESUMO FINAL")
-    print("="*60)
-    print(f"✅ Autenticação: {'Sucesso' if auth_success else 'Falha'}")
-    print(f"📁 Dados salvos em: {PROCESSED_DIR}")
-    print(f"🖼️ Visualizações geradas:")
-    print(f"  - Sentinel-1: {'Sim' if s1_path else 'Não'}")
-    print(f"  - Sentinel-2: {'Sim' if s2_path else 'Não'}")
+        logging.error(f"--- TESTE DO MÓDULO FALHOU: {e} ---")

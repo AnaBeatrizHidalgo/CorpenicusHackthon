@@ -17,6 +17,16 @@ env/
 venv/
 naia-env/
 
+dados geologicos/Dados IBGE/
+
+*.zip
+*.cpg
+*.prj
+*.shp
+*.shx
+*.dbf
+
+
 # Jupyter
 .ipynb_checkpoints/
 

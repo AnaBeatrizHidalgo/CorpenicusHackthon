@@ -1,180 +1,123 @@
-import os
-import geopandas as gpd
+# src/features/metrics_calculator.py
+"""
+Módulo para calcular métricas a partir das imagens recortadas e unir todas as
+fontes de features em um único arquivo.
+"""
+import logging
+from pathlib import Path
 import rasterio
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import glob
+from tqdm import tqdm
 
-# Configurar diretórios
-os.makedirs('data/processed', exist_ok=True)
-print('✓ Diretório data/processed/ criado ou já existente')
+def calculate_image_metrics(
+    s1_images_dir: Path,
+    s2_images_dir: Path,
+    output_path: Path
+):
+    """
+    Calcula métricas (NDVI, VV, VH) para cada setor a partir das imagens recortadas.
 
-# Definir caminhos
-sectors_path = 'data/area_prova_barao.geojson'
-s1_pattern = 'data/processed/s1_setor_*.tiff'
-s2_pattern = 'data/processed/s2_setor_*.tiff'
+    Args:
+        s1_images_dir (Path): Diretório com as imagens Sentinel-1 recortadas.
+        s2_images_dir (Path): Diretório com as imagens Sentinel-2 recortadas.
+        output_path (Path): Caminho para salvar o CSV com as métricas de imagem.
+    """
+    logging.info("Iniciando cálculo de métricas a partir das imagens de satélite.")
+    
+    # Encontra todos os arquivos de imagem recortados
+    s1_files = list(s1_images_dir.glob("*_sector_*.tiff"))
+    s2_files = list(s2_images_dir.glob("*_sector_*.tiff"))
+    
+    if not s1_files and not s2_files:
+        logging.warning("Nenhuma imagem recortada encontrada para processar.")
+        return
 
-# Verificar arquivos de entrada
-print('\n--- Verificando arquivos de entrada ---')
-s1_files = glob.glob(s1_pattern)
-s2_files = glob.glob(s2_pattern)
-print(f'✓ Encontrados {len(s1_files)} arquivos Sentinel-1 recortados')
-print(f'✓ Encontrados {len(s2_files)} arquivos Sentinel-2 recortados')
-if os.path.exists(sectors_path):
-    size_mb = os.path.getsize(sectors_path) / (1024 * 1024)
-    print(f'✓ {sectors_path} ({size_mb:.1f} MB)')
-else:
-    print(f'❌ {sectors_path} não encontrado')
-try:
-    sectors_gdf = gpd.read_file(sectors_path)
-    print(f'✓ GeoJSON de setores carregado: {len(sectors_gdf)} setores censitários')
-    print(f'  Colunas disponíveis: {list(sectors_gdf.columns)}')
-    if 'CD_SETOR' not in sectors_gdf.columns:
-        raise ValueError('Coluna CD_SETOR não encontrada no GeoJSON')
-    # Filtrar setores urbanos com área <= 1.0 km²
-    sectors_gdf_urban = sectors_gdf[(sectors_gdf['SITUACAO'] == 'Urbana') & (sectors_gdf['AREA_KM2'] <= 1.0)]
-    print(f'✓ Setores filtrados: {len(sectors_gdf_urban)} setores urbanos com área ≤ 1.0 km²')
-    if len(sectors_gdf_urban) == 0:
-        raise ValueError('Nenhum setor urbano encontrado após filtro')
-    # Extrair IDs de setores com TIFFs disponíveis
-    s1_ids = {os.path.basename(f).replace('s1_setor_', '').replace('.tiff', '') for f in s1_files}
-    s2_ids = {os.path.basename(f).replace('s2_setor_', '').replace('.tiff', '') for f in s2_files}
-    sector_ids = s1_ids.intersection(s2_ids)  # Setores com ambos S1 e S2
-    print(f'✓ IDs de setores com TIFFs disponíveis: {len(sector_ids)}')
-    # Filtrar GeoDataFrame para setores com TIFFs
-    sectors_gdf_urban = sectors_gdf_urban[sectors_gdf_urban['CD_SETOR'].astype(str).isin(sector_ids)]
-    print(f'✓ Setores filtrados com TIFFs: {len(sectors_gdf_urban)}')
-except Exception as e:
-    print(f'❌ Erro ao carregar {sectors_path}: {e}')
-    sectors_gdf_urban = None
-def calculate_metrics(s1_files, s2_files, sector_ids):
-    """Calcula métricas por setor censitário."""
-    metrics = []
-    s1_files_set = set(s1_files)
-    s2_files_set = set(s2_files)
-    for cd_setor in sector_ids:
-        s1_file = f'data/processed/s1_setor_{cd_setor}.tiff'
-        s2_file = f'data/processed/s2_setor_{cd_setor}.tiff'
-        metric = {'CD_SETOR': cd_setor}
+    all_metrics = []
 
-        # Processar Sentinel-1 (VV/VH)
-        if s1_file in s1_files_set:
-            try:
-                with rasterio.open(s1_file) as src:
-                    data = src.read()
-                    if data.shape[0] >= 2:  # VV e VH
-                        vv = data[0]
-                        vh = data[1]
-                        # Converter para dB (log10)
-                        vv_db = 10 * np.log10(vv + 1e-10)
-                        vh_db = 10 * np.log10(vh + 1e-10)
-                        # Médias, ignorando zeros
-                        vv_mean = np.nanmean(vv_db[vv_db > -100]) if np.any(vv_db > -100) else np.nan
-                        vh_mean = np.nanmean(vh_db[vh_db > -100]) if np.any(vh_db > -100) else np.nan
-                        metric['VV_mean_dB'] = vv_mean
-                        metric['VH_mean_dB'] = vh_mean
-                        print(f'✓ Processado S1: {cd_setor} (VV={vv_mean:.2f} dB, VH={vh_mean:.2f} dB)')
-                    else:
-                        print(f'⚠️ {s1_file} tem menos de 2 bandas')
-                        metric['VV_mean_dB'] = np.nan
-                        metric['VH_mean_dB'] = np.nan
-            except Exception as e:
-                print(f'❌ Erro ao processar {s1_file}: {e}')
-                metric['VV_mean_dB'] = np.nan
-                metric['VH_mean_dB'] = np.nan
-        else:
-            metric['VV_mean_dB'] = np.nan
-            metric['VH_mean_dB'] = np.nan
+    # Processa Sentinel-2 (NDVI)
+    logging.info(f"Processando {len(s2_files)} imagens de Sentinel-2 para cálculo de NDVI.")
+    for f in tqdm(s2_files, desc="Calculando NDVI"):
+        try:
+            sector_id = int(f.stem.split('_sector_')[-1])
+            with rasterio.open(f) as src:
+                # S2: [B04 (Red), B03 (Green), B02 (Blue), B08 (NIR)]
+                # O evalscript já ordenou para [Red, Green, Blue, NIR]
+                red = src.read(1).astype(float)
+                nir = src.read(4).astype(float)
+                
+                # Evita divisão por zero
+                np.seterr(divide='ignore', invalid='ignore')
+                ndvi = np.where((nir + red) > 0, (nir - red) / (nir + red), 0)
+                
+                # Remove valores infinitos ou nulos antes de calcular a média
+                ndvi_mean = np.nanmean(ndvi[np.isfinite(ndvi)])
 
-        # Processar Sentinel-2 (NDVI)
-        if s2_file in s2_files_set:
-            try:
-                with rasterio.open(s2_file) as src:
-                    data = src.read()
-                    if data.shape[0] >= 4:  # R, G, B, NIR
-                        red = data[0].astype(float)
-                        nir = data[3].astype(float)
-                        # Calcular NDVI: (NIR - Red) / (NIR + Red)
-                        ndvi = (nir - red) / (nir + red + 1e-10)
-                        # Média, ignorando valores inválidos
-                        ndvi_mean = np.nanmean(ndvi[(ndvi >= -1) & (ndvi <= 1)]) if np.any((ndvi >= -1) & (ndvi <= 1)) else np.nan
-                        metric['NDVI_mean'] = ndvi_mean
-                        print(f'✓ Processado S2: {cd_setor} (NDVI={ndvi_mean:.3f})')
-                    else:
-                        print(f'⚠️ {s2_file} tem menos de 4 bandas')
-                        metric['NDVI_mean'] = np.nan
-            except Exception as e:
-                print(f'❌ Erro ao processar {s2_file}: {e}')
-                metric['NDVI_mean'] = np.nan
-        else:
-            metric['NDVI_mean'] = np.nan
+                all_metrics.append({'CD_SETOR': sector_id, 'ndvi_mean': ndvi_mean})
+        except Exception as e:
+            logging.error(f"Erro ao processar o arquivo {f.name}: {e}")
+            continue
 
-        metrics.append(metric)
-    return pd.DataFrame(metrics)
+    # Processa Sentinel-1 (VV, VH)
+    logging.info(f"Processando {len(s1_files)} imagens de Sentinel-1 para backscatter.")
+    for f in tqdm(s1_files, desc="Calculando Backscatter"):
+        try:
+            sector_id = int(f.stem.split('_sector_')[-1])
+            with rasterio.open(f) as src:
+                vv = src.read(1).astype(float)
+                vh = src.read(2).astype(float)
+                
+                # Calcula a média, ignorando valores nulos (geralmente NoData)
+                vv_mean = np.nanmean(vv[vv != src.nodata])
+                vh_mean = np.nanmean(vh[vh != src.nodata])
 
-if sectors_gdf_urban is not None:
-    print('\n--- Calculando métricas por setor ---')
-    metrics_df = calculate_metrics(s1_files, s2_files, sector_ids)
-    output_csv = 'data/processed/metrics.csv'
-    metrics_df.to_csv(output_csv, index=False)
-    print(f'✓ Métricas salvas em {output_csv}')
-else:
-    print('❌ Pulando cálculo de métricas devido a falha no carregamento dos setores')
+                # Adiciona ou atualiza o dicionário na lista
+                found = False
+                for item in all_metrics:
+                    if item['CD_SETOR'] == sector_id:
+                        item.update({'vv_mean': vv_mean, 'vh_mean': vh_mean})
+                        found = True
+                        break
+                if not found:
+                    all_metrics.append({'CD_SETOR': sector_id, 'vv_mean': vv_mean, 'vh_mean': vh_mean})
+        except Exception as e:
+            logging.error(f"Erro ao processar o arquivo {f.name}: {e}")
+            continue
+    
+    # Salva o resultado em um CSV
+    metrics_df = pd.DataFrame(all_metrics)
+    metrics_df.to_csv(output_path, index=False)
+    logging.info(f"Métricas de imagem salvas com sucesso em: {output_path}")
+    return metrics_df
 
-if 'metrics_df' in locals() and not metrics_df.empty:
-    # Histograma de NDVI
-    plt.figure(figsize=(10, 6))
-    plt.hist(metrics_df['NDVI_mean'].dropna(), bins=20, color='green', alpha=0.7)
-    plt.title('Distribuição de NDVI Médio por Setor Censitário', fontsize=14)
-    plt.xlabel('NDVI Médio')
-    plt.ylabel('Frequência')
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig('data/processed/ndvi_histogram.png', dpi=300, bbox_inches='tight')
-    plt.show()
-    print('✓ Histograma de NDVI salvo em data/processed/ndvi_histogram.png')
 
-    # Histograma de VV (Sentinel-1)
-    plt.figure(figsize=(10, 6))
-    plt.hist(metrics_df['VV_mean_dB'].dropna(), bins=20, color='blue', alpha=0.7)
-    plt.title('Distribuição de Backscatter VV Médio (dB) por Setor Censitário', fontsize=14)
-    plt.xlabel('Backscatter VV Médio (dB)')
-    plt.ylabel('Frequência')
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig('data/processed/vv_histogram.png', dpi=300, bbox_inches='tight')
-    plt.show()
-    print('✓ Histograma de VV salvo em data/processed/vv_histogram.png')
+def merge_features(
+    climate_features_path: Path,
+    image_features_path: Path,
+    output_path: Path
+):
+    """
+    Une as features climáticas e de imagem em um único arquivo.
 
-    # Histograma de VH (Sentinel-1)
-    plt.figure(figsize=(10, 6))
-    plt.hist(metrics_df['VH_mean_dB'].dropna(), bins=20, color='purple', alpha=0.7)
-    plt.title('Distribuição de Backscatter VH Médio (dB) por Setor Censitário', fontsize=14)
-    plt.xlabel('Backscatter VH Médio (dB)')
-    plt.ylabel('Frequência')
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig('data/processed/vh_histogram.png', dpi=300, bbox_inches='tight')
-    plt.show()
-    print('✓ Histograma de VH salvo em data/processed/vh_histogram.png')
-else:
-    print('❌ Pulando gráficos devido a falha no cálculo de métricas')
+    Args:
+        climate_features_path (Path): Caminho para o CSV de features climáticas.
+        image_features_path (Path): Caminho para o CSV de features de imagem.
+        output_path (Path): Caminho para salvar o CSV final com todas as features.
+    """
+    logging.info("Unindo features climáticas e de imagem.")
+    try:
+        climate_df = pd.read_csv(climate_features_path)
+        image_df = pd.read_csv(image_features_path)
 
-print('\n' + '='*50)
-print('📋 RESUMO DA EXECUÇÃO')
-print('='*50)
-print(f'✓ Setores urbanos processados: {len(sectors_gdf_urban) if sectors_gdf_urban is not None else 0}')
-print(f'✓ Arquivos Sentinel-1 processados: {len(s1_files)}')
-print(f'✓ Arquivos Sentinel-2 processados: {len(s2_files)}')
-if 'metrics_df' in locals():
-    print(f'✓ Setores com métricas calculadas: {len(metrics_df)}')
-    print(f'✓ Setores com TIFFs ausentes: {len(sector_ids) - len(metrics_df[metrics_df[["VV_mean_dB", "VH_mean_dB", "NDVI_mean"]].notna().all(axis=1)])}')
-    print(f'✓ Média NDVI: {metrics_df["NDVI_mean"].mean():.3f}')
-    print(f'✓ Média VV (dB): {metrics_df["VV_mean_dB"].mean():.2f}')
-    print(f'✓ Média VH (dB): {metrics_df["VH_mean_dB"].mean():.2f}')
+        # Garante que a coluna de junção seja do mesmo tipo
+        climate_df['CD_SETOR'] = climate_df['CD_SETOR'].astype(int)
+        image_df['CD_SETOR'] = image_df['CD_SETOR'].astype(int)
 
-print('\n🗂️ ARQUIVOS GERADOS:')
-for file in glob.glob('data/processed/*.csv') + glob.glob('data/processed/*_histogram.png'):
-    if os.path.exists(file):
-        print(f'  ✓ {file} (Tamanho: {os.path.getsize(file) / 1024 / 1024:.2f} MB)')
+        # Une os dois DataFrames
+        final_df = pd.merge(climate_df, image_df, on='CD_SETOR', how='left')
+        
+        final_df.to_csv(output_path, index=False)
+        logging.info(f"Arquivo de features final salvo com sucesso em: {output_path}")
+    except Exception as e:
+        logging.error(f"Falha ao unir os arquivos de features: {e}", exc_info=True)
+        raise
