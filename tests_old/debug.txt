@@ -1,0 +1,653 @@
+INFO: 🔍 INICIANDO DEBUG DOS DADOS DO PROJETO NAIA
+INFO: 
+🔎 Analisando: CSV com features finais
+INFO: 
+==================================================
+INFO: ANALISANDO: final_features.csv
+INFO: Caminho: output/analysis_-22.818_-47.069/final_features.csv
+INFO: Shape: (43, 6)
+INFO: Colunas: ['CD_SETOR', 'tp_mean', 't2m_mean', 'ndvi_mean', 'vv_mean', 'vh_mean']
+INFO: 
+--- Coluna: CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 350950205001000 - 350950210000194
+INFO: Média: 350950209651380.250
+INFO: Amostra: [350950205001000, 350950205001472, 350950205002675]
+INFO: 
+--- Coluna: tp_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: t2m_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: ndvi_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0791993487169882 - 0.3104445333989112
+INFO: Média: 0.187
+INFO: Amostra: [0.2818965278108283, 0.2661693346795209, 0.2765881732866573]
+INFO: 
+--- Coluna: vv_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 8.822575708206207 - 67.08518518518518
+INFO: Média: 32.166
+INFO: Amostra: [64.04692082111437, 67.08518518518518, 18.1281236005374]
+INFO: 
+--- Coluna: vh_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 1.9945989711385608 - 17.03272727272727
+INFO: Média: 8.078
+INFO: Amostra: [11.934017595307918, 12.580246913580249, 4.163927451858487]
+INFO: 
+--- Análise CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Duplicados: 0
+INFO: Amostra: [350950205001000, 350950205001472, 350950205002675]
+INFO: 
+🔎 Analisando: CSV com features de imagem
+INFO: 
+==================================================
+INFO: ANALISANDO: image_features.csv
+INFO: Caminho: output/analysis_-22.818_-47.069/image_features.csv
+INFO: Shape: (43, 4)
+INFO: Colunas: ['CD_SETOR', 'ndvi_mean', 'vv_mean', 'vh_mean']
+INFO: 
+--- Coluna: CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 350950205001000 - 350950210000194
+INFO: Média: 350950209651380.250
+INFO: Amostra: [350950210000181, 350950210000111, 350950210000136]
+INFO: 
+--- Coluna: ndvi_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0791993487169882 - 0.3104445333989112
+INFO: Média: 0.187
+INFO: Amostra: [0.1340229826241178, 0.1684707217670157, 0.0828580726505872]
+INFO: 
+--- Coluna: vv_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 8.822575708206207 - 67.08518518518518
+INFO: Média: 32.166
+INFO: Amostra: [22.33251633986928, 21.3703231292517, 29.31827956989247]
+INFO: 
+--- Coluna: vh_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 1.9945989711385608 - 17.03272727272727
+INFO: Média: 8.078
+INFO: Amostra: [9.768790849673202, 4.484268707482993, 5.479569892473118]
+INFO: 
+--- Análise CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Duplicados: 0
+INFO: Amostra: [350950210000181, 350950210000111, 350950210000136]
+INFO: 
+🔎 Analisando: CSV com features climáticas
+INFO: 
+==================================================
+INFO: ANALISANDO: climate_features.csv
+INFO: Caminho: output/analysis_-22.818_-47.069/climate_features.csv
+INFO: Shape: (43, 3)
+INFO: Colunas: ['CD_SETOR', 'tp_mean', 't2m_mean']
+INFO: 
+--- Coluna: CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 350950205001000 - 350950210000194
+INFO: Média: 350950209651380.250
+INFO: Amostra: [350950205001000, 350950205001472, 350950205002675]
+INFO: 
+--- Coluna: tp_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: t2m_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Análise CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Duplicados: 0
+INFO: Amostra: [350950205001000, 350950205001472, 350950205002675]
+INFO: 
+🔎 Analisando: CSV de debug do mapa
+INFO: 
+==================================================
+INFO: ANALISANDO: debug_map_data.csv
+INFO: Caminho: output/analysis_-22.818_-47.069/debug_map_data.csv
+INFO: Shape: (43, 44)
+INFO: Colunas: ['CD_SETOR', 'SITUACAO', 'CD_SIT', 'CD_TIPO', 'AREA_KM2', 'CD_REGIAO', 'NM_REGIAO', 'CD_UF', 'NM_UF', 'CD_MUN', 'NM_MUN', 'CD_DIST', 'NM_DIST', 'CD_SUBDIST', 'NM_SUBDIST', 'CD_BAIRRO', 'NM_BAIRRO', 'CD_NU', 'NM_NU', 'CD_FCU', 'NM_FCU', 'CD_AGLOM', 'NM_AGLOM', 'CD_RGINT', 'NM_RGINT', 'CD_RGI', 'NM_RGI', 'CD_CONCURB', 'NM_CONCURB', 'tp_mean', 't2m_mean', 'ndvi_mean', 'vv_mean', 'vh_mean', 'ndvi_mean_norm', 't2m_mean_norm', 'tp_mean_norm', 'vv_mean_norm', 'vh_mean_norm', 'risk_score', 'risk_level', 'dirty_pool_count', 'risk_score.1', 'final_risk_level']
+INFO: 
+--- Coluna: CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 350950205001000 - 350950210000194
+INFO: Média: 350950209651380.250
+INFO: Amostra: [350950205001000, 350950205001472, 350950205002675]
+INFO: 
+--- Coluna: SITUACAO ---
+INFO: Tipo: object
+INFO: Valores únicos: 2
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Urbana', 'Urbana', 'Urbana']
+INFO: 
+--- Coluna: CD_SIT ---
+INFO: Tipo: int64
+INFO: Valores únicos: 3
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 1 - 8
+INFO: Média: 1.372
+INFO: Amostra: [1, 1, 2]
+INFO: 
+--- Coluna: CD_TIPO ---
+INFO: Tipo: int64
+INFO: Valores únicos: 2
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0 - 4
+INFO: Média: 0.093
+INFO: Amostra: [0, 0, 4]
+INFO: 
+--- Coluna: AREA_KM2 ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.05184832012789 - 8.683247703758582
+INFO: Média: 0.738
+INFO: Amostra: [0.147017528150223, 0.16298538264076, 6.229927582150902]
+INFO: 
+--- Coluna: CD_REGIAO ---
+INFO: Tipo: int64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 3 - 3
+INFO: Média: 3.000
+INFO: Amostra: [3, 3, 3]
+INFO: 
+--- Coluna: NM_REGIAO ---
+INFO: Tipo: object
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Sudeste', 'Sudeste', 'Sudeste']
+INFO: 
+--- Coluna: CD_UF ---
+INFO: Tipo: int64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 35 - 35
+INFO: Média: 35.000
+INFO: Amostra: [35, 35, 35]
+INFO: 
+--- Coluna: NM_UF ---
+INFO: Tipo: object
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['São Paulo', 'São Paulo', 'São Paulo']
+INFO: 
+--- Coluna: CD_MUN ---
+INFO: Tipo: int64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 3509502 - 3509502
+INFO: Média: 3509502.000
+INFO: Amostra: [3509502, 3509502, 3509502]
+INFO: 
+--- Coluna: NM_MUN ---
+INFO: Tipo: object
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Campinas', 'Campinas', 'Campinas']
+INFO: 
+--- Coluna: CD_DIST ---
+INFO: Tipo: int64
+INFO: Valores únicos: 2
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 350950205 - 350950210
+INFO: Média: 350950209.651
+INFO: Amostra: [350950205, 350950205, 350950205]
+INFO: 
+--- Coluna: NM_DIST ---
+INFO: Tipo: object
+INFO: Valores únicos: 2
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Campinas', 'Campinas', 'Campinas']
+INFO: 
+--- Coluna: CD_SUBDIST ---
+INFO: Tipo: int64
+INFO: Valores únicos: 2
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 35095020500 - 35095021000
+INFO: Média: 35095020965.116
+INFO: Amostra: [35095020500, 35095020500, 35095020500]
+INFO: 
+--- Coluna: NM_SUBDIST ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: CD_BAIRRO ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: NM_BAIRRO ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: CD_NU ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: NM_NU ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: CD_FCU ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: NM_FCU ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: CD_AGLOM ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: NM_AGLOM ---
+INFO: Tipo: float64
+INFO: Valores únicos: 0
+INFO: Valores nulos: 43
+INFO: Valores vazios (''): 0
+INFO: Min-Max: nan - nan
+INFO: Média: nan
+INFO: Amostra: []
+INFO: 
+--- Coluna: CD_RGINT ---
+INFO: Tipo: int64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 3510 - 3510
+INFO: Média: 3510.000
+INFO: Amostra: [3510, 3510, 3510]
+INFO: 
+--- Coluna: NM_RGINT ---
+INFO: Tipo: object
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Campinas', 'Campinas', 'Campinas']
+INFO: 
+--- Coluna: CD_RGI ---
+INFO: Tipo: int64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 350038 - 350038
+INFO: Média: 350038.000
+INFO: Amostra: [350038, 350038, 350038]
+INFO: 
+--- Coluna: NM_RGI ---
+INFO: Tipo: object
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Campinas', 'Campinas', 'Campinas']
+INFO: 
+--- Coluna: CD_CONCURB ---
+INFO: Tipo: int64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 3509502 - 3509502
+INFO: Média: 3509502.000
+INFO: Amostra: [3509502, 3509502, 3509502]
+INFO: 
+--- Coluna: NM_CONCURB ---
+INFO: Tipo: object
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Campinas/SP', 'Campinas/SP', 'Campinas/SP']
+INFO: 
+--- Coluna: tp_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0 - 0.0
+INFO: Média: 0.000
+INFO: Amostra: [0.0, 0.0, 0.0]
+INFO: 
+--- Coluna: t2m_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0 - 0.0
+INFO: Média: 0.000
+INFO: Amostra: [0.0, 0.0, 0.0]
+INFO: 
+--- Coluna: ndvi_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0791993487169882 - 0.3104445333989112
+INFO: Média: 0.187
+INFO: Amostra: [0.2818965278108283, 0.2661693346795209, 0.2765881732866573]
+INFO: 
+--- Coluna: vv_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 8.822575708206207 - 67.08518518518518
+INFO: Média: 32.166
+INFO: Amostra: [64.04692082111437, 67.08518518518518, 18.1281236005374]
+INFO: 
+--- Coluna: vh_mean ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 1.9945989711385608 - 17.03272727272727
+INFO: Média: 8.078
+INFO: Amostra: [11.934017595307918, 12.580246913580249, 4.163927451858487]
+INFO: 
+--- Coluna: ndvi_mean_norm ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0 - 1.0
+INFO: Média: 0.465
+INFO: Amostra: [0.8765465943546, 0.8085356943527682, 0.8535910697607685]
+INFO: 
+--- Coluna: t2m_mean_norm ---
+INFO: Tipo: float64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.5 - 0.5
+INFO: Média: 0.500
+INFO: Amostra: [0.5, 0.5, 0.5]
+INFO: 
+--- Coluna: tp_mean_norm ---
+INFO: Tipo: float64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.5 - 0.5
+INFO: Média: 0.500
+INFO: Amostra: [0.5, 0.5, 0.5]
+INFO: 
+--- Coluna: vv_mean_norm ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0 - 1.0
+INFO: Média: 0.401
+INFO: Amostra: [0.9478522436371254, 1.0, 0.1597173208661045]
+INFO: 
+--- Coluna: vh_mean_norm ---
+INFO: Tipo: float64
+INFO: Valores únicos: 43
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0 - 1.0
+INFO: Média: 0.405
+INFO: Amostra: [0.6609478536713445, 0.703920576427278, 0.1442552182834313]
+INFO: 
+--- Coluna: risk_score ---
+INFO: Tipo: float64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.5 - 0.5
+INFO: Média: 0.500
+INFO: Amostra: [0.5, 0.5, 0.5]
+INFO: 
+--- Coluna: risk_level ---
+INFO: Tipo: object
+INFO: Valores únicos: 3
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Baixo', 'Médio', 'Baixo']
+INFO: 
+--- Coluna: dirty_pool_count ---
+INFO: Tipo: float64
+INFO: Valores únicos: 2
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.0 - 1.0
+INFO: Média: 0.047
+INFO: Amostra: [0.0, 0.0, 0.0]
+INFO: 
+--- Coluna: risk_score.1 ---
+INFO: Tipo: float64
+INFO: Valores únicos: 1
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Min-Max: 0.5 - 0.5
+INFO: Média: 0.500
+INFO: Amostra: [0.5, 0.5, 0.5]
+INFO: 
+--- Coluna: final_risk_level ---
+INFO: Tipo: object
+INFO: Valores únicos: 3
+INFO: Valores nulos: 0
+INFO: Valores vazios (''): 0
+INFO: Amostra: ['Baixo', 'Médio', 'Baixo']
+INFO: 
+--- Análise CD_SETOR ---
+INFO: Tipo: int64
+INFO: Valores únicos: 43
+INFO: Duplicados: 0
+INFO: Amostra: [350950205001000, 350950205001472, 350950205002675]
+INFO: 
+🗺️  Analisando: Área de interesse
+INFO: 
+==================================================
+INFO: ANALISANDO GEOJSON: area_of_interest.geojson
+INFO: Shape: (43, 30)
+INFO: CRS: EPSG:4674
+INFO: Colunas: ['CD_SETOR', 'SITUACAO', 'CD_SIT', 'CD_TIPO', 'AREA_KM2', 'CD_REGIAO', 'NM_REGIAO', 'CD_UF', 'NM_UF', 'CD_MUN', 'NM_MUN', 'CD_DIST', 'NM_DIST', 'CD_SUBDIST', 'NM_SUBDIST', 'CD_BAIRRO', 'NM_BAIRRO', 'CD_NU', 'NM_NU', 'CD_FCU', 'NM_FCU', 'CD_AGLOM', 'NM_AGLOM', 'CD_RGINT', 'NM_RGINT', 'CD_RGI', 'NM_RGI', 'CD_CONCURB', 'NM_CONCURB', 'geometry']
+INFO: 
+--- Análise Geometrias ---
+INFO: Geometrias válidas: 43
+INFO: Geometrias inválidas: 0
+INFO: Geometrias nulas: 0
+INFO: Bounds: [-47.110683  -22.846961  -47.0327404 -22.7697108]
+INFO: Centro: [-22.808335899999964, -47.07171169999998]
+INFO: 
+--- CD_SETOR ---
+INFO: Tipo: object
+INFO: Nulos: 0
+INFO: Amostra: ['350950205001000', '350950205001472', '350950205002675']
+INFO: 
+🗺️  Analisando: Dados finais de risco
+INFO: 
+==================================================
+INFO: ANALISANDO GEOJSON: final_risk_data.geojson
+INFO: Shape: (43, 45)
+INFO: CRS: EPSG:4674
+INFO: Colunas: ['CD_SETOR', 'SITUACAO', 'CD_SIT', 'CD_TIPO', 'AREA_KM2', 'CD_REGIAO', 'NM_REGIAO', 'CD_UF', 'NM_UF', 'CD_MUN', 'NM_MUN', 'CD_DIST', 'NM_DIST', 'CD_SUBDIST', 'NM_SUBDIST', 'CD_BAIRRO', 'NM_BAIRRO', 'CD_NU', 'NM_NU', 'CD_FCU', 'NM_FCU', 'CD_AGLOM', 'NM_AGLOM', 'CD_RGINT', 'NM_RGINT', 'CD_RGI', 'NM_RGI', 'CD_CONCURB', 'NM_CONCURB', 'tp_mean', 't2m_mean', 'ndvi_mean', 'vv_mean', 'vh_mean', 'ndvi_mean_norm', 't2m_mean_norm', 'tp_mean_norm', 'vv_mean_norm', 'vh_mean_norm', 'risk_score', 'risk_level', 'dirty_pool_count', 'amplified_risk_score', 'final_risk_level', 'geometry']
+INFO: 
+--- Análise Geometrias ---
+INFO: Geometrias válidas: 43
+INFO: Geometrias inválidas: 0
+INFO: Geometrias nulas: 0
+INFO: Bounds: [-47.110683  -22.846961  -47.0327404 -22.7697108]
+INFO: Centro: [-22.808335899999964, -47.07171169999998]
+INFO: 
+--- CD_SETOR ---
+INFO: Tipo: object
+INFO: Nulos: 0
+INFO: Amostra: ['350950205001000', '350950205001472', '350950205002675']
+INFO: 
+--- risk_score ---
+INFO: Tipo: float64
+INFO: Nulos: 0
+INFO: Range: 0.3807946817012151 - 0.6079929925046761
+INFO: Amostra: [0.5170101346893853, 0.5590406090695681, 0.46517731126582507]
+INFO: 
+--- final_risk_level ---
+INFO: Tipo: object
+INFO: Nulos: 0
+INFO: Amostra: ['Médio', 'Médio', 'Médio']
+INFO: 
+--- dirty_pool_count ---
+INFO: Tipo: int64
+INFO: Nulos: 0
+INFO: Range: 0 - 0
+INFO: Amostra: [0, 0, 0]
+INFO: 
+🗺️  Analisando: Piscinas detectadas
+INFO: 
+==================================================
+INFO: ANALISANDO GEOJSON: detected_pools.geojson
+INFO: Shape: (2, 7)
+INFO: CRS: EPSG:4326
+INFO: Colunas: ['sector_id', 'pool_lat', 'pool_lon', 'pool_confidence', 'CD_SETOR', 'risk_level', 'geometry']
+INFO: 
+--- Análise Geometrias ---
+INFO: Geometrias válidas: 2
+INFO: Geometrias inválidas: 0
+INFO: Geometrias nulas: 0
+INFO: Bounds: [-47.08071258 -22.83293806 -47.07578364 -22.82359191]
+INFO: Centro: [-22.82826498578516, -47.07824811230361]
+INFO: 
+--- CD_SETOR ---
+INFO: Tipo: int64
+INFO: Nulos: 0
+INFO: Range: 350950210000102 - 350950210000135
+INFO: Amostra: [350950210000102, 350950210000135]
+INFO: 
+==================================================
+INFO: 🔧 ANÁLISE DE PROBLEMAS ESPECÍFICOS
+WARNING: Problema identificado - Dados climáticos:
+WARNING:   tp_mean (precipitação) vazio: True
+WARNING:   t2m_mean (temperatura) vazio: True
+INFO: 💡 SOLUÇÃO: Os dados climáticos não foram baixados corretamente.
+INFO:    Verifique a configuração da API do Copernicus CDS.
+WARNING: Problema identificado - Colunas duplicadas:
+WARNING:   Colunas risk_score: ['risk_score', 'risk_score.1']
+INFO: 💡 SOLUÇÃO: Remover colunas duplicadas antes da geração do mapa.
+INFO: 
+🔍 Verificação de consistência dos dados:
+INFO:   CD_SETOR único: 43
+INFO:   Setores com NDVI: 43
+INFO:   Setores com dados S1: 43
+INFO:   Setores com dados climáticos: 0
+INFO: 
+==================================================
+INFO: 🎯 RESUMO DOS PROBLEMAS ENCONTRADOS:
+INFO: 1. Dados climáticos (tp_mean, t2m_mean) estão vazios
+INFO: 2. Possíveis colunas duplicadas (risk_score)
+INFO: 3. Tipos de dados inconsistentes
+INFO: 
+💡 Use o script run_analysis_fixed_complete.py para corrigir esses problemas!
