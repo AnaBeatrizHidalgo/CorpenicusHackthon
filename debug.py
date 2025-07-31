@@ -1,208 +1,96 @@
-#!/usr/bin/env python3
-"""
-Script de debug para identificar problemas nos dados do projeto NAIA
-"""
-import pandas as pd
-import geopandas as gpd
-import numpy as np
+# debug.py
+import os
 from pathlib import Path
-import logging
 
-# Configuração do logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-logger = logging.getLogger(__name__)
+# --- Início da Ferramenta de Diagnóstico NAIÁ ---
 
-def analyze_csv_file(file_path, file_name):
-    """Analisa um arquivo CSV e identifica problemas"""
-    logger.info(f"\n{'='*50}")
-    logger.info(f"ANALISANDO: {file_name}")
-    logger.info(f"Caminho: {file_path}")
-    
-    try:
-        if not Path(file_path).exists():
-            logger.error(f"Arquivo não encontrado: {file_path}")
-            return
-        
-        # Carrega o arquivo
-        df = pd.read_csv(file_path)
-        logger.info(f"Shape: {df.shape}")
-        logger.info(f"Colunas: {list(df.columns)}")
-        
-        # Verifica colunas duplicadas
-        duplicate_cols = df.columns[df.columns.duplicated()].tolist()
-        if duplicate_cols:
-            logger.warning(f"Colunas duplicadas encontradas: {duplicate_cols}")
-        
-        # Analisa cada coluna
-        for col in df.columns:
-            logger.info(f"\n--- Coluna: {col} ---")
-            logger.info(f"Tipo: {df[col].dtype}")
-            logger.info(f"Valores únicos: {df[col].nunique()}")
-            logger.info(f"Valores nulos: {df[col].isnull().sum()}")
-            logger.info(f"Valores vazios (''): {(df[col] == '').sum()}")
-            
-            # Se é numérica, mostra estatísticas
-            if df[col].dtype in ['int64', 'float64']:
-                logger.info(f"Min-Max: {df[col].min()} - {df[col].max()}")
-                logger.info(f"Média: {df[col].mean():.3f}")
-                
-                # Verifica valores infinitos
-                inf_count = np.isinf(df[col]).sum()
-                if inf_count > 0:
-                    logger.warning(f"Valores infinitos: {inf_count}")
-            
-            # Mostra amostra dos valores
-            sample_values = df[col].dropna().head(3).tolist()
-            logger.info(f"Amostra: {sample_values}")
-        
-        # Verifica ID principal
-        if 'CD_SETOR' in df.columns:
-            logger.info(f"\n--- Análise CD_SETOR ---")
-            logger.info(f"Tipo: {df['CD_SETOR'].dtype}")
-            logger.info(f"Valores únicos: {df['CD_SETOR'].nunique()}")
-            logger.info(f"Duplicados: {df['CD_SETOR'].duplicated().sum()}")
-            logger.info(f"Amostra: {df['CD_SETOR'].head(3).tolist()}")
-        
-        return df
-        
-    except Exception as e:
-        logger.error(f"Erro ao analisar {file_name}: {e}")
-        return None
+print("="*60)
+print("🕵️  INICIANDO SCRIPT DE DIAGNÓSTICO DO PROJETO NAIÁ 🕵️")
+print("="*60)
 
-def analyze_geojson_file(file_path, file_name):
-    """Analisa um arquivo GeoJSON"""
-    logger.info(f"\n{'='*50}")
-    logger.info(f"ANALISANDO GEOJSON: {file_name}")
-    
-    try:
-        if not Path(file_path).exists():
-            logger.error(f"Arquivo não encontrado: {file_path}")
-            return
-        
-        gdf = gpd.read_file(file_path)
-        logger.info(f"Shape: {gdf.shape}")
-        logger.info(f"CRS: {gdf.crs}")
-        logger.info(f"Colunas: {list(gdf.columns)}")
-        
-        # Verifica geometrias
-        logger.info(f"\n--- Análise Geometrias ---")
-        logger.info(f"Geometrias válidas: {gdf.geometry.is_valid.sum()}")
-        logger.info(f"Geometrias inválidas: {(~gdf.geometry.is_valid).sum()}")
-        logger.info(f"Geometrias nulas: {gdf.geometry.isnull().sum()}")
-        
-        if not gdf.geometry.isnull().all():
-            bounds = gdf.total_bounds
-            logger.info(f"Bounds: {bounds}")
-            center = [(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2]
-            logger.info(f"Centro: {center}")
-        
-        # Verifica outras colunas importantes
-        important_cols = ['CD_SETOR', 'risk_score', 'final_risk_level', 'dirty_pool_count']
-        for col in important_cols:
-            if col in gdf.columns:
-                logger.info(f"\n--- {col} ---")
-                logger.info(f"Tipo: {gdf[col].dtype}")
-                logger.info(f"Nulos: {gdf[col].isnull().sum()}")
-                if gdf[col].dtype in ['int64', 'float64']:
-                    logger.info(f"Range: {gdf[col].min()} - {gdf[col].max()}")
-                logger.info(f"Amostra: {gdf[col].head(3).tolist()}")
-        
-        return gdf
-        
-    except Exception as e:
-        logger.error(f"Erro ao analisar GeoJSON {file_name}: {e}")
-        return None
+project_root = Path.cwd()
+print(f"Diretório Raiz do Projeto: {project_root}\n")
 
-def main():
-    """Função principal de debug"""
-    logger.info("🔍 INICIANDO DEBUG DOS DADOS DO PROJETO NAIA")
-    
-    # Define caminhos base
-    base_dir = Path(".")
-    output_dir = base_dir / "output" / "analysis_-22.818_-47.069"
-    
-    # Lista de arquivos para analisar
-    files_to_analyze = [
-        ("final_features.csv", "CSV com features finais"),
-        ("image_features.csv", "CSV com features de imagem"),
-        ("climate_features.csv", "CSV com features climáticas"),
-        ("debug_map_data.csv", "CSV de debug do mapa"),
-    ]
-    
-    geojson_files = [
-        ("area_of_interest.geojson", "Área de interesse"),
-        ("final_risk_data.geojson", "Dados finais de risco"),
-        ("detected_pools.geojson", "Piscinas detectadas"),
-    ]
-    
-    # Analisa arquivos CSV
-    for filename, description in files_to_analyze:
-        file_path = output_dir / filename
-        if not file_path.exists():
-            file_path = base_dir / filename  # Tenta na raiz também
-        
-        logger.info(f"\n🔎 Analisando: {description}")
-        df = analyze_csv_file(file_path, filename)
-    
-    # Analisa arquivos GeoJSON
-    for filename, description in geojson_files:
-        file_path = output_dir / filename
-        logger.info(f"\n🗺️  Analisando: {description}")
-        gdf = analyze_geojson_file(file_path, filename)
-    
-    # Análise específica dos problemas identificados
-    logger.info(f"\n{'='*50}")
-    logger.info("🔧 ANÁLISE DE PROBLEMAS ESPECÍFICOS")
-    
-    # Problema 1: Colunas climáticas vazias
-    climate_path = output_dir / "climate_features.csv"
-    if climate_path.exists():
-        climate_df = pd.read_csv(climate_path)
-        tp_empty = climate_df['tp_mean'].isnull().all() if 'tp_mean' in climate_df.columns else True
-        t2m_empty = climate_df['t2m_mean'].isnull().all() if 't2m_mean' in climate_df.columns else True
-        
-        logger.warning(f"Problema identificado - Dados climáticos:")
-        logger.warning(f"  tp_mean (precipitação) vazio: {tp_empty}")
-        logger.warning(f"  t2m_mean (temperatura) vazio: {t2m_empty}")
-        
-        if tp_empty or t2m_empty:
-            logger.info("💡 SOLUÇÃO: Os dados climáticos não foram baixados corretamente.")
-            logger.info("   Verifique a configuração da API do Copernicus CDS.")
-    
-    # Problema 2: Colunas duplicadas no debug_map_data.csv
-    debug_path = output_dir / "debug_map_data.csv"
-    if not debug_path.exists():
-        debug_path = base_dir / "debug_map_data.csv"
-    
-    if debug_path.exists():
-        debug_df = pd.read_csv(debug_path)
-        risk_score_cols = [col for col in debug_df.columns if 'risk_score' in col]
-        
-        if len(risk_score_cols) > 1:
-            logger.warning(f"Problema identificado - Colunas duplicadas:")
-            logger.warning(f"  Colunas risk_score: {risk_score_cols}")
-            logger.info("💡 SOLUÇÃO: Remover colunas duplicadas antes da geração do mapa.")
-    
-    # Problema 3: Verificação dos tipos de dados
-    final_features_path = output_dir / "final_features.csv"
-    if not final_features_path.exists():
-        final_features_path = base_dir / "final_features.csv"
-    
-    if final_features_path.exists():
-        features_df = pd.read_csv(final_features_path)
-        
-        logger.info(f"\n🔍 Verificação de consistência dos dados:")
-        logger.info(f"  CD_SETOR único: {features_df['CD_SETOR'].nunique()}")
-        logger.info(f"  Setores com NDVI: {features_df['ndvi_mean'].notna().sum()}")
-        logger.info(f"  Setores com dados S1: {features_df[['vv_mean', 'vh_mean']].notna().all(axis=1).sum()}")
-        logger.info(f"  Setores com dados climáticos: {features_df[['tp_mean', 't2m_mean']].notna().all(axis=1).sum()}")
-    
-    logger.info(f"\n{'='*50}")
-    logger.info("🎯 RESUMO DOS PROBLEMAS ENCONTRADOS:")
-    logger.info("1. Dados climáticos (tp_mean, t2m_mean) estão vazios")
-    logger.info("2. Possíveis colunas duplicadas (risk_score)")
-    logger.info("3. Tipos de dados inconsistentes")
-    logger.info("\n💡 Use o script run_analysis_fixed_complete.py para corrigir esses problemas!")
+# --- 1. Verificando Estrutura de Pastas Essenciais ---
+print("--- 1. Verificando Estrutura de Pastas ---")
+required_dirs = ['src', 'config', 'output', 'templates', 'static', 'data/raw/sentinel', 'data/raw/climate']
+all_ok = True
+for dir_path in required_dirs:
+    full_path = project_root / dir_path
+    if full_path.exists() and full_path.is_dir():
+        print(f"[OK]      Pasta '{dir_path}' encontrada.")
+    else:
+        print(f"[FALHA]   Pasta '{dir_path}' NÃO encontrada.")
+        all_ok = False
+if all_ok:
+    print(">> Estrutura de pastas parece correta.\n")
+else:
+    print(">> ATENÇÃO: Verifique a estrutura de pastas do seu projeto.\n")
 
-if __name__ == "__main__":
-    main()
+
+# --- 2. Verificando Arquivos de Configuração e Dados Críticos ---
+print("--- 2. Verificando Arquivos Essenciais ---")
+# Tenta carregar o run_analysis para ler os parâmetros
+try:
+    from run_analysis import NATIONAL_SHAPEFILE_PATH
+    shapefile_path_str = str(NATIONAL_SHAPEFILE_PATH)
+except (ImportError, AttributeError):
+    shapefile_path_str = "D:/data/dados geologicos/Dados IBGE/BR_setores_CD2022.shp" # Valor padrão
+    print("[AVISO] Não foi possível ler NATIONAL_SHAPEFILE_PATH do run_analysis.py. Usando valor padrão.")
+
+required_files = {
+    'config/settings.py': "Arquivo de configurações do projeto.",
+    '.env': "Arquivo de chaves de API (essencial para as APIs).",
+    shapefile_path_str: "Shapefile nacional do IBGE."
+}
+all_ok = True
+for file_path_str, desc in required_files.items():
+    full_path = Path(file_path_str)
+    # Se o caminho não for absoluto, considera-o relativo à raiz do projeto
+    if not full_path.is_absolute():
+        full_path = project_root / file_path_str
+        
+    if full_path.exists() and full_path.is_file():
+        print(f"[OK]      Arquivo '{file_path_str}' encontrado. ({desc})")
+    else:
+        print(f"[FALHA]   Arquivo '{file_path_str}' NÃO encontrado. ({desc})")
+        all_ok = False
+if all_ok:
+    print(">> Arquivos essenciais parecem estar no lugar.\n")
+else:
+    print(">> ATENÇÃO: Verifique se os arquivos essenciais existem e os caminhos estão corretos.\n")
+
+
+# --- 3. Verificando o Módulo 'paths.py' ---
+print("--- 3. Verificando src/utils/paths.py ---")
+try:
+    from src.utils import paths
+    print("[OK]      Módulo 'paths.py' importado com sucesso.")
+    path_vars = [v for v in dir(paths) if not v.startswith('__') and isinstance(getattr(paths, v), Path)]
+    if not path_vars:
+        print("[FALHA]   Nenhuma variável de caminho (Path) foi encontrada em 'paths.py'.")
+    else:
+        print("  Variáveis de caminho encontradas:")
+        for var in path_vars:
+            print(f"    - paths.{var} = {getattr(paths, var)}")
+        print(">> O módulo 'paths.py' parece estar configurado.\n")
+
+except ImportError:
+    print("[FALHA]   Não foi possível importar 'src.utils.paths'. Verifique se o arquivo existe e não contém erros.\n")
+except Exception as e:
+    print(f"[FALHA]   Ocorreu um erro ao inspecionar 'src.utils.paths': {e}\n")
+
+
+# --- 4. Lembrete Manual ---
+print("--- 4. Ação Manual Necessária ---")
+print("Por favor, verifique o seu arquivo 'run_analysis.py' e confirme os valores das seguintes flags:")
+print("  - SKIP_DOWNLOADS_AND_PROCESSING")
+print("  - SKIP_POOL_DETECTION")
+print("Lembre-se: Para a primeira execução numa nova área, 'SKIP_DOWNLOADS_AND_PROCESSING' deve ser 'False'.\n")
+
+
+# --- Fim do Diagnóstico ---
+print("="*60)
+print("🕵️  DIAGNÓSTICO CONCLUÍDO 🕵️")
+print("="*60)
+print("Por favor, copie e cole a SAÍDA COMPLETA deste script na nossa conversa.")

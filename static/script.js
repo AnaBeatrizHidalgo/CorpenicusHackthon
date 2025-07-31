@@ -13,11 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'avg-temp': document.getElementById('avg-temp'),
         'total-precip': document.getElementById('total-precip')
     };
-    
+
     runBtn.addEventListener('click', () => {
         const lat = latInput.value;
         const lon = lonInput.value;
-        
+
         if (!lat || !lon) {
             statusDiv.textContent = 'Por favor, insira latitude e longitude.';
             return;
@@ -25,22 +25,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         statusDiv.textContent = 'Iniciando análise... Isso pode levar vários minutos.';
         runBtn.disabled = true;
-        
+
         fetch('/run', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lat: parseFloat(lat), lon: parseFloat(lon) })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.job_id) {
-                statusDiv.textContent = 'Análise em andamento... Verificando status.';
-                checkStatus(data.job_id);
-            } else {
-                statusDiv.textContent = 'Erro ao iniciar a análise.';
-                runBtn.disabled = false;
-            }
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.job_id) {
+                    statusDiv.textContent = 'Análise em andamento... Verificando status.';
+                    checkStatus(data.job_id);
+                } else {
+                    statusDiv.textContent = 'Erro ao iniciar a análise.';
+                    runBtn.disabled = false;
+                }
+            });
     });
 
     function checkStatus(jobId) {
@@ -55,8 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         runBtn.disabled = false;
                     } else if (data.status === 'error') {
                         clearInterval(interval);
-                        statusDiv.textContent = `Erro na análise: ${data.message}`;
+                        // Mostra uma mensagem de erro mais útil
+                        statusDiv.innerHTML = `<strong>Erro na análise:</strong><br><small>${data.message}</small>`;
                         runBtn.disabled = false;
+                        console.error('Erro retornado pelo servidor:', data.message);
                     }
                 });
         }, 5000);

@@ -2,8 +2,11 @@ from flask import Flask, render_template, request, jsonify
 from threading import Thread
 import run_analysis
 import time
+import os
+import traceback
 
-app = Flask(__name__, static_url_path='', static_folder='')
+# Serve a pasta raiz do projeto como estática
+app = Flask(__name__, static_url_path='', static_folder=os.getcwd())
 analysis_status = {}
 
 @app.route('/')
@@ -15,11 +18,10 @@ def run_analysis_endpoint():
     data = request.json
     lat, lon, size = data.get('lat'), data.get('lon'), data.get('size', 3.0)
     
-    # Gera um ID de trabalho único com timestamp para evitar colisões
     job_id = f"analysis_{lat}_{lon}_{int(time.time())}"
     analysis_status[job_id] = {"status": "running"}
 
-    print(f"[SERVER] Nova análise requisitada. Job ID: {job_id}")
+    print(f"\n[SERVER] Nova análise requisitada. Job ID: {job_id}")
     thread = Thread(target=run_analysis_in_background, args=(job_id, lat, lon, size))
     thread.start()
     
@@ -30,13 +32,15 @@ def run_analysis_in_background(job_id, lat, lon, size):
         summary_data = run_analysis.execute_pipeline(lat, lon, size, job_id)
         if summary_data:
             analysis_status[job_id] = {"status": "complete", "result": summary_data}
-            print(f"[SERVER] Análise concluída com sucesso para o Job ID: {job_id}")
+            print(f"[SERVER] Análise CONCLUÍDA com sucesso para o Job ID: {job_id}")
         else:
             raise Exception("Pipeline não retornou resultados.")
             
     except Exception as e:
-        print(f"[SERVER] ERRO na análise para o Job ID {job_id}: {str(e)}")
-        analysis_status[job_id] = {"status": "error", "message": str(e)}
+        error_message = f"Erro interno no pipeline: {str(e)}"
+        print(f"[SERVER] ERRO CRÍTICO na análise para o Job ID {job_id}: {error_message}")
+        print(traceback.format_exc())
+        analysis_status[job_id] = {"status": "error", "message": error_message}
 
 @app.route('/status/<job_id>')
 def get_status(job_id):
