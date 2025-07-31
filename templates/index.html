@@ -7,7 +7,6 @@
     <title>NAIA - Análise de Risco de Dengue</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- CSS interno para evitar problemas de carregamento -->
     <style>
         * {
             margin: 0;
@@ -80,48 +79,151 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos para o container principal */
-        .main-content {
+        /* Main Container */
+        .container {
             display: grid;
-            grid-template-columns: 400px 1fr;
+            grid-template-columns: 1fr 380px;
             gap: 20px;
-            padding: 20px;
-            height: calc(100vh - 120px);
+            padding: 20px 30px;
+            height: calc(100vh - 100px);
         }
 
-        /* Container do mapa com análise */
-        #map-container {
+        /* Map Section */
+        .map-section {
             background: rgba(26, 36, 68, 0.6);
             border-radius: 15px;
-            overflow: hidden;
+            padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 124, 51, 0.2);
             position: relative;
+            overflow: hidden;
         }
 
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .map-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            background: #FF7C33;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Map Container - CORREÇÃO CRÍTICA */
         #map-frame {
             width: 100%;
-            height: 100%;
+            height: calc(100% - 80px);
             border: none;
-            border-radius: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            display: none; /* Inicialmente oculto */
         }
 
-        /* Indicador de carregamento */
+        .map-placeholder {
+            width: 100%;
+            height: calc(100% - 80px);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            border: 2px dashed rgba(255, 124, 51, 0.3);
+            text-align: center;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            top: 70px;
+            left: 30px;
+            background: rgba(26, 36, 68, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 124, 51, 0.3);
+            display: none; /* Inicialmente oculta */
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .high-risk { background: #FF7C33; }
+        .moderate-risk { background: #FFB366; }
+        .pool-detected { background: #FF1744; }
+
+        /* Stats Section */
+        .stats-section {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(26, 36, 68, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 124, 51, 0.3);
+            z-index: 1001;
+            min-width: 200px;
+            display: none; /* Inicialmente oculta */
+        }
+
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #FF7C33;
+            margin: 0;
+        }
+
+        .stats-label {
+            font-size: 1rem;
+            color: #cccccc;
+            margin: 5px 0 0 0;
+        }
+
+        /* Loading Overlay */
         .loading-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 80px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
             background: rgba(26, 36, 68, 0.95);
             display: none;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             color: white;
-            z-index: 10;
-            border-radius: 15px;
+            z-index: 1002;
+            border-radius: 10px;
         }
 
         .loading-spinner {
@@ -146,26 +248,26 @@
             gap: 20px;
         }
 
-        /* Estilos do sidebar de análise */
-        .analysis-control {
+        .sidebar-panel {
             background: rgba(26, 36, 68, 0.6);
             border-radius: 15px;
             padding: 25px;
-            margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 124, 51, 0.2);
         }
 
-        .analysis-control h3 {
-            color: #ffffff;
+        .panel-title {
+            font-size: 1.4rem;
+            font-weight: bold;
             margin-bottom: 20px;
-            font-size: 1.2rem;
+            color: #ffffff;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        /* Analysis Control Panel */
         .analysis-control input {
             width: 100%;
             padding: 12px 16px;
@@ -194,7 +296,7 @@
             background: linear-gradient(135deg, #FF7C33 0%, #FF5722 100%);
             border: none;
             padding: 14px 20px;
-            border-radius: 10px;
+            border-radius: 25px;
             color: white;
             font-weight: 600;
             font-size: 1rem;
@@ -246,162 +348,152 @@
             border: 1px solid rgba(255, 124, 51, 0.3);
         }
 
-        /* Seção de resumo de análise */
-        .analysis-summary {
-            background: rgba(26, 36, 68, 0.6);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 124, 51, 0.2);
+        /* Metrics Cards */
+        .metrics-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 124, 51, 0.3);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .metrics-card:hover {
+            background: rgba(255, 124, 51, 0.1);
+            border-color: #FF7C33;
+            transform: translateX(5px);
+        }
+
+        .metrics-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .metrics-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        .metrics-text {
             flex-grow: 1;
         }
 
-        .analysis-summary h3 {
-            color: #ffffff;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .metrics-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+            font-size: 0.9rem;
         }
 
-        /* Cards de métricas melhorados */
-        .sentinel-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 124, 51, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
+        .metrics-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #FF7C33;
+        }
+
+        /* Community Updates */
+        .community-section {
+            flex-grow: 1;
+        }
+
+        .chart-container {
+            height: 120px;
+            background: rgba(255, 124, 51, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
             position: relative;
             overflow: hidden;
         }
 
-        .sentinel-card::before {
-            content: '';
+        .chart-placeholder {
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #FF7C33, #FF5722);
+            height: 70%;
+            background: linear-gradient(45deg, 
+                transparent 20%, 
+                rgba(255, 124, 51, 0.3) 40%, 
+                rgba(255, 124, 51, 0.5) 60%, 
+                rgba(255, 124, 51, 0.7) 80%);
+            clip-path: polygon(0 100%, 15% 85%, 30% 90%, 50% 70%, 70% 75%, 85% 50%, 100% 40%, 100% 100%);
         }
 
-        .sentinel-card:hover {
-            background: rgba(255, 124, 51, 0.1);
-            border-color: #FF7C33;
-            transform: translateY(-2px);
-        }
-
-        .sentinel-card h4 {
-            color: #ffffff;
-            font-size: 0.95rem;
-            margin-bottom: 10px;
+        .whatsapp-btn {
+            background: #25D366;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            color: white;
             font-weight: 600;
-        }
-
-        .sentinel-card p {
-            color: #FF7C33;
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        /* Modal para visualização de imagens */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            margin: auto;
-            display: block;
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 8px 32px rgba(255, 124, 51, 0.3);
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 35px;
-            color: #ffffff;
-            font-size: 40px;
-            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            z-index: 2001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
         }
 
-        .close-modal:hover {
-            color: #FF7C33;
-            transform: scale(1.1);
+        .whatsapp-btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
         }
 
-        /* Responsividade */
+        /* Responsive Design */
         @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 350px 1fr;
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .sidebar-panel {
+                min-width: 300px;
             }
         }
 
-        @media (max-width: 900px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
-                height: auto;
-                min-height: calc(100vh - 120px);
-            }
-
-            .sidebar {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
-
-            #map-container {
-                min-height: 500px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .sidebar {
-                grid-template-columns: 1fr;
-            }
-
-            .main-content {
-                padding: 15px;
-                gap: 15px;
-            }
-
+        @media (max-width: 768px) {
             .header {
                 padding: 15px 20px;
             }
-
+            
+            .container {
+                padding: 15px 20px;
+                gap: 15px;
+            }
+            
             .logo {
                 font-size: 2rem;
             }
+            
+            .sidebar {
+                flex-direction: column;
+            }
+            
+            .sidebar-panel {
+                min-width: unset;
+            }
+            
+            .legend, .stats-section {
+                position: relative;
+                margin-bottom: 15px;
+            }
         }
 
-        /* Animação de loading */
+        /* Loading Animation */
         @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .loading {
@@ -414,7 +506,6 @@
     <!-- Header -->
     <header class="header">
         <div class="logo">
-            <!-- Fallback caso o SVG não carregue -->
             <img src="/assets/Naia-Logo.svg" alt="NAIA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" style="max-height: 50px;">
             <span style="display: none;">NAIA</span>
         </div>
@@ -431,13 +522,57 @@
         </div>
     </header>
 
-    <!-- Conteúdo Principal -->
-    <div class="main-content">
-        <!-- Sidebar com controles e métricas -->
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="map-header">
+                <h2 class="map-title">NAIA - Análise de Risco Vetorial</h2>
+                <div class="risk-badge">Sistema Real</div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend" id="map-legend">
+                <div class="legend-item">
+                    <div class="legend-color high-risk"></div>
+                    <span>Alto Risco</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color moderate-risk"></div>
+                    <span>Risco Moderado</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color pool-detected"></div>
+                    <span>Piscinas Detectadas</span>
+                </div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loading-overlay">
+                <div class="loading-spinner"></div>
+                <p>Processando análise...</p>
+                <small id="loading-detail">Isso pode levar alguns minutos</small>
+            </div>
+
+            <!-- Map Container -->
+            <div id="map-placeholder" class="map-placeholder">
+                <i class="fas fa-map-marked-alt" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                <div>Execute uma análise para visualizar o mapa de risco</div>
+            </div>
+            <iframe id="map-frame" src=""></iframe>
+
+            <!-- Statistics -->
+            <div class="stats-section" id="map-stats">
+                <div class="stats-number" id="pools-found">--</div>
+                <div class="stats-label">piscinas detectadas na área</div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
         <div class="sidebar">
-            <!-- Controle de análise -->
-            <div class="analysis-control">
-                <h3>
+            <!-- Analysis Control Panel -->
+            <div class="sidebar-panel analysis-control">
+                <h3 class="panel-title">
                     <i class="fas fa-map-marker-alt"></i>
                     Analisar Nova Área
                 </h3>
@@ -445,65 +580,306 @@
                 <input type="text" id="lon-input" placeholder="Longitude (ex: -47.069)" value="">
                 <button id="run-btn">
                     <i class="fas fa-play"></i>
-                    Analisar
+                    Executar Análise
                 </button>
                 <div id="status-message"></div>
             </div>
 
-            <!-- Resumo da análise -->
-            <div class="analysis-summary">
-                <h3>
+            <!-- Metrics Panel -->
+            <div class="sidebar-panel">
+                <h3 class="panel-title">
                     <i class="fas fa-chart-bar"></i>
-                    Resumo da Análise
+                    Métricas da Análise
                 </h3>
                 
-                <div class="sentinel-card">
-                    <h4><i class="fas fa-tint" style="color: #FF1744; margin-right: 8px;"></i>Piscinas Sujas Detectadas</h4>
-                    <p id="pools-found">--</p>
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-exclamation-triangle" style="color: #FF5722; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">Setores de Alto Risco</div>
+                            <div class="metrics-value" id="high-risk-sectors">--</div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="sentinel-card">
-                    <h4><i class="fas fa-exclamation-triangle" style="color: #FF5722; margin-right: 8px;"></i>Setores de Alto/Crítico Risco</h4>
-                    <p id="high-risk-sectors">--</p>
+
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-leaf" style="color: #4CAF50; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">NDVI Médio</div>
+                            <div class="metrics-value" id="avg-ndvi">--</div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="sentinel-card">
-                    <h4><i class="fas fa-leaf" style="color: #4CAF50; margin-right: 8px;"></i>NDVI Médio da Área</h4>
-                    <p id="avg-ndvi">--</p>
+
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-thermometer-half" style="color: #FF9800; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">Temperatura Média</div>
+                            <div class="metrics-value" id="avg-temp">--</div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="sentinel-card">
-                    <h4><i class="fas fa-thermometer-half" style="color: #FF9800; margin-right: 8px;"></i>Temperatura Média</h4>
-                    <p id="avg-temp">--</p>
-                </div>
-                
-                <div class="sentinel-card">
-                    <h4><i class="fas fa-cloud-rain" style="color: #2196F3; margin-right: 8px;"></i>Precipitação Mensal</h4>
-                    <p id="total-precip">--</p>
+
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-cloud-rain" style="color: #2196F3; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">Precipitação</div>
+                            <div class="metrics-value" id="total-precip">--</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Container do mapa -->
-        <div id="map-container">
-            <div class="loading-overlay" id="loading-overlay">
-                <div class="loading-spinner"></div>
-                <p>Processando análise...</p>
-                <small id="loading-detail">Isso pode levar alguns minutos</small>
+            <!-- Community Updates Panel -->
+            <div class="sidebar-panel community-section">
+                <h3 class="panel-title">
+                    <i class="fas fa-users"></i>
+                    Community Updates
+                </h3>
+                
+                <div class="chart-container">
+                    <div class="chart-placeholder"></div>
+                </div>
+
+                <button class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp Community
+                </button>
             </div>
-            <iframe id="map-frame" src="" width="100%" height="100%" frameborder="0"></iframe>
         </div>
-    </div>
-
-    <!-- Modal para visualização de imagens -->
-    <div id="imageModal" class="modal">
-        <span class="close-modal">&times;</span>
-        <img class="modal-content" id="modalImage" alt="Imagem ampliada">
     </div>
 
     <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="/static/script.js"></script>
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const runBtn = document.getElementById('run-btn');
+            const latInput = document.getElementById('lat-input');
+            const lonInput = document.getElementById('lon-input');
+            const statusDiv = document.getElementById('status-message');
+            const mapFrame = document.getElementById('map-frame');
+            const mapPlaceholder = document.getElementById('map-placeholder');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const mapLegend = document.getElementById('map-legend');
+            const mapStats = document.getElementById('map-stats');
 
+            // Mapeamento de IDs para elementos do painel
+            const panelElements = {
+                'pools-found': document.getElementById('pools-found'),
+                'high-risk-sectors': document.getElementById('high-risk-sectors'),
+                'avg-ndvi': document.getElementById('avg-ndvi'),
+                'avg-temp': document.getElementById('avg-temp'),
+                'total-precip': document.getElementById('total-precip')
+            };
+
+            // Função para mostrar status
+            function showStatus(message, type = 'info') {
+                statusDiv.textContent = message;
+                statusDiv.className = `status-${type}`;
+            }
+
+            // Função para mostrar/ocultar elementos do mapa
+            function toggleMapElements(show) {
+                const elements = [mapLegend, mapStats];
+                elements.forEach(el => {
+                    if (el) {
+                        el.style.display = show ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // Event listener do botão
+            runBtn.addEventListener('click', () => {
+                const lat = latInput.value.trim();
+                const lon = lonInput.value.trim();
+
+                if (!lat || !lon) {
+                    showStatus('Por favor, insira latitude e longitude.', 'error');
+                    return;
+                }
+
+                // Valida coordenadas
+                const latNum = parseFloat(lat);
+                const lonNum = parseFloat(lon);
+
+                if (isNaN(latNum) || isNaN(lonNum)) {
+                    showStatus('Coordenadas inválidas. Use números decimais.', 'error');
+                    return;
+                }
+
+                if (latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
+                    showStatus('Coordenadas fora do range válido.', 'error');
+                    return;
+                }
+
+                // Inicia análise
+                showStatus('Iniciando análise... Isso pode levar vários minutos.', 'info');
+                runBtn.disabled = true;
+                loadingOverlay.style.display = 'flex';
+
+                fetch('/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lat: latNum, lon: lonNum })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.job_id) {
+                        showStatus('Análise em andamento... Verificando status.', 'info');
+                        checkStatus(data.job_id);
+                    } else {
+                        throw new Error('Job ID não retornado pelo servidor');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao iniciar análise:', error);
+                    showStatus(`Erro ao iniciar a análise: ${error.message}`, 'error');
+                    runBtn.disabled = false;
+                    loadingOverlay.style.display = 'none';
+                });
+            });
+
+            function checkStatus(jobId) {
+                let attempts = 0;
+                const maxAttempts = 120; // 10 minutos máximo
+
+                const interval = setInterval(() => {
+                    attempts++;
+                    
+                    if (attempts > maxAttempts) {
+                        clearInterval(interval);
+                        showStatus('Timeout: Análise demorou muito para completar.', 'error');
+                        runBtn.disabled = false;
+                        loadingOverlay.style.display = 'none';
+                        return;
+                    }
+
+                    fetch(`/status/${jobId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(`Status check ${attempts}:`, data);
+
+                            if (data.status === 'complete') {
+                                clearInterval(interval);
+                                showStatus('Análise concluída! Carregando resultados...', 'success');
+                                updateDashboard(data.result);
+                                runBtn.disabled = false;
+                                loadingOverlay.style.display = 'none';
+                            } else if (data.status === 'error') {
+                                clearInterval(interval);
+                                const errorMsg = data.message || 'Erro desconhecido na análise';
+                                showStatus(`Erro na análise: ${errorMsg}`, 'error');
+                                runBtn.disabled = false;
+                                loadingOverlay.style.display = 'none';
+                                console.error('Erro retornado pelo servidor:', data);
+                            } else if (data.status === 'not_found') {
+                                clearInterval(interval);
+                                showStatus('Job não encontrado no servidor.', 'error');
+                                runBtn.disabled = false;
+                                loadingOverlay.style.display = 'none';
+                            }
+                            // Se status === 'running', continua verificando
+                        })
+                        .catch(error => {
+                            console.error('Erro ao verificar status:', error);
+                            // Não para o interval por erro de rede, tenta novamente
+                        });
+                }, 5000); // Verifica a cada 5 segundos
+            }
+
+            function updateDashboard(summary) {
+                console.log('Atualizando dashboard com:', summary);
+
+                try {
+                    // Atualiza URL do mapa com cache bust
+                    const mapUrl = summary.map_url + '?t=' + Date.now();
+                    console.log('Carregando mapa de:', mapUrl);
+                    
+                    mapFrame.src = mapUrl;
+                    
+                    // Esconde placeholder e mostra mapa
+                    mapPlaceholder.style.display = 'none';
+                    mapFrame.style.display = 'block';
+                    
+                    // Mostra elementos do mapa
+                    toggleMapElements(true);
+
+                    // Atualiza métricas
+                    if (panelElements['pools-found']) {
+                        panelElements['pools-found'].textContent = summary.dirty_pools_found || 0;
+                    }
+
+                    if (panelElements['high-risk-sectors']) {
+                        const highRisk = (summary.risk_distribution?.['Alto'] || 0) + 
+                                        (summary.risk_distribution?.['Crítico'] || 0);
+                        panelElements['high-risk-sectors'].textContent = highRisk;
+                    }
+
+                    if (panelElements['avg-ndvi']) {
+                        panelElements['avg-ndvi'].textContent = summary.avg_ndvi || 'N/D';
+                    }
+
+                    if (panelElements['avg-temp']) {
+                        panelElements['avg-temp'].textContent = summary.avg_temp_celsius ? 
+                            `${summary.avg_temp_celsius}°C` : 'N/D';
+                    }
+
+                    if (panelElements['total-precip']) {
+                        panelElements['total-precip'].textContent = summary.total_precip_mm ? 
+                            `${summary.total_precip_mm} mm` : 'N/D';
+                    }
+
+                    showStatus('Resultados carregados com sucesso!', 'success');
+
+                    // Aguarda um pouco e verifica se o iframe carregou
+                    setTimeout(() => {
+                        mapFrame.onload = () => {
+                            console.log('Mapa carregado no iframe');
+                        };
+                        mapFrame.onerror = () => {
+                            console.error('Erro ao carregar mapa no iframe');
+                            showStatus('Mapa gerado, mas houve erro ao carregar na interface.', 'error');
+                        };
+                    }, 1000);
+
+                } catch (error) {
+                    console.error('Erro ao atualizar dashboard:', error);
+                    showStatus('Erro ao atualizar interface com os resultados.', 'error');
+                }
+            }
+
+            // Outras funcionalidades
+            document.querySelectorAll('.metrics-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.metrics-title').textContent;
+                    console.log(`Clicked on metric: ${title}`);
+                });
+            });
+
+            // WhatsApp button
+            document.querySelector('.whatsapp-btn').addEventListener('click', function() {
+                alert('Funcionalidade de WhatsApp será implementada em breve!');
+            });
+
+            // Coordenadas padrão para Indaiatuba (para testes)
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    latInput.value = '-22.818';
+                    lonInput.value = '-47.069';
+                    console.log('Coordenadas padrão inseridas (Ctrl+D)');
+                }
+            });
+
+            console.log('NAIA Dashboard inicializado');
+        });
+    </script>
+</body>
 </html>
