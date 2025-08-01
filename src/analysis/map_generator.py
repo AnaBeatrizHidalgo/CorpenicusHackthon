@@ -1,6 +1,6 @@
 # src/analysis/map_generator.py
 """
-Módulo para gerar mapas interativos de risco e detecções - Versão Redesenhada.
+Módulo para gerar mapas interativos de risco e detecções - Versão com Imagens nos Popups.
 """
 import logging
 import folium
@@ -8,6 +8,8 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import base64
+import os
 
 def validate_map_data(gdf, data_name="data"):
     """Valida e limpa dados para o mapa"""
@@ -40,6 +42,49 @@ def validate_map_data(gdf, data_name="data"):
     
     logger.info(f"{data_name} validado. Shape: {gdf.shape}")
     return gdf
+
+def encode_image_to_base64(image_path: Path) -> str:
+    """Converte uma imagem para base64 para embedar no HTML"""
+    try:
+        if not image_path.exists():
+            return None
+        
+        with open(image_path, "rb") as img_file:
+            encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
+            return f"data:image/png;base64,{encoded_string}"
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"Erro ao codificar imagem {image_path}: {e}")
+        return None
+
+def find_pool_image(sector_id: str, detected_images_dir: Path) -> str:
+    """Encontra a imagem detectada para uma piscina específica"""
+    logger = logging.getLogger(__name__)
+    
+    if not detected_images_dir.exists():
+        logger.warning(f"Diretório de imagens detectadas não existe: {detected_images_dir}")
+        return None
+    
+    # Padrões possíveis de nome de arquivo
+    possible_patterns = [
+        f"{sector_id}_dirty_pool_detected.png",
+        f"{sector_id}_detected.png",
+        f"{sector_id}_pool_detected.png"
+    ]
+    
+    for pattern in possible_patterns:
+        image_path = detected_images_dir / pattern
+        if image_path.exists():
+            logger.info(f"Imagem encontrada para setor {sector_id}: {image_path.name}")
+            return encode_image_to_base64(image_path)
+    
+    # Se não encontrar com padrões específicos, procura qualquer arquivo que contenha o sector_id
+    for image_file in detected_images_dir.glob("*.png"):
+        if str(sector_id) in image_file.name:
+            logger.info(f"Imagem encontrada por busca genérica para setor {sector_id}: {image_file.name}")
+            return encode_image_to_base64(image_file)
+    
+    logger.warning(f"Nenhuma imagem encontrada para setor {sector_id}")
+    return None
 
 def prepare_sectors_data(sectors_gdf):
     """Prepara dados dos setores para o mapa"""
@@ -136,11 +181,36 @@ def get_risk_color(risk_level, risk_score):
     }
     return color_map.get(risk_level, '#2196F3')  # Azul como fallback
 
-def create_modern_popup(title, data_dict, color="#FF7C33"):
-    """Cria popup moderno com estilo similar ao index_old.html"""
+def create_modern_popup_with_image(title, data_dict, image_base64=None, color="#FF7C33"):
+    """Cria popup moderno com imagem incluída"""
     data_rows = ""
     for key, value in data_dict.items():
         data_rows += f"<p style='margin: 5px 0;'><strong>{key}:</strong> {value}</p>"
+    
+    # Adiciona seção da imagem se disponível
+    image_section = ""
+    if image_base64:
+        image_section = f"""
+        <div style="margin: 15px 0; text-align: center;">
+            <h5 style="color: {color}; margin-bottom: 10px; font-size: 1.1rem;">📸 Imagem da Detecção</h5>
+            <img src="{image_base64}" 
+                 style="
+                     max-width: 300px; 
+                     max-height: 200px; 
+                     border-radius: 10px; 
+                     border: 2px solid {color}; 
+                     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                     object-fit: contain;
+                 " 
+                 alt="Piscina Detectada"
+                 onclick="this.style.maxWidth = this.style.maxWidth === '600px' ? '300px' : '600px'; this.style.maxHeight = this.style.maxHeight === '400px' ? '200px' : '400px';"
+                 title="Clique para ampliar/reduzir"
+            />
+            <p style="font-size: 10px; color: #cccccc; margin-top: 5px;">
+                💡 Clique na imagem para ampliar
+            </p>
+        </div>
+        """
     
     popup_html = f"""
     <div style="
@@ -149,7 +219,8 @@ def create_modern_popup(title, data_dict, color="#FF7C33"):
         color: #ffffff;
         padding: 20px;
         border-radius: 15px;
-        min-width: 280px;
+        min-width: 320px;
+        max-width: 400px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 124, 51, 0.3);
@@ -171,6 +242,7 @@ def create_modern_popup(title, data_dict, color="#FF7C33"):
             background: rgba(255, 124, 51, 0.3);
         ">
         {data_rows}
+        {image_section}
         <hr style="
             margin: 15px 0; 
             border: none; 
@@ -191,18 +263,26 @@ def create_modern_popup(title, data_dict, color="#FF7C33"):
     """
     return popup_html
 
+def create_modern_popup(title, data_dict, color="#FF7C33"):
+    """Cria popup moderno sem imagem (versão original)"""
+    return create_modern_popup_with_image(title, data_dict, None, color)
+
 def create_priority_map(
     sectors_risk_gdf: gpd.GeoDataFrame,
     dirty_pools_gdf: gpd.GeoDataFrame | None,
     output_html_path: Path
 ):
     """
-    Cria um mapa interativo com design moderno e elegante.
+    Cria um mapa interativo com design moderno e elegante, incluindo imagens nos popups das piscinas.
     """
     logger = logging.getLogger(__name__)
-    logger.info(f"Gerando mapa de priorização redesenhado para {output_html_path.name}...")
+    logger.info(f"Gerando mapa de priorização com imagens para {output_html_path.name}...")
     
     try:
+        # Determina diretório de imagens detectadas baseado no output_html_path
+        detected_images_dir = output_html_path.parent / "google_detected_images"
+        logger.info(f"Diretório de imagens detectadas: {detected_images_dir}")
+        
         # Prepara dados dos setores
         clean_sectors = prepare_sectors_data(sectors_risk_gdf)
         if clean_sectors is None:
@@ -274,7 +354,7 @@ def create_priority_map(
                                 'fillOpacity': 0.6,
                                 'opacity': 0.8
                             },
-                            popup=folium.Popup(popup_html, max_width=350),
+                            popup=folium.Popup(popup_html, max_width=420),
                             tooltip=f"Setor {row['CD_SETOR']} - {row['final_risk_level']}"
                         ).add_to(m)
                         
@@ -324,7 +404,7 @@ def create_priority_map(
                             radius=0.1,  # Muito pequeno, quase invisível
                             color='transparent',
                             fill=False,
-                            popup=folium.Popup(popup_html, max_width=350),
+                            popup=folium.Popup(popup_html, max_width=420),
                             tooltip=f"Setor {row['CD_SETOR']}"
                         ).add_to(m)
                         
@@ -353,10 +433,10 @@ def create_priority_map(
             except Exception as e2:
                 logger.error(f"Falha também no fallback: {e2}")
         
-        # --- Camada 2: Piscinas com Design Moderno (Similar aos Focos de Dengue) ---
+        # --- Camada 2: Piscinas com Imagens nos Popups ---
         if clean_pools is not None and not clean_pools.empty:
             try:
-                logger.info(f"Adicionando {len(clean_pools)} piscinas com design moderno...")
+                logger.info(f"Adicionando {len(clean_pools)} piscinas com imagens nos popups...")
                 
                 pools_layer = folium.FeatureGroup(name='🏊 Piscinas de Risco Detectadas')
                 
@@ -398,7 +478,10 @@ def create_priority_map(
                         }
                         status = status_map.get(risk_level, 'Ativo')
                         
-                        # Popup moderno similar ao foco de dengue
+                        # NOVA FUNCIONALIDADE: Busca a imagem da piscina
+                        pool_image_base64 = find_pool_image(sector_id, detected_images_dir)
+                        
+                        # Popup moderno com imagem
                         popup_data = {
                             'Localização': f"Setor {sector_id}",
                             'Confiança da Detecção': confidence_str,
@@ -414,14 +497,15 @@ def create_priority_map(
                             'Coordenadas': f"{lat:.4f}, {lon:.4f}"
                         }
                         
-                        popup_html = create_modern_popup(
+                        # Usa o popup com imagem se disponível
+                        popup_html = create_modern_popup_with_image(
                             "🏊 Piscina de Risco Detectada", 
                             popup_data, 
+                            pool_image_base64,
                             risk_color
                         )
                         
-                        # Cria marcador customizado similar ao foco de dengue
-                        # Usando DivIcon para controle total do estilo
+                        # Cria marcador customizado
                         custom_icon = folium.DivIcon(
                             html=f"""
                             <div style="
@@ -449,11 +533,17 @@ def create_priority_map(
                         folium.Marker(
                             location=[lat, lon],
                             icon=custom_icon,
-                            popup=folium.Popup(popup_html, max_width=350),
+                            popup=folium.Popup(popup_html, max_width=420),
                             tooltip=f"Piscina - Setor {sector_id} ({risk_level})"
                         ).add_to(pools_layer)
                         
                         added_pools += 1
+                        
+                        # Log se encontrou imagem
+                        if pool_image_base64:
+                            logger.info(f"✅ Piscina no setor {sector_id} adicionada COM imagem")
+                        else:
+                            logger.info(f"⚠️ Piscina no setor {sector_id} adicionada SEM imagem")
                         
                     except Exception as e:
                         logger.warning(f"Erro ao adicionar piscina no índice {idx}: {e}")
@@ -461,7 +551,7 @@ def create_priority_map(
                 
                 if added_pools > 0:
                     pools_layer.add_to(m)
-                    logger.info(f"Adicionadas {added_pools} piscinas ao mapa")
+                    logger.info(f"✅ Adicionadas {added_pools} piscinas ao mapa com funcionalidade de imagem")
                 else:
                     logger.warning("Nenhuma piscina foi adicionada ao mapa")
                 
@@ -515,6 +605,15 @@ def create_priority_map(
         .leaflet-control-layers label {
             color: white !important;
         }
+        /* Estilo para as imagens nos popups */
+        .leaflet-popup-content img {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .leaflet-popup-content img:hover {
+            opacity: 0.8;
+            transform: scale(1.02);
+        }
         </style>
         """
         m.get_root().html.add_child(folium.Element(custom_css))
@@ -523,7 +622,7 @@ def create_priority_map(
         try:
             output_html_path.parent.mkdir(parents=True, exist_ok=True)
             m.save(str(output_html_path))
-            logger.info(f"✅ Mapa redesenhado salvo com sucesso em: {output_html_path}")
+            logger.info(f"✅ Mapa com imagens salvo com sucesso em: {output_html_path}")
             return True
             
         except Exception as e:
