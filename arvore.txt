@@ -40,7 +40,14 @@
 │   │   ├── images
 │   │   │   ├── s1_preview.png
 │   │   │   ├── sentinel-1
+│   │   │   │   ├── s1_2024-07-01_2024-07-30_sector_350950210000001.tiff
+│   │  
+│   │   │   │   └── s1_2024-07-01_2024-07-30_sector_350950210000194.tiff
 │   │   │   └── sentinel-2
+│   │   │       ├── s2_2024-07-01_2024-07-30_sector_350950210000001.tiff
+│   │   │       ├── s2_2024-07-01_2024-07-30_sector_350950210000002.tiff
+
+│   │   │       └── s2_2024-07-01_2024-07-30_sector_350950210000194.tiff
 │   │   ├── maps
 │   │   ├── metrics
 │   │   ├── metrics.csv
@@ -60,35 +67,7 @@
 │   │   ├── spatial_maps.png
 │   │   ├── vh_histogram.png
 │   │   └── vv_histogram.png
-│   ├── raw
-│   │   ├── 1800e909591d4f1147048fb54503f281
-│   │   │   └── request.json
-│   │   ├── cb0e23b7b2bd6b5e0e51fbfe61c1ad1e
-│   │   │   └── request.json
-│   │   ├── climate
-│   │   │   ├── analysis_-22.818_-47.069_era5.nc
-│   │   │   ├── analysis_-22.896_-47.054_era5.nc
-│   │   │   └── era5_land_2024-07.nc
-│   │   ├── geodata
-│   │   │   └── setores_barao.geojson
-│   │   ├── geospatial
-│   │   │   ├── area_prova_barao.geojson
-│   │   │   ├── area_prova_bbox.geojson
-│   │   │   └── area_prova.geojson
-│   │   ├── satellite
-│   │   │   ├── sentinel1_unicamp.tiff
-│   │   │   └── sentinel2_unicamp.tiff
-│   │   └── sentinel
-│   │       ├── analysis_-22.818_-47.069_s1.tiff
-│   │       ├── analysis_-22.818_-47.069_s2.tiff
-│   │       ├── analysis_-22.896_-47.054_s1.tiff
-│   │       ├── analysis_-22.896_-47.054_s2.tiff
-│   │       ├── s1_2024-07-01_2024-07-30.tiff
-│   │       ├── s1_2024-07-01_a_2024-07-30.tiff
-│   │       ├── s1_test_2024-07-01_2024-07-30.tiff
-│   │       ├── s2_2024-07-01_2024-07-30.tiff
-│   │       ├── s2_2024-07-01_a_2024-07-30.tiff
-│   │       └── s2_test_2024-07-01_2024-07-30.tiff
+│  
 │   ├── setores_map.html
 │   └── temp
 │       ├── google_detected
@@ -97,7 +76,10 @@
 │       └── google_raw
 │           ├── 1001_raw.png
 │           └── 1002_raw.png
+├── debug copy.py
+├── debug_image.py
 ├── debug.py
+├── debug.txt
 ├── docs
 │   └── user_guide.md
 ├── main.py
@@ -108,85 +90,8 @@
 │       ├── README.md
 │       └── val_batch0_pred.jpg
 ├── naia-env
-│   ├── bin
-│   │   ├── activate
-│   │   ├── activate.csh
-│   │   ├── activate.fish
-│   │   ├── Activate.ps1
-│   │   ├── cpuinfo
-│   │   ├── debugpy
-│   │   ├── debugpy-adapter
-│   │   ├── dotenv
-│   │   ├── ee
-│   │   ├── f2py
-│   │   ├── fio
-│   │   ├── flask
-│   │   ├── fonttools
-│   │   ├── import_pb_to_tensorboard
-│   │   ├── ipython
-│   │   ├── ipython3
-│   │   ├── isympy
-│   │   ├── jupyter
-│   │   ├── jupyter-kernel
-│   │   ├── jupyter-kernelspec
-│   │   ├── jupyter-migrate
-│   │   ├── jupyter-run
-│   │   ├── jupyter-troubleshoot
-│   │   ├── lsm2bin
-│   │   ├── markdown-it
-│   │   ├── markdown_py
-│   │   ├── mercantile
-│   │   ├── nc3tonc4
-│   │   ├── nc4tonc3
-│   │   ├── ncinfo
-│   │   ├── normalizer
-│   │   ├── pip
-│   │   ├── pip3
-│   │   ├── pip3.12
-│   │   ├── proton
-│   │   ├── proton-viewer
-│   │   ├── pyftmerge
-│   │   ├── pyftsubset
-│   │   ├── pygmentize
-│   │   ├── pyproj
-│   │   ├── python -> python3
-│   │   ├── python3 -> /home/lorhan/anaconda3/bin/python3
-│   │   ├── python3.12 -> python3
-│   │   ├── rio
-│   │   ├── saved_model_cli
-│   │   ├── sentinelhub
-│   │   ├── sentinelhub.aws
-│   │   ├── sentinelhub.config
-│   │   ├── sentinelhub.download
-│   │   ├── tensorboard
-│   │   ├── tflite_convert
-│   │   ├── tf_upgrade_v2
-│   │   ├── tiff2fsspec
-│   │   ├── tiffcomment
-│   │   ├── tifffile
-│   │   ├── toco
-│   │   ├── torchfrtrace
-│   │   ├── torchrun
-│   │   ├── tqdm
-│   │   ├── ttx
-│   │   ├── ultralytics
-│   │   ├── utm-converter
-│   │   ├── wheel
-│   │   └── yolo
-│   ├── include
-│   │   └── python3.12
-│   ├── lib
-│   │   └── python3.12
-│   │       └── site-packages
-│   ├── lib64 -> lib
-│   ├── pyvenv.cfg
-│   └── share
-│       ├── jupyter
-│       │   └── kernels
-│       ├── man
-│       │   └── man1
-│       └── xyzservices
-│           └── providers.json
+
+│   
 ├── naia_results
 │   ├── detected_pools.csv
 │   ├── risk_map.html
@@ -209,30 +114,32 @@
 │   │   ├── final_risk_data.geojson
 │   │   ├── google_detected_images
 │   │   │   ├── 350950205001472_detected.png
-│   │ 
+│
 │   │   │   └── 350950210000181_detected.png
 │   │   ├── google_raw_images
-│   │ 
+│   │   │   ├── 350950205001000_raw.png
+│   │   │   ├── 350950205001472_raw.png
+│   │
+│   │   │   └── 350950210000194_raw.png
 │   │   ├── image_features.csv
 │   │   ├── mapa_de_risco_e_priorizacao.html
-│   │   └── processed_images
-│   │       ├── sentinel-1
-│   │       └── sentinel-2
-│   ├── analysis_-22.896_-47.054
+│   │   ├── processed_images
+│   │   │   ├── sentinel-1
+│   │   │   │   ├── analysis_-22.818_-47.069_s1_sector_350950205001000.tiff
+│   │   │
+│   │   └── summary.json
+│   ├── analysis_-22.818_-47.069_1754001737
 │   │   ├── area_of_interest.geojson
 │   │   ├── climate_features.csv
 │   │   ├── final_features.csv
 │   │   ├── google_detected_images
-│   │   │   ├── 350950205000088_dirty_pool_detected.png
-│   │   │   ├── 350950205000089_dirty_pool_detected.png
-│   │   │   └── 350950205000195_dirty_pool_detected.png
+│   │   │   ├── 350950210000102_dirty_pool_detected.png
+│   │   │   └── 350950210000135_dirty_pool_detected.png
 │   │   ├── google_raw_images
-│   │   │   ├── 350950205000001_raw.png
-│   │   
-│   │   ├── image_features.csv
-│   │   └── processed_images
-│   │       ├── sentinel-1
-│   │       └── sentinel-2
+│   │   │   ├── 350950205001000_raw.png
+│   │   │   ├── 350950205001472_raw.png
+│   
+│   ├── analysis_None_-47.069_1753986137
 │   ├── data_exports
 │   ├── maps
 │   └── reports
@@ -241,6 +148,8 @@
 │   └── run_analysis.cpython-312.pyc
 ├── README.md
 ├── requirements.txt
+├── run_analysis copy 2.py
+├── run_analysis copy.py
 ├── run_analysis.py
 ├── scripts
 │   ├── run_full_pipeline.py
@@ -295,46 +204,11 @@
 │           ├── __init__.cpython-312.pyc
 │           └── paths.cpython-312.pyc
 ├── static
-│   └── script.js
-├── templates
-│   ├── index.html
+│   ├── script.js
 │   └── styles.css
+├── templates
+│   └── index.html
 ├── tests
-└── tests_old
-    ├── analise_combinada_dengue (1).png
-    ├── analise_combinada_dengue.png
-    ├── api.py
-    ├── combined_satellite_analysis.png
-    ├── completo.py
-    ├── debug.txt
-    ├── embed.py
-    ├── google_earth_raw (1).png
-    ├── google_earth_raw.png
-    ├── infografico_dengue_compacto.png
-    ├── nao _aguento.py
-    ├── preview_satellite.png
-    ├── processamento.py
-    ├── projeto2.ipynb
-    ├── projeto.ipynb
-    ├── relatorio_dengue_profissional.pdf
-    ├── relatorio_dengue_profissional.png
-    ├── relatorio.html
-    ├── relatorio.py
-    ├── report_genserator.py
-    ├── run_new_claude.py
-    ├── s1_unicamp_20240701.png
-    ├── s1_unicamp_analises_avancadas.png
-    ├── s1_unicamp_multiplas_visualizacoes.png
-    ├── satellite_comparison.png
-    ├── satellite_image.png
-    ├── satellite_image_raw.png
-    ├── sentinel1_unicamp_raw.npy
-    ├── sentinel_processed (1).png
-    ├── sentinel_processed.png
-    ├── sentinel_raw (1).png
-    ├── sentinel_raw.png
-    ├── test_2.py
-    ├── test_credentials.py
-    └── teste_image.py
 
-80 directories, 482 files
+
+485 directories, 2693 files

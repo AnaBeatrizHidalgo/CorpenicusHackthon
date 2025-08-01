@@ -1,4 +1,4 @@
-# run_analysis.py - VERSÃO CORRIGIDA COM ÁREA CLIMÁTICA GRANDE
+# run_analysis.py
 import json
 from pathlib import Path
 import os
@@ -7,6 +7,7 @@ import geopandas as gpd
 import numpy as np
 from calendar import monthrange
 import traceback
+import logging
 import rasterio
 
 # --- 1. Imports ---
@@ -22,69 +23,23 @@ from src.analysis.risk_assessor import calculate_risk_score
 from src.models.pool_detector import find_pools_in_sectors
 from src.analysis.map_generator import create_priority_map
 
+# Configurar logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 def safe_execute(func, description, *args, **kwargs):
     """Executes a function with error handling and print output."""
-    print(f"\n[PIPELINE] Iniciando: {description}...")
+    logging.info(f"\n[PIPELINE] Iniciando: {description}...")
     try:
         result = func(*args, **kwargs)
         if result is None and "Geração do mapa" not in description:
-            print(f"⚠️ Etapa '{description}' não produziu resultados.")
+            logging.warning(f"Etapa '{description}' não produziu resultados.")
             return None
-        print(f"✅ [PIPELINE-SUCCESS] Etapa '{description}' concluída.")
+        logging.info(f"[PIPELINE-SUCCESS] Etapa '{description}' concluída.")
         return result
     except Exception as e:
-        print(f"❌ [PIPELINE-ERROR] Falha crítica na etapa '{description}': {str(e)}")
-        traceback.print_exc()
+        logging.error(f"[PIPELINE-ERROR] Falha crítica na etapa '{description}': {str(e)}")
+        logging.error(traceback.format_exc())
         raise e
-
-def _calculate_climate_download_area(study_area_gdf, min_size_km=60):
-    """
-    Calcula uma área MUITO MAIOR para download de dados climáticos.
-    Garante cobertura completa expandindo significativamente a área.
-    CORREÇÃO: Agora usa 60km como mínimo + margem de segurança de 50%
-    """
-    bounds = study_area_gdf.total_bounds  # [min_lon, min_lat, max_lon, max_lat]
-    center_lat = (bounds[1] + bounds[3]) / 2
-    center_lon = (bounds[0] + bounds[2]) / 2
-    
-    # Calcular tamanho atual da área
-    lat_degree_km = 111.32
-    lon_degree_km = 111.32 * np.cos(np.radians(center_lat))
-    
-    current_width_km = (bounds[2] - bounds[0]) * lon_degree_km
-    current_height_km = (bounds[3] - bounds[1]) * lat_degree_km
-    current_size_km = max(current_width_km, current_height_km)
-    
-    print(f"📏 Área atual dos setores: {current_size_km:.2f} km")
-    print(f"📡 Tamanho mínimo para ERA5-Land: {min_size_km} km")
-    
-    # SEMPRE expandir para área maior, independente do tamanho atual
-    # Adicionar margem de segurança de 50% para garantir cobertura completa
-    safety_margin = 1.5  # 50% de margem extra
-    expanded_size_km = max(min_size_km, current_size_km * 2) * safety_margin
-    
-    print(f"🔧 Expandindo área de {current_size_km:.2f} km para {expanded_size_km:.2f} km (com margem de segurança de 50%)")
-    
-    # Calcular nova área expandida
-    half_size_lat_deg = (expanded_size_km / 2) / lat_degree_km
-    half_size_lon_deg = (expanded_size_km / 2) / lon_degree_km
-    
-    expanded_bounds = [
-        center_lon - half_size_lon_deg,  # min_lon
-        center_lat - half_size_lat_deg,  # min_lat
-        center_lon + half_size_lon_deg,  # max_lon
-        center_lat + half_size_lat_deg   # max_lat
-    ]
-    
-    # Validação final
-    final_width_km = (expanded_bounds[2] - expanded_bounds[0]) * lon_degree_km
-    final_height_km = (expanded_bounds[3] - expanded_bounds[1]) * lat_degree_km
-    
-    print(f"📦 Área final expandida: {expanded_bounds}")
-    print(f"📐 Dimensões finais: {final_width_km:.2f} km x {final_height_km:.2f} km")
-    print(f"✅ Garantia de cobertura total para todos os setores")
-    
-    return expanded_bounds
 
 # --- 2. Main Pipeline Function ---
 def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
@@ -98,70 +53,43 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
 
     output_dir = paths.OUTPUT_DIR / job_id
     output_dir.mkdir(parents=True, exist_ok=True)
-    print(f"🗂️ [PIPELINE-SETUP] Resultados para {job_id} serão salvos em: {output_dir}")
+    logging.info(f"[PIPELINE-SETUP] Resultados para {job_id} serão salvos em: {output_dir}")
     
     area_geojson_path = output_dir / "area_of_interest.geojson"
     study_area_gdf = safe_execute(create_study_area_geojson, "Recorte da área de estudo",
                                   national_shapefile_path=NATIONAL_SHAPEFILE_PATH, center_lat=center_lat, 
                                   center_lon=center_lon, size_km=area_size_km, output_geojson_path=area_geojson_path)
     if study_area_gdf is None:
-        print("❌ Falha na criação da área de estudo. Encerrando pipeline.")
+        logging.error("Falha na criação da área de estudo. Encerrando pipeline.")
         return None
-    
-    # CORREÇÃO CRÍTICA: Converter CD_SETOR para int64 corretamente
-    study_area_gdf['CD_SETOR'] = pd.to_numeric(study_area_gdf['CD_SETOR'], errors='coerce').astype(np.int64)
+    study_area_gdf['CD_SETOR'] = study_area_gdf['CD_SETOR'].astype(np.int64)
 
     # --- CORREÇÃO: Detecção inteligente de primeira execução ---
     final_features_path = output_dir / "final_features.csv"
     
     if SKIP_DOWNLOADS_AND_PROCESSING and not final_features_path.exists():
-        print(f"\n🔍 [PIPELINE-AUTODETECT] Primeira execução detectada!")
-        print(f"❌ Arquivo necessário não encontrado: {final_features_path}")
-        print(f"⚡ Forçando execução completa do pipeline...")
+        logging.info(f"\n[PIPELINE-AUTODETECT] 🔍 Primeira execução detectada!")
+        logging.info(f"[PIPELINE-AUTODETECT] ❌ Arquivo necessário não encontrado: {final_features_path}")
+        logging.info(f"[PIPELINE-AUTODETECT] ⚡ Forçando execução completa do pipeline...")
         SKIP_DOWNLOADS_AND_PROCESSING = False
 
     # --- Conditional Data Processing Pipeline ---
     if not SKIP_DOWNLOADS_AND_PROCESSING:
-        print("\n🚀 [PIPELINE] Executando pipeline COMPLETO de download e processamento de dados.")
+        print("\n[PIPELINE] 🚀 Executando pipeline COMPLETO de download e processamento de dados.")
         
-        # --- CORREÇÃO CRÍTICA: Cálculo correto da área para downloads ---
-        print("\n📊 === CALCULANDO ÁREAS PARA DOWNLOAD ===")
-        
-        # Área para Sentinel (pode usar área original)
-        sentinel_bbox = list(study_area_gdf.total_bounds)
-        print(f"🛰️ Área Sentinel: {sentinel_bbox}")
-        
-        # Área para clima (MUITO expandida para garantir cobertura total)
-        climate_bbox = _calculate_climate_download_area(study_area_gdf, min_size_km=60)
-        print(f"🌡️ Área Clima: {climate_bbox}")
-        
-        # CORREÇÃO: Conversão correta para formato CDS (Norte, Oeste, Sul, Leste)
-        area_cds = [climate_bbox[3], climate_bbox[0], climate_bbox[1], climate_bbox[2]]  # [max_lat, min_lon, min_lat, max_lon]
-        print(f"📡 Área CDS (N,O,S,L): {area_cds}")
-        
-        # Validação final da área CDS
-        if area_cds[0] <= area_cds[2]:  # Norte <= Sul
-            print(f"❌ ERRO: Área CDS inválida - Norte ({area_cds[0]}) <= Sul ({area_cds[2]})")
-            return None
-        if area_cds[1] >= area_cds[3]:  # Oeste >= Leste
-            print(f"❌ ERRO: Área CDS inválida - Oeste ({area_cds[1]}) >= Leste ({area_cds[3]})")
-            return None
-
-        # Verificação adicional: área deve cobrir completamente os setores
-        sectors_bounds = study_area_gdf.total_bounds
-        print(f"🏘️ Bounds dos setores: {sectors_bounds}")
-        print(f"🌍 Bounds do clima: {climate_bbox}")
-        
-        # Verificar se a área climática cobre todos os setores
-        if (climate_bbox[0] > sectors_bounds[0] or  # clima min_lon > setores min_lon
-            climate_bbox[1] > sectors_bounds[1] or  # clima min_lat > setores min_lat
-            climate_bbox[2] < sectors_bounds[2] or  # clima max_lon < setores max_lon
-            climate_bbox[3] < sectors_bounds[3]):   # clima max_lat < setores max_lat
-            print("⚠️ AVISO: Área climática pode não cobrir todos os setores completamente")
-        else:
-            print("✅ Área climática cobre completamente todos os setores")
-
         # --- Data Downloads ---
+        bbox = list(study_area_gdf.total_bounds)
+        logging.info(f"BBox calculado para downloads: {bbox}")
+        logging.info(f"BBox de teste (para comparação): {settings.STUDY_AREA['bbox']}")
+        # Fallback para o bbox de teste se o calculado for muito pequeno
+        min_lon, min_lat, max_lon, max_lat = bbox
+        area_width_km = (max_lon - min_lon) * 111.32  # Aproximação: 1 grau ≈ 111.32 km
+        area_height_km = (max_lat - min_lat) * 111.32
+        if area_width_km < 5 or area_height_km < 5:
+            logging.warning(f"BBox muito pequeno ({area_width_km:.2f} km x {area_height_km:.2f} km). Usando bbox de teste.")
+            bbox = settings.STUDY_AREA['bbox']  # Usa o bbox de teste
+            logging.info(f"Novo bbox: {bbox}")
+
         date_config = settings.DATA_RANGES['monitoramento_dengue']
         time_interval = (date_config['start'], date_config['end'])
         s1_raw_path = paths.RAW_SENTINEL_DIR / f"{job_id}_s1.tiff"
@@ -171,35 +99,35 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         
         # Download Sentinel-1
         s1_result = safe_execute(download_and_save_sentinel_data, "Download de dados Sentinel-1", 
-                                'S1', auth_config, sentinel_bbox, time_interval, s1_raw_path, job_id=job_id)
+                                'S1', auth_config, bbox, time_interval, s1_raw_path, job_id=job_id)
         if s1_result is None or not s1_raw_path.exists():
-            print(f"❌ Falha no download do Sentinel-1. Arquivo {s1_raw_path} não encontrado. Encerrando pipeline.")
+            logging.error(f"Falha no download do Sentinel-1. Arquivo {s1_raw_path} não encontrado. Encerrando pipeline.")
             return None
         # Validar arquivo TIFF
         try:
             with rasterio.open(s1_raw_path) as src:
-                print(f"✅ Arquivo {s1_raw_path} válido com {src.count} bandas.")
+                logging.info(f"Arquivo {s1_raw_path} válido com {src.count} bandas.")
         except Exception as e:
-            print(f"❌ Arquivo {s1_raw_path} corrompido ou inválido: {str(e)}")
+            logging.error(f"Arquivo {s1_raw_path} corrompido ou inválido: {str(e)}")
             return None
         
         # Download Sentinel-2
         s2_result = safe_execute(download_and_save_sentinel_data, "Download de dados Sentinel-2", 
-                                'S2', auth_config, sentinel_bbox, time_interval, s2_raw_path, job_id=job_id)
+                                'S2', auth_config, bbox, time_interval, s2_raw_path, job_id=job_id)
         if s2_result is None or not s2_raw_path.exists():
-            print(f"❌ Falha no download do Sentinel-2. Arquivo {s2_raw_path} não encontrado. Encerrando pipeline.")
+            logging.error(f"Falha no download do Sentinel-2. Arquivo {s2_raw_path} não encontrado. Encerrando pipeline.")
             return None
         # Validar arquivo TIFF
         try:
             with rasterio.open(s2_raw_path) as src:
-                print(f"✅ Arquivo {s2_raw_path} válido com {src.count} bandas.")
+                logging.info(f"Arquivo {s2_raw_path} válido com {src.count} bandas.")
         except Exception as e:
-            print(f"❌ Arquivo {s2_raw_path} corrompido ou inválido: {str(e)}")
+            logging.error(f"Arquivo {s2_raw_path} corrompido ou inválido: {str(e)}")
             return None
         
-        # Download ERA5-Land (com área MUITO expandida)
         year, month = date_config['start'][:4], date_config['start'][5:7]
         days = [str(d).zfill(2) for d in range(1, monthrange(int(year), int(month))[1] + 1)]
+        area_cds = [bbox[3], bbox[0], bbox[1], bbox[2]]
         safe_execute(download_era5_land_data, "Download de dados climáticos ERA5", 
                     ['total_precipitation', '2m_temperature'], year, month, days, ['00:00', '12:00'], area_cds, climate_raw_path)
     
@@ -216,15 +144,15 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         safe_execute(calculate_image_metrics, "Cálculo de métricas de imagem (NDVI, etc.)", s1_processed_dir, s2_processed_dir, image_features_path)
         safe_execute(merge_features, "União de todas as features", climate_features_path, image_features_path, final_features_path)
         
-        print(f"✅ [PIPELINE-SUCCESS] Pipeline de processamento concluído! Arquivo criado: {final_features_path}")
+        logging.info(f"[PIPELINE-SUCCESS] ✅ Pipeline de processamento concluído! Arquivo criado: {final_features_path}")
         
     else:
-        print(f"\n⚡ [PIPELINE] Pulando downloads e processamento. Usando arquivo de features existente: {final_features_path}")
+        logging.info(f"\n[PIPELINE] ⚡ Pulando downloads e processamento. Usando arquivo de features existente: {final_features_path}")
         
         # Verificação final de segurança
         if not final_features_path.exists():
             error_msg = f"ERRO CRÍTICO: Arquivo de features ainda não existe após o processamento: {final_features_path}"
-            print(f"❌ [PIPELINE-ERROR] {error_msg}")
+            logging.error(f"[PIPELINE-ERROR] {error_msg}")
             raise FileNotFoundError(error_msg)
 
     # --- Verificação de integridade do arquivo ---
@@ -232,16 +160,16 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         features_df = pd.read_csv(final_features_path)
         if features_df.empty:
             raise ValueError("Arquivo de features está vazio")
-        print(f"✅ [PIPELINE-INFO] Arquivo de features carregado com sucesso. Shape: {features_df.shape}")
+        logging.info(f"[PIPELINE-INFO] ✅ Arquivo de features carregado com sucesso. Shape: {features_df.shape}")
     except Exception as e:
         error_msg = f"Erro ao carregar arquivo de features {final_features_path}: {str(e)}"
-        print(f"❌ [PIPELINE-ERROR] {error_msg}")
+        logging.error(f"[PIPELINE-ERROR] {error_msg}")
         raise Exception(error_msg)
 
     # --- Baseline Risk Calculation ---
     baseline_risk_df = safe_execute(calculate_risk_score, "Cálculo do score de risco base", features_df)
     if baseline_risk_df is None:
-        print("❌ Falha no cálculo do score de risco. Encerrando pipeline.")
+        logging.error("Falha no cálculo do score de risco. Encerrando pipeline.")
         return None
 
     # --- Pool Detection ---
@@ -255,7 +183,7 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         if detected_pools is None:
             detected_pools = []
     else:
-        print("\n⏭️ [PIPELINE] Pulando etapa de DETECÇÃO DE PISCINAS (SKIP_POOL_DETECTION=True).")
+        logging.info("\n[PIPELINE] ⏭️ Pulando etapa de DETECÇÃO DE PISCINAS (SKIP_POOL_DETECTION=True).")
     
     # --- Consolidation and Map Generation ---
     final_risk_gdf = study_area_gdf.merge(baseline_risk_df, on='CD_SETOR', how='left')
@@ -307,8 +235,8 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
     with open(summary_path, 'w') as f:
         json.dump(summary_data, f, indent=4)
     
-    print(f"🎉 [PIPELINE-FINAL] Pipeline concluído com sucesso!")
-    print(f"📊 [PIPELINE-FINAL] Resumo: {len(final_risk_gdf)} setores, {len(detected_pools)} piscinas detectadas")
-    print(f"🗺️ [PIPELINE-FINAL] Mapa salvo em: {map_path}")
+    logging.info(f"[PIPELINE-FINAL] 🎉 Pipeline concluído com sucesso!")
+    logging.info(f"[PIPELINE-FINAL] 📊 Resumo: {len(final_risk_gdf)} setores, {len(detected_pools)} piscinas detectadas")
+    logging.info(f"[PIPELINE-FINAL] 🗺️ Mapa salvo em: {map_path}")
         
     return summary_data

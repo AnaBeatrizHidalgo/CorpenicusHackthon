@@ -29,10 +29,17 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
         
         # Fill NaN values with the column's mean
         if df[col].isnull().any():
-            mean_val = df[col].mean()
-            if pd.isna(mean_val):  # If mean is also NaN (all values are NaN)
-                mean_val = 0
-            df[col] = df[col].fillna(mean_val)
+            # Calculate mean ignoring NaNs
+            mean_val = df[col].mean() 
+            
+            # Only fill if the mean is a valid number (i.e., the column wasn't all NaN)
+            if pd.notna(mean_val):
+                df[col] = df[col].fillna(mean_val)
+                logging.info(f"Valores NaN em '{col}' preenchidos com a média ({mean_val:.2f}).")
+            else:
+                # If the whole column is NaN, the mean will be NaN. Keep it that way.
+                logging.warning(f"A coluna de risco '{col}' contém apenas valores NaN. A coluna permanecerá sem dados.")
+
 
         # If after filling, the column is STILL all NaN (because it was empty), fill with 0
         if df[col].isnull().all():
