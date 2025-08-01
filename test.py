@@ -1,223 +1,105 @@
-import cdsapi
+
+#!/usr/bin/env python3
+# test_clip_fix.py
+"""
+Script para testar a correção do problema de recorte.
+"""
+
+import sys
+import logging
 from pathlib import Path
-import zipfile
-import os
-import xarray as xr
-from calendar import monthrange
 
-def _handle_decompression(downloaded_path: Path, final_path: Path):
-    """Verifica se um arquivo é ZIP, extrai o conteúdo e renomeia."""
-    if not zipfile.is_zipfile(downloaded_path):
-        print("Arquivo não é ZIP. Renomeando para o caminho final.")
-        downloaded_path.rename(final_path)
-        return
+# Configurar logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    print("Arquivo detectado como ZIP. Iniciando descompactação...")
-    with zipfile.ZipFile(downloaded_path, 'r') as zip_ref:
-        file_list = zip_ref.namelist()
-        print(f"Arquivos no ZIP: {file_list}")
-
-        nc_files = [f for f in file_list if f.endswith('.nc')]
-        if not nc_files:
-            raise FileNotFoundError("Nenhum arquivo .nc encontrado dentro do arquivo ZIP baixado.")
-
-        extracted_file_name = nc_files[0]
-        zip_ref.extract(extracted_file_name, path=final_path.parent)
-        
-        extracted_file_path = final_path.parent / extracted_file_name
-        extracted_file_path.rename(final_path)
-
-        os.remove(downloaded_path)
-        print(f"Descompactação concluída. Arquivo final: {final_path}")
-
-def download_era5_land_data(
-    variables: list,
-    year: str,
-    month: str,
-    days: list,
-    time: list,
-    area: list,
-    output_path: Path
-):
-    """
-    Baixa dados do reanálise ERA5-Land e lida com a descompactação.
-    Returns the output path on success.
-    """
-    print(f"🌍 Iniciando download de dados ERA5-Land para {output_path.name}")
-    print(f"📍 Área solicitada: {area} (Norte/Oeste/Sul/Leste)")
+def test_clip_fix():
+    """Testa a função corrigida de recorte"""
     
-    norte, oeste, sul, leste = area
-    if norte <= sul:
-        raise ValueError(f"❌ Área inválida: Norte ({norte}) deve ser > Sul ({sul})")
-    if oeste >= leste:
-        raise ValueError(f"❌ Área inválida: Oeste ({oeste}) deve ser < Leste ({leste})")
+    # Arquivos identificados pelo diagnóstico
+    base_dir = Path.cwd()
+    s1_file = base_dir / "data" / "raw" / "sentinel" / "analysis_-22.818_-47.069_1754005045_s1.tiff"
+    s2_file = base_dir / "data" / "raw" / "sentinel" / "analysis_-22.818_-47.069_1754001033_s2.tiff"
+    geojson_file = base_dir / "data" / "campinas_all.geojson"
     
-    area_lat = abs(norte - sul)
-    area_lon = abs(leste - oeste) 
-    print(f"📏 Dimensões da área: {area_lat:.4f}° x {area_lon:.4f}°")
+    job_id = "debug_test"
+    s1_output_dir = base_dir / "output" / job_id / "processed_images" / "sentinel-1"
+    s2_output_dir = base_dir / "output" / job_id / "processed_images" / "sentinel-2"
     
-    if area_lat > 10 or area_lon > 10:
-        print(f"⚠️ ÁREA MUITO GRANDE! Lat: {area_lat:.2f}°, Lon: {area_lon:.2f}°")
-        print(f"   Reduzindo para limites seguros da API...")
-        
-        center_lat = (norte + sul) / 2
-        center_lon = (oeste + leste) / 2
-        
-        max_size = 5.0
-        half_size = max_size / 2
-        
-        area = [
-            center_lat + half_size,
-            center_lon - half_size,
-            center_lat - half_size,
-            center_lon + half_size
-        ]
-        
-        print(f"📐 Nova área ajustada: {area}")
-        print(f"📏 Novas dimensões: {max_size:.1f}° x {max_size:.1f}°")
+    print(f"🧪 === TESTE DA CORREÇÃO DE RECORTE ===")
+    print(f"Job ID: {job_id}")
+    print(f"S1 File: {s1_file}")
+    print(f"S2 File: {s2_file}")
+    print(f"GeoJSON: {geojson_file}")
     
-    temp_download_path = output_path.with_suffix('.download')
-
+    # Importar a função corrigida
     try:
-        temp_download_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        client = cdsapi.Client()
-        
-        print("📡 Enviando requisição para a API do CDS...")
-        
-        request_data = {
-            'variable': variables,
-            'year': year,
-            'month': month, 
-            'day': days,
-            'time': time,
-            'area': area,
-            'format': 'netcdf',
-            'grid': [0.1, 0.1]
-        }
-        
-        print(f"📋 Parâmetros da requisição: {request_data}")
-        
-        client.retrieve(
-            'reanalysis-era5-land',
-            request_data,
-            str(temp_download_path)
-        )
-        print(f"✅ Download inicial concluído em: {temp_download_path}")
-
-        if not temp_download_path.exists():
-            raise FileNotFoundError(f"Arquivo não foi baixado: {temp_download_path}")
-        
-        file_size = temp_download_path.stat().st_size
-        print(f"📦 Tamanho do arquivo baixado: {file_size / 1024:.1f} KB")
-        
-        if file_size < 1000:
-            print(f"⚠️ Arquivo muito pequeno ({file_size} bytes), pode haver erro")
-
-        _handle_decompression(temp_download_path, output_path)
-        
-        if output_path.exists():
-            final_size = output_path.stat().st_size
-            print(f"✅ Arquivo final: {final_size / 1024:.1f} KB")
+        # Assumindo que você salvou o código corrigido como image_processor_fixed.py
+        sys.path.insert(0, str(Path(__file__).parent))
+        from image_processor_fixed import clip_raster_by_sectors
+        print(f"✅ Função corrigida importada com sucesso")
+    except ImportError as e:
+        print(f"❌ Erro ao importar função corrigida: {e}")
+        print(f"💡 Certifique-se de salvar o código corrigido como 'image_processor_fixed.py'")
+        return False
+    
+    # Testar S1
+    try:
+        print(f"\n🛰️ === TESTANDO SENTINEL-1 ===")
+        result_s1 = clip_raster_by_sectors(s1_file, geojson_file, s1_output_dir, job_id)
+        if result_s1:
+            print(f"✅ Sentinel-1 processado com sucesso!")
         else:
-            raise FileNotFoundError(f"Arquivo final não encontrado: {output_path}")
-        
-        print(f"🎉 Download completo! Arquivo salvo em: {output_path}")
-        return output_path
-
+            print(f"⚠️ Sentinel-1 processado com avisos")
     except Exception as e:
-        print(f"❌ Falha ao baixar os dados do ERA5-Land: {e}")
-        print(f"💡 Dicas para resolver:")
-        print(f"   1. Verifique suas credenciais do CDS")
-        print(f"   2. Verifique se a área não é muito grande")
-        print(f"   3. Verifique se as datas são válidas")
-        print(f"   4. Tente novamente em alguns minutos")
-        
-        if temp_download_path.exists():
-            os.remove(temp_download_path)
-        raise
-
-def safe_execute(func, description, *args, **kwargs):
-    """Simulates the safe_execute function from run_analysis.py."""
-    print(f"\n[TEST] Iniciando: {description}...")
-    try:
-        result = func(*args, **kwargs)
-        if result is None and "Geração do mapa" not in description:
-            print(f"⚠️ Etapa '{description}' não produziu resultados.")
-            return None
-        print(f"✅ [TEST-SUCCESS] Etapa '{description}' concluída.")
-        return result
-    except Exception as e:
-        print(f"❌ [TEST-ERROR] Falha crítica na etapa '{description}': {str(e)}")
-        raise
-
-def test_download_era5():
-    """Test harness for download_era5_land_data."""
-    print("🚀 Starting ERA5-Land download test...")
+        print(f"❌ Erro no Sentinel-1: {e}")
+        return False
     
-    # Parameters from your pipeline run
-    job_id = "analysis_-22.818_-47.069_1754078650"
-    output_path = Path(f"data/raw/climate/{job_id}_era5.nc")
-    area_cds = [-22.40409587125399, -47.510241818393816, -23.212575928745903, -46.63318158160609]
-    year = "2024"
-    month = "07"
-    days = [str(d).zfill(2) for d in range(1, monthrange(int(year), int(month))[1] + 1)]
-    variables = ["total_precipitation", "2m_temperature"]
-    time = ["00:00", "12:00"]
-
-    print(f"\n📋 Test parameters:")
-    print(f"Output path: {output_path}")
-    print(f"Area (N/W/S/E): {area_cds}")
-    print(f"Year: {year}, Month: {month}, Days: {days}")
-    print(f"Variables: {variables}")
-    print(f"Time: {time}")
-
-    # Run the download with safe_execute
-    result = safe_execute(
-        download_era5_land_data,
-        "Download de dados climáticos ERA5",
-        variables,
-        year,
-        month,
-        days,
-        time,
-        area_cds,
-        output_path
-    )
-
-    print(f"\n📈 Download function returned: {result}")
-
-    # Verify the downloaded file
-    if output_path.exists():
-        print(f"✅ File exists at: {output_path}")
-        file_size = output_path.stat().st_size / 1024
-        print(f"📦 File size: {file_size:.1f} KB")
-
-        try:
-            ds = xr.open_dataset(output_path)
-            print(f"\n📊 NetCDF file contents:")
-            print(f"Dimensions: {dict(ds.sizes)}")
-            print(f"Coordinates: {list(ds.coords)}")
-            print(f"Variables: {list(ds.data_vars)}")
-
-            era5_var_map = {
-                "total_precipitation": "tp",
-                "2m_temperature": "t2m"
-            }
-            for input_var in variables:
-                era5_var = era5_var_map.get(input_var, input_var)
-                if era5_var in ds.data_vars:
-                    print(f"\n🔍 Variable {era5_var}:")
-                    print(f"Shape: {ds[era5_var].shape}")
-                    print(f"Mean value: {ds[era5_var].mean().values:.4f}")
-                else:
-                    print(f"⚠️ Variable {era5_var} not found in dataset")
-
-            ds.close()
-        except Exception as e:
-            print(f"❌ Error opening NetCDF file: {e}")
+    # Testar S2
+    try:
+        print(f"\n🛰️ === TESTANDO SENTINEL-2 ===")
+        result_s2 = clip_raster_by_sectors(s2_file, geojson_file, s2_output_dir, job_id)
+        if result_s2:
+            print(f"✅ Sentinel-2 processado com sucesso!")
+        else:
+            print(f"⚠️ Sentinel-2 processado com avisos")
+    except Exception as e:
+        print(f"❌ Erro no Sentinel-2: {e}")
+        return False
+    
+    # Verificar resultados
+    print(f"\n📊 === VERIFICAÇÃO DOS RESULTADOS ===")
+    
+    s1_files = list(s1_output_dir.glob("*.tiff")) if s1_output_dir.exists() else []
+    s2_files = list(s2_output_dir.glob("*.tiff")) if s2_output_dir.exists() else []
+    
+    print(f"Arquivos S1 gerados: {len(s1_files)}")
+    print(f"Arquivos S2 gerados: {len(s2_files)}")
+    
+    if s1_files:
+        print(f"📁 Exemplos S1:")
+        for f in s1_files[:3]:  # Mostrar apenas 3 exemplos
+            print(f"   {f.name}")
+        if len(s1_files) > 3:
+            print(f"   ... e mais {len(s1_files)-3} arquivos")
+    
+    if s2_files:
+        print(f"📁 Exemplos S2:")
+        for f in s2_files[:3]:  # Mostrar apenas 3 exemplos
+            print(f"   {f.name}")
+        if len(s2_files) > 3:
+            print(f"   ... e mais {len(s2_files)-3} arquivos")
+    
+    total_files = len(s1_files) + len(s2_files)
+    
+    if total_files > 0:
+        print(f"\n🎉 TESTE CONCLUÍDO COM SUCESSO!")
+        print(f"✅ Total de {total_files} arquivos de recorte gerados")
+        return True
     else:
-        print(f"❌ File not found: {output_path}")
+        print(f"\n⚠️ TESTE CONCLUÍDO COM AVISOS")
+        print(f"❌ Nenhum arquivo de recorte foi gerado")
+        return False
 
 if __name__ == "__main__":
-    test_download_era5()
+    success = test_clip_fix()
+    sys.exit(0 if success else 1)

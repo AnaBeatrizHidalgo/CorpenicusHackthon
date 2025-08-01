@@ -1,0 +1,659 @@
+2025-08-01 18:59:45,749 - root - INFO - 🚀 [TEST] Iniciando teste para Sentinel-1
+2025-08-01 18:59:45,749 - root - INFO - --- [TEST] Iniciando download para S1, job_id: debug_tiff_warnings ---
+2025-08-01 18:59:45,749 - root - INFO - Parâmetros: bbox=[-47.110683, -22.846961, -47.03274, -22.769711], time_interval=('2024-07-01', '2024-07-30'), output_path=data/raw/sentinel/debug_s1.tiff
+2025-08-01 18:59:45,749 - root - INFO - [TEST] Configuração do Sentinel Hub pronta.
+2025-08-01 18:59:45,749 - root - INFO - [TEST] Diretório de cache: data/raw/sentinel/.sh_cache_debug_tiff_warnings
+2025-08-01 18:59:45,751 - root - INFO - [TEST] Enviando requisição para S1.
+2025-08-01 18:59:49,337 - root - INFO - [TEST] response.tiff encontrado: data/raw/sentinel/.sh_cache_debug_tiff_warnings/ee581fa2771fb0e5d37b6680cbfed950/response.tiff
+2025-08-01 18:59:49,340 - rasterio._env - WARNING - CPLE_AppDefined in response.tiff: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+2025-08-01 18:59:49,346 - root - INFO - [TEST] Inspecting response.tiff:
+2025-08-01 18:59:49,346 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,346 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 512, 'height': 512, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.110683,
+       0.0, -0.00015087890624999878, -22.769711), 'blockxsize': 512, 'blockysize': 8, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,346 - rasterio._env - WARNING - CPLE_AppDefined in TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+2025-08-01 18:59:49,356 - root - INFO -   Data shape: (2, 512, 512)
+2025-08-01 18:59:49,356 - root - INFO -   Data min/max (per band): [(0.0, 176.19673), (0.0, 13.599112)]
+2025-08-01 18:59:49,394 - root - INFO - [TEST] Arquivo final data/raw/sentinel/debug_s1.tiff:
+2025-08-01 18:59:49,394 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,394 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 512, 'height': 512, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.110683,
+       0.0, -0.00015087890624999878, -22.769711), 'blockxsize': 512, 'blockysize': 8, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,394 - root - INFO -   Tags: {'PHOTOMETRIC': 'MINISBLACK', 'AREA_OR_POINT': 'Area'}
+2025-08-01 18:59:49,403 - root - INFO -   Data shape: (2, 512, 512)
+2025-08-01 18:59:49,403 - root - INFO -   Data min/max (per band): [(0.0, 176.19673), (0.0, 13.599112)]
+2025-08-01 18:59:49,404 - root - INFO - [TEST] Dados válidos em data/raw/sentinel/debug_s1.tiff
+2025-08-01 18:59:49,404 - root - INFO - [TEST] Iniciando recorte do raster 'debug_s1.tiff' por setores.
+2025-08-01 18:59:49,433 - root - INFO - [TEST] Processando 43 setores...
+2025-08-01 18:59:49,433 - root - INFO - [TEST] Campos disponíveis no GeoJSON: ['CD_SETOR', 'SITUACAO', 'CD_SIT', 'CD_TIPO', 'AREA_KM2', 'CD_REGIAO', 'NM_REGIAO', 'CD_UF', 'NM_UF', 'CD_MUN', 'NM_MUN', 'CD_DIST', 'NM_DIST', 'CD_SUBDIST', 'NM_SUBDIST', 'CD_BAIRRO', 'NM_BAIRRO', 'CD_NU', 'NM_NU', 'CD_FCU', 'NM_FCU', 'CD_AGLOM', 'NM_AGLOM', 'CD_RGINT', 'NM_RGINT', 'CD_RGI', 'NM_RGI', 'CD_CONCURB', 'NM_CONCURB', 'geometry']
+2025-08-01 18:59:49,433 - root - INFO - [TEST] Usando campo 'CD_SETOR' como identificador.
+2025-08-01 18:59:49,435 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950205001000.tiff
+2025-08-01 18:59:49,436 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950205001000.tiff:
+2025-08-01 18:59:49,436 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,436 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 31, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07018917578125,
+       0.0, -0.00015087890624999878, -22.799886781250002), 'blockxsize': 22, 'blockysize': 31, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,436 - root - INFO -   Data shape: (2, 31, 22)
+2025-08-01 18:59:49,436 - root - INFO -   Data min/max (per band): [(0.0, 4.209388), (0.0, 0.44937706)]
+2025-08-01 18:59:49,437 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950205001472.tiff
+2025-08-01 18:59:49,438 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950205001472.tiff:
+2025-08-01 18:59:49,438 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,438 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 27, 'height': 30, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.06714452734375,
+       0.0, -0.00015087890624999878, -22.80033941796875), 'blockxsize': 27, 'blockysize': 30, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,438 - root - INFO -   Data shape: (2, 30, 27)
+2025-08-01 18:59:49,438 - root - INFO -   Data min/max (per band): [(0.0, 4.383515), (0.0, 0.8179696)]
+2025-08-01 18:59:49,447 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950205002675.tiff
+2025-08-01 18:59:49,447 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950205002675.tiff:
+2025-08-01 18:59:49,447 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,447 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 203, 'height': 220, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.06364318164062,
+       0.0, -0.00015087890624999878, -22.80094293359375), 'blockxsize': 203, 'blockysize': 5, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,448 - root - INFO -   Data shape: (2, 220, 203)
+2025-08-01 18:59:49,448 - root - INFO -   Data min/max (per band): [(0.0, 176.19673), (0.0, 5.404852)]
+2025-08-01 18:59:49,450 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000001.tiff
+2025-08-01 18:59:49,450 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000001.tiff:
+2025-08-01 18:59:49,450 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,450 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 29, 'height': 31, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0832811640625,
+       0.0, -0.00015087890624999878, -22.8267432265625), 'blockxsize': 29, 'blockysize': 31, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,450 - root - INFO -   Data shape: (2, 31, 29)
+2025-08-01 18:59:49,450 - root - INFO -   Data min/max (per band): [(0.0, 2.941955), (0.0, 1.1495801)]
+2025-08-01 18:59:49,452 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000002.tiff
+2025-08-01 18:59:49,452 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000002.tiff:
+2025-08-01 18:59:49,452 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,452 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 49, 'height': 23, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0869347421875,
+       0.0, -0.00015087890624999878, -22.8249326796875), 'blockxsize': 49, 'blockysize': 20, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,452 - root - INFO -   Data shape: (2, 23, 49)
+2025-08-01 18:59:49,452 - root - INFO -   Data min/max (per band): [(0.0, 1.5998585), (0.0, 0.6010399)]
+2025-08-01 18:59:49,453 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000003.tiff
+2025-08-01 18:59:49,454 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000003.tiff:
+2025-08-01 18:59:49,454 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,454 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 35, 'height': 30, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07993205078125,
+       0.0, -0.00015087890624999878, -22.82387652734375), 'blockxsize': 35, 'blockysize': 29, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,454 - root - INFO -   Data shape: (2, 30, 35)
+2025-08-01 18:59:49,454 - root - INFO -   Data min/max (per band): [(0.0, 3.3444624), (0.0, 1.274726)]
+2025-08-01 18:59:49,456 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000006.tiff
+2025-08-01 18:59:49,456 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000006.tiff:
+2025-08-01 18:59:49,456 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,456 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 76, 'height': 61, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.09393743359375,
+       0.0, -0.00015087890624999878, -22.8249326796875), 'blockxsize': 76, 'blockysize': 13, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,456 - root - INFO -   Data shape: (2, 61, 76)
+2025-08-01 18:59:49,456 - root - INFO -   Data min/max (per band): [(0.0, 45.218586), (0.0, 4.1890497)]
+2025-08-01 18:59:49,458 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000007.tiff
+2025-08-01 18:59:49,458 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000007.tiff:
+2025-08-01 18:59:49,458 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,458 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 47, 'height': 30, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08876153125,
+       0.0, -0.00015087890624999878, -22.82206598046875), 'blockxsize': 47, 'blockysize': 21, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,458 - root - INFO -   Data shape: (2, 30, 47)
+2025-08-01 18:59:49,458 - root - INFO -   Data min/max (per band): [(0.0, 13.577359), (0.0, 2.8121543)]
+2025-08-01 18:59:49,460 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000021.tiff
+2025-08-01 18:59:49,460 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000021.tiff:
+2025-08-01 18:59:49,460 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,460 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 43, 'height': 54, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.06897131640625,
+       0.0, -0.00015087890624999878, -22.8044131484375), 'blockxsize': 43, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,460 - root - INFO -   Data shape: (2, 54, 43)
+2025-08-01 18:59:49,460 - root - INFO -   Data min/max (per band): [(0.0, 4.7522125), (0.0, 0.4056173)]
+2025-08-01 18:59:49,462 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000056.tiff
+2025-08-01 18:59:49,462 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000056.tiff:
+2025-08-01 18:59:49,462 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,462 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 50, 'height': 54, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08982715820313,
+       0.0, -0.00015087890624999878, -22.82387652734375), 'blockxsize': 50, 'blockysize': 20, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,462 - root - INFO -   Data shape: (2, 54, 50)
+2025-08-01 18:59:49,462 - root - INFO -   Data min/max (per band): [(0.0, 2.346443), (0.0, 2.3887982)]
+2025-08-01 18:59:49,463 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000089.tiff
+2025-08-01 18:59:49,464 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000089.tiff:
+2025-08-01 18:59:49,464 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,464 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 32, 'height': 31, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07901865625,
+       0.0, -0.00015087890624999878, -22.8204063125), 'blockxsize': 32, 'blockysize': 31, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,464 - root - INFO -   Data shape: (2, 31, 32)
+2025-08-01 18:59:49,464 - root - INFO -   Data min/max (per band): [(0.0, 3.6541774), (0.0, 0.638747)]
+2025-08-01 18:59:49,465 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000090.tiff
+2025-08-01 18:59:49,466 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000090.tiff:
+2025-08-01 18:59:49,466 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,466 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 38, 'height': 43, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.077800796874996,
+       0.0, -0.00015087890624999878, -22.821613343750002), 'blockxsize': 38, 'blockysize': 26, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,466 - root - INFO -   Data shape: (2, 43, 38)
+2025-08-01 18:59:49,466 - root - INFO -   Data min/max (per band): [(0.0, 2.9265783), (0.0, 0.5785014)]
+2025-08-01 18:59:49,467 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000091.tiff
+2025-08-01 18:59:49,467 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000091.tiff:
+2025-08-01 18:59:49,467 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,468 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 32, 'height': 33, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.074299451171875,
+       0.0, -0.00015087890624999878, -22.8237256484375), 'blockxsize': 32, 'blockysize': 32, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,468 - root - INFO -   Data shape: (2, 33, 32)
+2025-08-01 18:59:49,468 - root - INFO -   Data min/max (per band): [(0.0, 1.990116), (0.0, 0.5391663)]
+2025-08-01 18:59:49,469 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000092.tiff
+2025-08-01 18:59:49,469 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000092.tiff:
+2025-08-01 18:59:49,469 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,469 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 26, 'height': 28, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07064587304687,
+       0.0, -0.00015087890624999878, -22.822216859375), 'blockxsize': 26, 'blockysize': 28, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,469 - root - INFO -   Data shape: (2, 28, 26)
+2025-08-01 18:59:49,469 - root - INFO -   Data min/max (per band): [(0.0, 2.8347514), (0.0, 0.8398642)]
+2025-08-01 18:59:49,471 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000093.tiff
+2025-08-01 18:59:49,471 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000093.tiff:
+2025-08-01 18:59:49,471 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,471 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 29, 'height': 33, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07323382421875,
+       0.0, -0.00015087890624999878, -22.82176422265625), 'blockxsize': 29, 'blockysize': 33, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,471 - root - INFO -   Data shape: (2, 33, 29)
+2025-08-01 18:59:49,471 - root - INFO -   Data min/max (per band): [(0.0, 1.7245574), (0.0, 0.5859275)]
+2025-08-01 18:59:49,473 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000094.tiff
+2025-08-01 18:59:49,473 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000094.tiff:
+2025-08-01 18:59:49,473 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,473 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 28, 'height': 35, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07688740234375,
+       0.0, -0.00015087890624999878, -22.81542730859375), 'blockxsize': 28, 'blockysize': 35, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,473 - root - INFO -   Data shape: (2, 35, 28)
+2025-08-01 18:59:49,473 - root - INFO -   Data min/max (per band): [(0.0, 2.3800762), (0.0, 1.0358235)]
+2025-08-01 18:59:49,474 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000102.tiff
+2025-08-01 18:59:49,475 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000102.tiff:
+2025-08-01 18:59:49,475 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,475 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 25, 'height': 48, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08282446679687,
+       0.0, -0.00015087890624999878, -22.821009828125), 'blockxsize': 25, 'blockysize': 40, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,475 - root - INFO -   Data shape: (2, 48, 25)
+2025-08-01 18:59:49,475 - root - INFO -   Data min/max (per band): [(0.0, 2.0985563), (0.0, 0.32035786)]
+2025-08-01 18:59:49,476 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000103.tiff
+2025-08-01 18:59:49,477 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000103.tiff:
+2025-08-01 18:59:49,477 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,477 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 37, 'height': 68, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08419455859375,
+       0.0, -0.00015087890624999878, -22.814672914062502), 'blockxsize': 37, 'blockysize': 27, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,477 - root - INFO -   Data shape: (2, 68, 37)
+2025-08-01 18:59:49,477 - root - INFO -   Data min/max (per band): [(0.0, 2.8507752), (0.0, 0.9408646)]
+2025-08-01 18:59:49,478 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000104.tiff
+2025-08-01 18:59:49,478 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000104.tiff:
+2025-08-01 18:59:49,479 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,479 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 27, 'height': 32, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.078866423828124,
+       0.0, -0.00015087890624999878, -22.81678521875), 'blockxsize': 27, 'blockysize': 32, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,479 - root - INFO -   Data shape: (2, 32, 27)
+2025-08-01 18:59:49,479 - root - INFO -   Data min/max (per band): [(0.0, 1.0543495), (0.0, 0.5023696)]
+2025-08-01 18:59:49,480 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000105.tiff
+2025-08-01 18:59:49,480 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000105.tiff:
+2025-08-01 18:59:49,480 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,480 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 19, 'height': 41, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079170888671875,
+       0.0, -0.00015087890624999878, -22.817690492187502), 'blockxsize': 19, 'blockysize': 41, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,480 - root - INFO -   Data shape: (2, 41, 19)
+2025-08-01 18:59:49,481 - root - INFO -   Data min/max (per band): [(0.0, 2.5675771), (0.0, 0.49257177)]
+2025-08-01 18:59:49,482 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000106.tiff
+2025-08-01 18:59:49,482 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000106.tiff:
+2025-08-01 18:59:49,482 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,482 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 35, 'height': 34, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079170888671875,
+       0.0, -0.00015087890624999878, -22.8128623671875), 'blockxsize': 35, 'blockysize': 29, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,482 - root - INFO -   Data shape: (2, 34, 35)
+2025-08-01 18:59:49,482 - root - INFO -   Data min/max (per band): [(0.0, 3.9055502), (0.0, 0.7697529)]
+2025-08-01 18:59:49,484 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000107.tiff
+2025-08-01 18:59:49,484 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000107.tiff:
+2025-08-01 18:59:49,484 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,484 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 27, 'height': 33, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0771918671875,
+       0.0, -0.00015087890624999878, -22.810146546875), 'blockxsize': 27, 'blockysize': 33, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,484 - root - INFO -   Data shape: (2, 33, 27)
+2025-08-01 18:59:49,484 - root - INFO -   Data min/max (per band): [(0.0, 5.8979454), (0.0, 2.777365)]
+2025-08-01 18:59:49,486 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000110.tiff
+2025-08-01 18:59:49,486 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000110.tiff:
+2025-08-01 18:59:49,486 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,486 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 29, 'height': 45, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08069321289062,
+       0.0, -0.00015087890624999878, -22.80848687890625), 'blockxsize': 29, 'blockysize': 35, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,486 - root - INFO -   Data shape: (2, 45, 29)
+2025-08-01 18:59:49,486 - root - INFO -   Data min/max (per band): [(0.0, 4.419096), (0.0, 0.28988987)]
+2025-08-01 18:59:49,488 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000111.tiff
+2025-08-01 18:59:49,488 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000111.tiff:
+2025-08-01 18:59:49,488 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,488 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 56, 'height': 42, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07871419140625,
+       0.0, -0.00015087890624999878, -22.805318421875), 'blockxsize': 56, 'blockysize': 18, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,488 - root - INFO -   Data shape: (2, 42, 56)
+2025-08-01 18:59:49,488 - root - INFO -   Data min/max (per band): [(0.0, 7.170727), (0.0, 0.36108744)]
+2025-08-01 18:59:49,489 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000113.tiff
+2025-08-01 18:59:49,490 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000113.tiff:
+2025-08-01 18:59:49,490 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,490 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 28, 'height': 33, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0771918671875,
+       0.0, -0.00015087890624999878, -22.803809632812502), 'blockxsize': 28, 'blockysize': 33, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,490 - root - INFO -   Data shape: (2, 33, 28)
+2025-08-01 18:59:49,490 - root - INFO -   Data min/max (per band): [(0.0, 2.4273899), (0.0, 0.71970505)]
+2025-08-01 18:59:49,491 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000114.tiff
+2025-08-01 18:59:49,492 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000114.tiff:
+2025-08-01 18:59:49,492 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,492 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 21, 'height': 31, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07323382421875,
+       0.0, -0.00015087890624999878, -22.80426226953125), 'blockxsize': 21, 'blockysize': 31, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,492 - root - INFO -   Data shape: (2, 31, 21)
+2025-08-01 18:59:49,492 - root - INFO -   Data min/max (per band): [(0.0, 1.9297004), (0.0, 0.5148481)]
+2025-08-01 18:59:49,493 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000115.tiff
+2025-08-01 18:59:49,493 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000115.tiff:
+2025-08-01 18:59:49,493 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,493 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 28, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.070493640625,
+       0.0, -0.00015087890624999878, -22.8074307265625), 'blockxsize': 22, 'blockysize': 28, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,494 - root - INFO -   Data shape: (2, 28, 22)
+2025-08-01 18:59:49,494 - root - INFO -   Data min/max (per band): [(0.0, 2.7040386), (0.0, 0.2527472)]
+2025-08-01 18:59:49,495 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000116.tiff
+2025-08-01 18:59:49,495 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000116.tiff:
+2025-08-01 18:59:49,495 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,495 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 31, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07034140820313,
+       0.0, -0.00015087890624999878, -22.8044131484375), 'blockxsize': 22, 'blockysize': 31, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,495 - root - INFO -   Data shape: (2, 31, 22)
+2025-08-01 18:59:49,495 - root - INFO -   Data min/max (per band): [(0.0, 8.282255), (0.0, 0.26529676)]
+2025-08-01 18:59:49,497 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000125.tiff
+2025-08-01 18:59:49,497 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000125.tiff:
+2025-08-01 18:59:49,497 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,497 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 51, 'height': 44, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.088913763671876,
+       0.0, -0.00015087890624999878, -22.8001885390625), 'blockxsize': 51, 'blockysize': 20, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,497 - root - INFO -   Data shape: (2, 44, 51)
+2025-08-01 18:59:49,497 - root - INFO -   Data min/max (per band): [(0.0, 2.579687), (0.0, 0.62758297)]
+2025-08-01 18:59:49,499 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000126.tiff
+2025-08-01 18:59:49,500 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000126.tiff:
+2025-08-01 18:59:49,500 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,500 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 70, 'height': 59, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08769590429687,
+       0.0, -0.00015087890624999878, -22.798076234375), 'blockxsize': 70, 'blockysize': 14, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,500 - root - INFO -   Data shape: (2, 59, 70)
+2025-08-01 18:59:49,500 - root - INFO -   Data min/max (per band): [(0.0, 8.401924), (0.0, 3.4785457)]
+2025-08-01 18:59:49,501 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000135.tiff
+2025-08-01 18:59:49,502 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000135.tiff:
+2025-08-01 18:59:49,502 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,502 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 26, 'height': 48, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.077800796874996,
+       0.0, -0.00015087890624999878, -22.828553773437502), 'blockxsize': 26, 'blockysize': 39, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,502 - root - INFO -   Data shape: (2, 48, 26)
+2025-08-01 18:59:49,502 - root - INFO -   Data min/max (per band): [(0.0, 2.6984608), (0.0, 1.2965329)]
+2025-08-01 18:59:49,503 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000136.tiff
+2025-08-01 18:59:49,504 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000136.tiff:
+2025-08-01 18:59:49,504 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,504 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 31, 'height': 45, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079475353515626,
+       0.0, -0.00015087890624999878, -22.82900641015625), 'blockxsize': 31, 'blockysize': 33, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,504 - root - INFO -   Data shape: (2, 45, 31)
+2025-08-01 18:59:49,504 - root - INFO -   Data min/max (per band): [(0.0, 31.439972), (0.0, 0.5167846)]
+2025-08-01 18:59:49,505 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000137.tiff
+2025-08-01 18:59:49,505 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000137.tiff:
+2025-08-01 18:59:49,505 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,505 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 19, 'height': 23, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08526018554687,
+       0.0, -0.00015087890624999878, -22.81935016015625), 'blockxsize': 19, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,506 - root - INFO -   Data shape: (2, 23, 19)
+2025-08-01 18:59:49,506 - root - INFO -   Data min/max (per band): [(0.0, 11.819921), (0.0, 0.35735357)]
+2025-08-01 18:59:49,507 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000138.tiff
+2025-08-01 18:59:49,507 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000138.tiff:
+2025-08-01 18:59:49,507 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,507 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 32, 'height': 23, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0857168828125,
+       0.0, -0.00015087890624999878, -22.82206598046875), 'blockxsize': 32, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,507 - root - INFO -   Data shape: (2, 23, 32)
+2025-08-01 18:59:49,507 - root - INFO -   Data min/max (per band): [(0.0, 4.4558153), (0.0, 0.81703395)]
+2025-08-01 18:59:49,509 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000140.tiff
+2025-08-01 18:59:49,509 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000140.tiff:
+2025-08-01 18:59:49,509 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,509 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 35, 'height': 32, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07734409960938,
+       0.0, -0.00015087890624999878, -22.799886781250002), 'blockxsize': 35, 'blockysize': 29, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,509 - root - INFO -   Data shape: (2, 32, 35)
+2025-08-01 18:59:49,509 - root - INFO -   Data min/max (per band): [(0.0, 1.1491798), (0.0, 0.24985896)]
+2025-08-01 18:59:49,511 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000141.tiff
+2025-08-01 18:59:49,511 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000141.tiff:
+2025-08-01 18:59:49,511 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,511 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 25, 'height': 31, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08236776953125,
+       0.0, -0.00015087890624999878, -22.8297608046875), 'blockxsize': 25, 'blockysize': 31, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,511 - root - INFO -   Data shape: (2, 31, 25)
+2025-08-01 18:59:49,511 - root - INFO -   Data min/max (per band): [(0.0, 11.551129), (0.0, 1.8060681)]
+2025-08-01 18:59:49,512 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000142.tiff
+2025-08-01 18:59:49,513 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000142.tiff:
+2025-08-01 18:59:49,513 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,513 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 31, 'height': 30, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0844990234375,
+       0.0, -0.00015087890624999878, -22.83021344140625), 'blockxsize': 31, 'blockysize': 30, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,513 - root - INFO -   Data shape: (2, 30, 31)
+2025-08-01 18:59:49,513 - root - INFO -   Data min/max (per band): [(0.0, 2.1946776), (0.0, 0.3067199)]
+2025-08-01 18:59:49,514 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000145.tiff
+2025-08-01 18:59:49,514 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000145.tiff:
+2025-08-01 18:59:49,514 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,514 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 21, 'height': 17, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.076735169921875,
+       0.0, -0.00015087890624999878, -22.82719586328125), 'blockxsize': 21, 'blockysize': 17, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,515 - root - INFO -   Data shape: (2, 17, 21)
+2025-08-01 18:59:49,515 - root - INFO -   Data min/max (per band): [(0.0, 2.352374), (0.0, 0.5625952)]
+2025-08-01 18:59:49,516 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000146.tiff
+2025-08-01 18:59:49,517 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000146.tiff:
+2025-08-01 18:59:49,517 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,517 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 25, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079170888671875,
+       0.0, -0.00015087890624999878, -22.82779937890625), 'blockxsize': 22, 'blockysize': 25, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,517 - root - INFO -   Data shape: (2, 25, 22)
+2025-08-01 18:59:49,517 - root - INFO -   Data min/max (per band): [(0.0, 3.20012), (0.0, 0.7972047)]
+2025-08-01 18:59:49,518 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000181.tiff
+2025-08-01 18:59:49,519 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000181.tiff:
+2025-08-01 18:59:49,519 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,519 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 36, 'height': 34, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07521284570313,
+       0.0, -0.00015087890624999878, -22.81844488671875), 'blockxsize': 36, 'blockysize': 28, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,519 - root - INFO -   Data shape: (2, 34, 36)
+2025-08-01 18:59:49,519 - root - INFO -   Data min/max (per band): [(0.0, 1.0533365), (0.0, 1.2341273)]
+2025-08-01 18:59:49,530 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000183.tiff
+2025-08-01 18:59:49,530 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000183.tiff:
+2025-08-01 18:59:49,530 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,530 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 217, 'height': 344, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.110683,
+       0.0, -0.00015087890624999878, -22.769711), 'blockxsize': 217, 'blockysize': 4, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,532 - root - INFO -   Data shape: (2, 344, 217)
+2025-08-01 18:59:49,532 - root - INFO -   Data min/max (per band): [(0.0, 2.1546712), (0.0, 0.7917118)]
+2025-08-01 18:59:49,543 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000185.tiff
+2025-08-01 18:59:49,543 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000185.tiff:
+2025-08-01 18:59:49,543 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,543 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 363, 'height': 279, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.10550709765625,
+       0.0, -0.00015087890624999878, -22.804865785156252), 'blockxsize': 363, 'blockysize': 2, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,546 - root - INFO -   Data shape: (2, 279, 363)
+2025-08-01 18:59:49,546 - root - INFO -   Data min/max (per band): [(0.0, 3.876327), (0.0, 1.354239)]
+2025-08-01 18:59:49,549 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000194.tiff
+2025-08-01 18:59:49,549 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s1/debug_debug_s1_sector_350950210000194.tiff:
+2025-08-01 18:59:49,549 - root - INFO -   Band count: 2
+2025-08-01 18:59:49,549 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 126, 'height': 157, 'count': 2, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07582177539062,
+       0.0, -0.00015087890624999878, -22.8098447890625), 'blockxsize': 126, 'blockysize': 8, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:49,550 - root - INFO -   Data shape: (2, 157, 126)
+2025-08-01 18:59:49,550 - root - INFO -   Data min/max (per band): [(0.0, 73.07733), (0.0, 8.979953)]
+2025-08-01 18:59:49,550 - root - INFO - [TEST] Download concluído: data/raw/sentinel/debug_s1.tiff
+2025-08-01 18:59:49,550 - root - INFO - 🚀 [TEST] Iniciando teste para Sentinel-2
+2025-08-01 18:59:49,550 - root - INFO - --- [TEST] Iniciando download para S2, job_id: debug_tiff_warnings ---
+2025-08-01 18:59:49,550 - root - INFO - Parâmetros: bbox=[-47.110683, -22.846961, -47.03274, -22.769711], time_interval=('2024-07-01', '2024-07-30'), output_path=data/raw/sentinel/debug_s2.tiff
+2025-08-01 18:59:49,550 - root - INFO - [TEST] Configuração do Sentinel Hub pronta.
+2025-08-01 18:59:49,551 - root - INFO - [TEST] Diretório de cache: data/raw/sentinel/.sh_cache_debug_tiff_warnings
+2025-08-01 18:59:49,551 - root - INFO - [TEST] Enviando requisição para S2.
+2025-08-01 18:59:52,554 - root - INFO - [TEST] response.tiff encontrado: data/raw/sentinel/.sh_cache_debug_tiff_warnings/e9d41fa3eb3a00ce2bc2fadf58e2b54c/response.tiff
+2025-08-01 18:59:52,554 - rasterio._env - WARNING - CPLE_AppDefined in response.tiff: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+2025-08-01 18:59:52,556 - root - INFO - [TEST] Inspecting response.tiff:
+2025-08-01 18:59:52,556 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,556 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 512, 'height': 512, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.110683,
+       0.0, -0.00015087890624999878, -22.769711), 'blockxsize': 512, 'blockysize': 8, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,556 - rasterio._env - WARNING - CPLE_AppDefined in TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+2025-08-01 18:59:52,588 - root - INFO -   Data shape: (4, 512, 512)
+2025-08-01 18:59:52,588 - root - INFO -   Data min/max (per band): [(0.0029, 0.7992), (0.0069, 0.7056), (0.0043, 0.6144), (0.0053, 0.7344)]
+2025-08-01 18:59:52,688 - root - INFO - [TEST] Arquivo final data/raw/sentinel/debug_s2.tiff:
+2025-08-01 18:59:52,688 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,688 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 512, 'height': 512, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.110683,
+       0.0, -0.00015087890624999878, -22.769711), 'blockxsize': 512, 'blockysize': 8, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,688 - root - INFO -   Tags: {'PHOTOMETRIC': 'MINISBLACK', 'AREA_OR_POINT': 'Area'}
+2025-08-01 18:59:52,704 - root - INFO -   Data shape: (4, 512, 512)
+2025-08-01 18:59:52,704 - root - INFO -   Data min/max (per band): [(0.0029, 0.7992), (0.0069, 0.7056), (0.0043, 0.6144), (0.0053, 0.7344)]
+2025-08-01 18:59:52,704 - root - INFO - [TEST] Dados válidos em data/raw/sentinel/debug_s2.tiff
+2025-08-01 18:59:52,705 - root - INFO - [TEST] Iniciando recorte do raster 'debug_s2.tiff' por setores.
+2025-08-01 18:59:52,713 - root - INFO - [TEST] Processando 43 setores...
+2025-08-01 18:59:52,713 - root - INFO - [TEST] Campos disponíveis no GeoJSON: ['CD_SETOR', 'SITUACAO', 'CD_SIT', 'CD_TIPO', 'AREA_KM2', 'CD_REGIAO', 'NM_REGIAO', 'CD_UF', 'NM_UF', 'CD_MUN', 'NM_MUN', 'CD_DIST', 'NM_DIST', 'CD_SUBDIST', 'NM_SUBDIST', 'CD_BAIRRO', 'NM_BAIRRO', 'CD_NU', 'NM_NU', 'CD_FCU', 'NM_FCU', 'CD_AGLOM', 'NM_AGLOM', 'CD_RGINT', 'NM_RGINT', 'CD_RGI', 'NM_RGI', 'CD_CONCURB', 'NM_CONCURB', 'geometry']
+2025-08-01 18:59:52,713 - root - INFO - [TEST] Usando campo 'CD_SETOR' como identificador.
+2025-08-01 18:59:52,716 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950205001000.tiff
+2025-08-01 18:59:52,716 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950205001000.tiff:
+2025-08-01 18:59:52,716 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,716 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 31, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07018917578125,
+       0.0, -0.00015087890624999878, -22.799886781250002), 'blockxsize': 22, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,717 - root - INFO -   Data shape: (4, 31, 22)
+2025-08-01 18:59:52,717 - root - INFO -   Data min/max (per band): [(0.0, 0.2742), (0.0, 0.2072), (0.0, 0.1776), (0.0, 0.348)]
+2025-08-01 18:59:52,718 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950205001472.tiff
+2025-08-01 18:59:52,719 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950205001472.tiff:
+2025-08-01 18:59:52,719 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,719 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 27, 'height': 30, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.06714452734375,
+       0.0, -0.00015087890624999878, -22.80033941796875), 'blockxsize': 27, 'blockysize': 18, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,719 - root - INFO -   Data shape: (4, 30, 27)
+2025-08-01 18:59:52,719 - root - INFO -   Data min/max (per band): [(0.0, 0.2576), (0.0, 0.2146), (0.0, 0.1732), (0.0, 0.336)]
+2025-08-01 18:59:52,735 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950205002675.tiff
+2025-08-01 18:59:52,735 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950205002675.tiff:
+2025-08-01 18:59:52,735 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,735 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 203, 'height': 220, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.06364318164062,
+       0.0, -0.00015087890624999878, -22.80094293359375), 'blockxsize': 203, 'blockysize': 2, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,738 - root - INFO -   Data shape: (4, 220, 203)
+2025-08-01 18:59:52,738 - root - INFO -   Data min/max (per band): [(0.0, 0.6608), (0.0, 0.6068), (0.0, 0.5592), (0.0, 0.728)]
+2025-08-01 18:59:52,739 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000001.tiff
+2025-08-01 18:59:52,740 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000001.tiff:
+2025-08-01 18:59:52,740 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,740 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 29, 'height': 31, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0832811640625,
+       0.0, -0.00015087890624999878, -22.8267432265625), 'blockxsize': 29, 'blockysize': 17, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,740 - root - INFO -   Data shape: (4, 31, 29)
+2025-08-01 18:59:52,740 - root - INFO -   Data min/max (per band): [(0.0, 0.3), (0.0, 0.3316), (0.0, 0.2924), (0.0, 0.3515)]
+2025-08-01 18:59:52,742 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000002.tiff
+2025-08-01 18:59:52,742 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000002.tiff:
+2025-08-01 18:59:52,742 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,742 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 49, 'height': 23, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0869347421875,
+       0.0, -0.00015087890624999878, -22.8249326796875), 'blockxsize': 49, 'blockysize': 10, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,742 - root - INFO -   Data shape: (4, 23, 49)
+2025-08-01 18:59:52,742 - root - INFO -   Data min/max (per band): [(0.0, 0.34), (0.0, 0.293), (0.0, 0.2442), (0.0, 0.4072)]
+2025-08-01 18:59:52,744 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000003.tiff
+2025-08-01 18:59:52,744 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000003.tiff:
+2025-08-01 18:59:52,744 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,744 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 35, 'height': 30, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07993205078125,
+       0.0, -0.00015087890624999878, -22.82387652734375), 'blockxsize': 35, 'blockysize': 14, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,744 - root - INFO -   Data shape: (4, 30, 35)
+2025-08-01 18:59:52,744 - root - INFO -   Data min/max (per band): [(0.0, 0.398), (0.0, 0.354), (0.0, 0.342), (0.0, 0.398)]
+2025-08-01 18:59:52,746 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000006.tiff
+2025-08-01 18:59:52,747 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000006.tiff:
+2025-08-01 18:59:52,747 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,747 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 76, 'height': 61, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.09393743359375,
+       0.0, -0.00015087890624999878, -22.8249326796875), 'blockxsize': 76, 'blockysize': 6, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,747 - root - INFO -   Data shape: (4, 61, 76)
+2025-08-01 18:59:52,747 - root - INFO -   Data min/max (per band): [(0.0, 0.418), (0.0, 0.3576), (0.0, 0.2988), (0.0, 0.4124)]
+2025-08-01 18:59:52,749 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000007.tiff
+2025-08-01 18:59:52,749 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000007.tiff:
+2025-08-01 18:59:52,749 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,749 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 47, 'height': 30, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08876153125,
+       0.0, -0.00015087890624999878, -22.82206598046875), 'blockxsize': 47, 'blockysize': 10, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,749 - root - INFO -   Data shape: (4, 30, 47)
+2025-08-01 18:59:52,749 - root - INFO -   Data min/max (per band): [(0.0, 0.514), (0.0, 0.468), (0.0, 0.4184), (0.0, 0.5436)]
+2025-08-01 18:59:52,751 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000021.tiff
+2025-08-01 18:59:52,751 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000021.tiff:
+2025-08-01 18:59:52,751 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,751 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 43, 'height': 54, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.06897131640625,
+       0.0, -0.00015087890624999878, -22.8044131484375), 'blockxsize': 43, 'blockysize': 11, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,752 - root - INFO -   Data shape: (4, 54, 43)
+2025-08-01 18:59:52,752 - root - INFO -   Data min/max (per band): [(0.0, 0.386), (0.0, 0.376), (0.0, 0.3268), (0.0, 0.4128)]
+2025-08-01 18:59:52,753 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000056.tiff
+2025-08-01 18:59:52,754 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000056.tiff:
+2025-08-01 18:59:52,754 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,754 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 50, 'height': 54, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08982715820313,
+       0.0, -0.00015087890624999878, -22.82387652734375), 'blockxsize': 50, 'blockysize': 10, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,754 - root - INFO -   Data shape: (4, 54, 50)
+2025-08-01 18:59:52,754 - root - INFO -   Data min/max (per band): [(0.0, 0.3196), (0.0, 0.2958), (0.0, 0.3094), (0.0, 0.4424)]
+2025-08-01 18:59:52,755 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000089.tiff
+2025-08-01 18:59:52,756 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000089.tiff:
+2025-08-01 18:59:52,756 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,756 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 32, 'height': 31, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07901865625,
+       0.0, -0.00015087890624999878, -22.8204063125), 'blockxsize': 32, 'blockysize': 16, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,756 - root - INFO -   Data shape: (4, 31, 32)
+2025-08-01 18:59:52,756 - root - INFO -   Data min/max (per band): [(0.0, 0.285), (0.0, 0.2626), (0.0, 0.2042), (0.0, 0.3764)]
+2025-08-01 18:59:52,758 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000090.tiff
+2025-08-01 18:59:52,758 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000090.tiff:
+2025-08-01 18:59:52,758 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,758 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 38, 'height': 43, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.077800796874996,
+       0.0, -0.00015087890624999878, -22.821613343750002), 'blockxsize': 38, 'blockysize': 13, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,758 - root - INFO -   Data shape: (4, 43, 38)
+2025-08-01 18:59:52,758 - root - INFO -   Data min/max (per band): [(0.0, 0.5572), (0.0, 0.56), (0.0, 0.5916), (0.0, 0.5585)]
+2025-08-01 18:59:52,760 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000091.tiff
+2025-08-01 18:59:52,760 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000091.tiff:
+2025-08-01 18:59:52,760 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,760 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 32, 'height': 33, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.074299451171875,
+       0.0, -0.00015087890624999878, -22.8237256484375), 'blockxsize': 32, 'blockysize': 16, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,760 - root - INFO -   Data shape: (4, 33, 32)
+2025-08-01 18:59:52,760 - root - INFO -   Data min/max (per band): [(0.0, 0.2662), (0.0, 0.2054), (0.0, 0.156), (0.0, 0.3801)]
+2025-08-01 18:59:52,762 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000092.tiff
+2025-08-01 18:59:52,762 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000092.tiff:
+2025-08-01 18:59:52,762 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,762 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 26, 'height': 28, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07064587304687,
+       0.0, -0.00015087890624999878, -22.822216859375), 'blockxsize': 26, 'blockysize': 19, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,762 - root - INFO -   Data shape: (4, 28, 26)
+2025-08-01 18:59:52,762 - root - INFO -   Data min/max (per band): [(0.0, 0.4324), (0.0, 0.4092), (0.0, 0.4164), (0.0, 0.4589)]
+2025-08-01 18:59:52,764 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000093.tiff
+2025-08-01 18:59:52,764 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000093.tiff:
+2025-08-01 18:59:52,764 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,764 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 29, 'height': 33, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07323382421875,
+       0.0, -0.00015087890624999878, -22.82176422265625), 'blockxsize': 29, 'blockysize': 17, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,764 - root - INFO -   Data shape: (4, 33, 29)
+2025-08-01 18:59:52,764 - root - INFO -   Data min/max (per band): [(0.0, 0.4316), (0.0, 0.4128), (0.0, 0.3988), (0.0, 0.46)]
+2025-08-01 18:59:52,766 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000094.tiff
+2025-08-01 18:59:52,766 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000094.tiff:
+2025-08-01 18:59:52,766 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,766 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 28, 'height': 35, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07688740234375,
+       0.0, -0.00015087890624999878, -22.81542730859375), 'blockxsize': 28, 'blockysize': 18, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,766 - root - INFO -   Data shape: (4, 35, 28)
+2025-08-01 18:59:52,766 - root - INFO -   Data min/max (per band): [(0.0, 0.4288), (0.0, 0.4316), (0.0, 0.4372), (0.0, 0.4784)]
+2025-08-01 18:59:52,768 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000102.tiff
+2025-08-01 18:59:52,768 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000102.tiff:
+2025-08-01 18:59:52,768 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,768 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 25, 'height': 48, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08282446679687,
+       0.0, -0.00015087890624999878, -22.821009828125), 'blockxsize': 25, 'blockysize': 20, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,768 - root - INFO -   Data shape: (4, 48, 25)
+2025-08-01 18:59:52,768 - root - INFO -   Data min/max (per band): [(0.0, 0.2338), (0.0, 0.1918), (0.0, 0.1854), (0.0, 0.3268)]
+2025-08-01 18:59:52,770 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000103.tiff
+2025-08-01 18:59:52,770 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000103.tiff:
+2025-08-01 18:59:52,770 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,771 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 37, 'height': 68, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08419455859375,
+       0.0, -0.00015087890624999878, -22.814672914062502), 'blockxsize': 37, 'blockysize': 13, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,771 - root - INFO -   Data shape: (4, 68, 37)
+2025-08-01 18:59:52,771 - root - INFO -   Data min/max (per band): [(0.0, 0.4516), (0.0, 0.4432), (0.0, 0.4144), (0.0, 0.4736)]
+2025-08-01 18:59:52,772 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000104.tiff
+2025-08-01 18:59:52,773 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000104.tiff:
+2025-08-01 18:59:52,773 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,773 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 27, 'height': 32, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.078866423828124,
+       0.0, -0.00015087890624999878, -22.81678521875), 'blockxsize': 27, 'blockysize': 18, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,773 - root - INFO -   Data shape: (4, 32, 27)
+2025-08-01 18:59:52,773 - root - INFO -   Data min/max (per band): [(0.0, 0.29), (0.0, 0.2798), (0.0, 0.2588), (0.0, 0.392)]
+2025-08-01 18:59:52,774 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000105.tiff
+2025-08-01 18:59:52,774 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000105.tiff:
+2025-08-01 18:59:52,775 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,775 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 19, 'height': 41, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079170888671875,
+       0.0, -0.00015087890624999878, -22.817690492187502), 'blockxsize': 19, 'blockysize': 26, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,775 - root - INFO -   Data shape: (4, 41, 19)
+2025-08-01 18:59:52,775 - root - INFO -   Data min/max (per band): [(0.0, 0.2998), (0.0, 0.2852), (0.0, 0.2652), (0.0, 0.3676)]
+2025-08-01 18:59:52,776 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000106.tiff
+2025-08-01 18:59:52,777 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000106.tiff:
+2025-08-01 18:59:52,777 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,777 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 35, 'height': 34, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079170888671875,
+       0.0, -0.00015087890624999878, -22.8128623671875), 'blockxsize': 35, 'blockysize': 14, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,777 - root - INFO -   Data shape: (4, 34, 35)
+2025-08-01 18:59:52,777 - root - INFO -   Data min/max (per band): [(0.0, 0.4168), (0.0, 0.404), (0.0, 0.3776), (0.0, 0.4384)]
+2025-08-01 18:59:52,778 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000107.tiff
+2025-08-01 18:59:52,779 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000107.tiff:
+2025-08-01 18:59:52,779 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,779 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 27, 'height': 33, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0771918671875,
+       0.0, -0.00015087890624999878, -22.810146546875), 'blockxsize': 27, 'blockysize': 18, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,779 - root - INFO -   Data shape: (4, 33, 27)
+2025-08-01 18:59:52,779 - root - INFO -   Data min/max (per band): [(0.0, 0.3536), (0.0, 0.3076), (0.0, 0.258), (0.0, 0.3688)]
+2025-08-01 18:59:52,780 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000110.tiff
+2025-08-01 18:59:52,781 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000110.tiff:
+2025-08-01 18:59:52,781 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,781 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 29, 'height': 45, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08069321289062,
+       0.0, -0.00015087890624999878, -22.80848687890625), 'blockxsize': 29, 'blockysize': 17, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,781 - root - INFO -   Data shape: (4, 45, 29)
+2025-08-01 18:59:52,781 - root - INFO -   Data min/max (per band): [(0.0, 0.2702), (0.0, 0.2654), (0.0, 0.2342), (0.0, 0.3489)]
+2025-08-01 18:59:52,783 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000111.tiff
+2025-08-01 18:59:52,783 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000111.tiff:
+2025-08-01 18:59:52,783 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,783 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 56, 'height': 42, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07871419140625,
+       0.0, -0.00015087890624999878, -22.805318421875), 'blockxsize': 56, 'blockysize': 9, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,783 - root - INFO -   Data shape: (4, 42, 56)
+2025-08-01 18:59:52,783 - root - INFO -   Data min/max (per band): [(0.0, 0.4016), (0.0, 0.3848), (0.0, 0.39), (0.0, 0.4264)]
+2025-08-01 18:59:52,785 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000113.tiff
+2025-08-01 18:59:52,785 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000113.tiff:
+2025-08-01 18:59:52,785 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,785 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 28, 'height': 33, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0771918671875,
+       0.0, -0.00015087890624999878, -22.803809632812502), 'blockxsize': 28, 'blockysize': 18, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,785 - root - INFO -   Data shape: (4, 33, 28)
+2025-08-01 18:59:52,785 - root - INFO -   Data min/max (per band): [(0.0, 0.384), (0.0, 0.3292), (0.0, 0.298), (0.0, 0.408)]
+2025-08-01 18:59:52,787 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000114.tiff
+2025-08-01 18:59:52,787 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000114.tiff:
+2025-08-01 18:59:52,787 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,787 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 21, 'height': 31, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07323382421875,
+       0.0, -0.00015087890624999878, -22.80426226953125), 'blockxsize': 21, 'blockysize': 24, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,787 - root - INFO -   Data shape: (4, 31, 21)
+2025-08-01 18:59:52,788 - root - INFO -   Data min/max (per band): [(0.0, 0.3288), (0.0, 0.2808), (0.0, 0.2674), (0.0, 0.3649)]
+2025-08-01 18:59:52,789 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000115.tiff
+2025-08-01 18:59:52,789 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000115.tiff:
+2025-08-01 18:59:52,789 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,789 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 28, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.070493640625,
+       0.0, -0.00015087890624999878, -22.8074307265625), 'blockxsize': 22, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,789 - root - INFO -   Data shape: (4, 28, 22)
+2025-08-01 18:59:52,789 - root - INFO -   Data min/max (per band): [(0.0, 0.2364), (0.0, 0.1906), (0.0, 0.139), (0.0, 0.3324)]
+2025-08-01 18:59:52,791 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000116.tiff
+2025-08-01 18:59:52,791 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000116.tiff:
+2025-08-01 18:59:52,791 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,791 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 31, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07034140820313,
+       0.0, -0.00015087890624999878, -22.8044131484375), 'blockxsize': 22, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,791 - root - INFO -   Data shape: (4, 31, 22)
+2025-08-01 18:59:52,791 - root - INFO -   Data min/max (per band): [(0.0, 0.4256), (0.0, 0.3708), (0.0, 0.3188), (0.0, 0.444)]
+2025-08-01 18:59:52,793 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000125.tiff
+2025-08-01 18:59:52,793 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000125.tiff:
+2025-08-01 18:59:52,794 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,794 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 51, 'height': 44, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.088913763671876,
+       0.0, -0.00015087890624999878, -22.8001885390625), 'blockxsize': 51, 'blockysize': 10, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,794 - root - INFO -   Data shape: (4, 44, 51)
+2025-08-01 18:59:52,794 - root - INFO -   Data min/max (per band): [(0.0, 0.346), (0.0, 0.3524), (0.0, 0.3896), (0.0, 0.5372)]
+2025-08-01 18:59:52,796 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000126.tiff
+2025-08-01 18:59:52,797 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000126.tiff:
+2025-08-01 18:59:52,797 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,797 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 70, 'height': 59, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08769590429687,
+       0.0, -0.00015087890624999878, -22.798076234375), 'blockxsize': 70, 'blockysize': 7, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,797 - root - INFO -   Data shape: (4, 59, 70)
+2025-08-01 18:59:52,797 - root - INFO -   Data min/max (per band): [(0.0, 0.3648), (0.0, 0.3428), (0.0, 0.2756), (0.0, 0.5617)]
+2025-08-01 18:59:52,799 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000135.tiff
+2025-08-01 18:59:52,799 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000135.tiff:
+2025-08-01 18:59:52,799 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,799 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 26, 'height': 48, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.077800796874996,
+       0.0, -0.00015087890624999878, -22.828553773437502), 'blockxsize': 26, 'blockysize': 19, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,799 - root - INFO -   Data shape: (4, 48, 26)
+2025-08-01 18:59:52,799 - root - INFO -   Data min/max (per band): [(0.0, 0.3324), (0.0, 0.3054), (0.0, 0.2862), (0.0, 0.3963)]
+2025-08-01 18:59:52,801 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000136.tiff
+2025-08-01 18:59:52,801 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000136.tiff:
+2025-08-01 18:59:52,801 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,801 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 31, 'height': 45, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079475353515626,
+       0.0, -0.00015087890624999878, -22.82900641015625), 'blockxsize': 31, 'blockysize': 16, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,801 - root - INFO -   Data shape: (4, 45, 31)
+2025-08-01 18:59:52,802 - root - INFO -   Data min/max (per band): [(0.0, 0.326), (0.0, 0.2958), (0.0, 0.281), (0.0, 0.3156)]
+2025-08-01 18:59:52,803 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000137.tiff
+2025-08-01 18:59:52,803 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000137.tiff:
+2025-08-01 18:59:52,803 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,803 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 19, 'height': 23, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08526018554687,
+       0.0, -0.00015087890624999878, -22.81935016015625), 'blockxsize': 19, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,803 - root - INFO -   Data shape: (4, 23, 19)
+2025-08-01 18:59:52,803 - root - INFO -   Data min/max (per band): [(0.0, 0.2842), (0.0, 0.2486), (0.0, 0.2254), (0.0, 0.3591)]
+2025-08-01 18:59:52,805 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000138.tiff
+2025-08-01 18:59:52,805 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000138.tiff:
+2025-08-01 18:59:52,805 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,805 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 32, 'height': 23, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0857168828125,
+       0.0, -0.00015087890624999878, -22.82206598046875), 'blockxsize': 32, 'blockysize': 16, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,805 - root - INFO -   Data shape: (4, 23, 32)
+2025-08-01 18:59:52,805 - root - INFO -   Data min/max (per band): [(0.0, 0.3584), (0.0, 0.3408), (0.0, 0.3064), (0.0, 0.414)]
+2025-08-01 18:59:52,807 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000140.tiff
+2025-08-01 18:59:52,807 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000140.tiff:
+2025-08-01 18:59:52,807 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,807 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 35, 'height': 32, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07734409960938,
+       0.0, -0.00015087890624999878, -22.799886781250002), 'blockxsize': 35, 'blockysize': 14, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,807 - root - INFO -   Data shape: (4, 32, 35)
+2025-08-01 18:59:52,807 - root - INFO -   Data min/max (per band): [(0.0, 0.3556), (0.0, 0.2876), (0.0, 0.2808), (0.0, 0.4284)]
+2025-08-01 18:59:52,809 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000141.tiff
+2025-08-01 18:59:52,809 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000141.tiff:
+2025-08-01 18:59:52,809 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,809 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 25, 'height': 31, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.08236776953125,
+       0.0, -0.00015087890624999878, -22.8297608046875), 'blockxsize': 25, 'blockysize': 20, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,809 - root - INFO -   Data shape: (4, 31, 25)
+2025-08-01 18:59:52,809 - root - INFO -   Data min/max (per band): [(0.0, 0.3116), (0.0, 0.2944), (0.0, 0.2508), (0.0, 0.3831)]
+2025-08-01 18:59:52,811 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000142.tiff
+2025-08-01 18:59:52,811 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000142.tiff:
+2025-08-01 18:59:52,811 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,811 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 31, 'height': 30, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.0844990234375,
+       0.0, -0.00015087890624999878, -22.83021344140625), 'blockxsize': 31, 'blockysize': 16, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,811 - root - INFO -   Data shape: (4, 30, 31)
+2025-08-01 18:59:52,811 - root - INFO -   Data min/max (per band): [(0.0, 0.3038), (0.0, 0.3256), (0.0, 0.3304), (0.0, 0.4073)]
+2025-08-01 18:59:52,813 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000145.tiff
+2025-08-01 18:59:52,813 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000145.tiff:
+2025-08-01 18:59:52,813 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,813 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 21, 'height': 17, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.076735169921875,
+       0.0, -0.00015087890624999878, -22.82719586328125), 'blockxsize': 21, 'blockysize': 17, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,813 - root - INFO -   Data shape: (4, 17, 21)
+2025-08-01 18:59:52,813 - root - INFO -   Data min/max (per band): [(0.0, 0.292), (0.0, 0.316), (0.0, 0.2846), (0.0, 0.3162)]
+2025-08-01 18:59:52,815 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000146.tiff
+2025-08-01 18:59:52,815 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000146.tiff:
+2025-08-01 18:59:52,815 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,815 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 22, 'height': 25, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.079170888671875,
+       0.0, -0.00015087890624999878, -22.82779937890625), 'blockxsize': 22, 'blockysize': 23, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,815 - root - INFO -   Data shape: (4, 25, 22)
+2025-08-01 18:59:52,815 - root - INFO -   Data min/max (per band): [(0.0, 0.3344), (0.0, 0.314), (0.0, 0.2916), (0.0, 0.3664)]
+2025-08-01 18:59:52,817 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000181.tiff
+2025-08-01 18:59:52,817 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000181.tiff:
+2025-08-01 18:59:52,817 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,817 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 36, 'height': 34, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07521284570313,
+       0.0, -0.00015087890624999878, -22.81844488671875), 'blockxsize': 36, 'blockysize': 14, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,817 - root - INFO -   Data shape: (4, 34, 36)
+2025-08-01 18:59:52,817 - root - INFO -   Data min/max (per band): [(0.0, 0.3228), (0.0, 0.281), (0.0, 0.2618), (0.0, 0.382)]
+2025-08-01 18:59:52,838 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000183.tiff
+2025-08-01 18:59:52,838 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000183.tiff:
+2025-08-01 18:59:52,838 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,838 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 217, 'height': 344, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.110683,
+       0.0, -0.00015087890624999878, -22.769711), 'blockxsize': 217, 'blockysize': 2, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,842 - root - INFO -   Data shape: (4, 344, 217)
+2025-08-01 18:59:52,842 - root - INFO -   Data min/max (per band): [(0.0, 0.2862), (0.0, 0.2458), (0.0, 0.2434), (0.0, 0.4784)]
+2025-08-01 18:59:52,863 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000185.tiff
+2025-08-01 18:59:52,863 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000185.tiff:
+2025-08-01 18:59:52,863 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,863 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 363, 'height': 279, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.10550709765625,
+       0.0, -0.00015087890624999878, -22.804865785156252), 'blockxsize': 363, 'blockysize': 1, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,868 - root - INFO -   Data shape: (4, 279, 363)
+2025-08-01 18:59:52,868 - root - INFO -   Data min/max (per band): [(0.0, 0.5168), (0.0, 0.5092), (0.0, 0.4572), (0.0, 0.4984)]
+2025-08-01 18:59:52,873 - root - INFO - [TEST] Arquivo recortado salvo: data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000194.tiff
+2025-08-01 18:59:52,873 - root - INFO - [TEST] Arquivo recortado data/raw/sentinel/debug_processed_s2/debug_debug_s2_sector_350950210000194.tiff:
+2025-08-01 18:59:52,873 - root - INFO -   Band count: 4
+2025-08-01 18:59:52,873 - root - INFO -   Profile: {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 'width': 126, 'height': 157, 'count': 4, 'crs': CRS.from_wkt('GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'), 'transform': Affine(0.0001522324218750093, 0.0, -47.07582177539062,
+       0.0, -0.00015087890624999878, -22.8098447890625), 'blockxsize': 126, 'blockysize': 4, 'tiled': False, 'compress': 'deflate', 'interleave': 'pixel'}
+2025-08-01 18:59:52,874 - root - INFO -   Data shape: (4, 157, 126)
+2025-08-01 18:59:52,874 - root - INFO -   Data min/max (per band): [(0.0, 0.5856), (0.0, 0.554), (0.0, 0.542), (0.0, 0.6101)]
+2025-08-01 18:59:52,875 - root - INFO - [TEST] Download concluído: data/raw/sentinel/debug_s2.tiff
+2025-08-01 18:59:52,875 - root - INFO - ✅ [TEST] Teste concluído
