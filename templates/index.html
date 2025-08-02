@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAIA - Análise de Risco de Dengue</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="/assets/Naia-Logo.svg" alt="NAIA" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" style="max-height: 50px;">
+            <span style="display: none;">NAIA</span>
+        </div>
+        <div class="header-controls">
+            <button class="header-btn" title="Buscar">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="header-btn" title="Configurações">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="header-btn" title="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="map-header">
+                <h2 class="map-title">NAIA - Análise de Risco Vetorial</h2>
+                <div class="risk-badge">Sistema Real</div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend" id="map-legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF5722;"></div>
+                    <span>Alto Risco</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF9800;"></div>
+                    <span>Risco Médio</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4CAF50;"></div>
+                    <span>Baixo Risco</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF1744; border-radius: 50%; width: 16px; height: 16px;"></div>
+                    <span>🏊 Piscinas Detectadas</span>
+                </div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loading-overlay">
+                <div class="loading-spinner"></div>
+                <p>Processando análise...</p>
+                <small id="loading-detail">Isso pode levar alguns minutos</small>
+            </div>
+
+            <!-- Map Container -->
+            <div id="map-placeholder" class="map-placeholder">
+                <i class="fas fa-map-marked-alt" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                <div>Execute uma análise para visualizar o mapa de risco</div>
+            </div>
+            <iframe id="map-frame" src=""></iframe>
+
+            <!-- Statistics -->
+            <div class="stats-section" id="map-stats">
+                <div class="stats-number" id="pools-found">--</div>
+                <div class="stats-label">piscinas detectadas na área</div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Analysis Control Panel -->
+            <div class="sidebar-panel analysis-control">
+                <h3 class="panel-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Analisar Nova Área
+                </h3>
+                <input type="text" id="lat-input" placeholder="Latitude (ex: -22.818)" value="">
+                <input type="text" id="lon-input" placeholder="Longitude (ex: -47.069)" value="">
+                <button id="run-btn">
+                    <i class="fas fa-play"></i>
+                    Executar Análise
+                </button>
+                <div id="status-message"></div>
+            </div>
+
+            <!-- Metrics Panel -->
+            <div class="sidebar-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Métricas da Análise
+                </h3>
+                
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-exclamation-triangle" style="color: #FF5722; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">Setores de Alto Risco</div>
+                            <div class="metrics-value" id="high-risk-sectors">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-leaf" style="color: #4CAF50; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">NDVI Médio</div>
+                            <div class="metrics-value" id="avg-ndvi">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-thermometer-half" style="color: #FF9800; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">Temperatura Média</div>
+                            <div class="metrics-value" id="avg-temp">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-card">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-cloud-rain" style="color: #2196F3; margin-right: 12px;"></i>
+                        <div class="metrics-text">
+                            <div class="metrics-title">Precipitação</div>
+                            <div class="metrics-value" id="total-precip">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Updates Panel -->
+            <div class="sidebar-panel community-section">
+                <h3 class="panel-title">
+                    <i class="fas fa-users"></i>
+                    Community Updates
+                </h3>
+                
+                <div class="chart-container">
+                    <div class="chart-placeholder"></div>
+                </div>
+
+                <button class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp Community
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="../static/script.js"> </script>
+    <!-- <script> 
+        document.addEventListener('DOMContentLoaded', () => {
+            const runBtn = document.getElementById('run-btn');
+            const latInput = document.getElementById('lat-input');
+            const lonInput = document.getElementById('lon-input');
+            const statusDiv = document.getElementById('status-message');
+            const mapFrame = document.getElementById('map-frame');
+            const mapPlaceholder = document.getElementById('map-placeholder');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const mapLegend = document.getElementById('map-legend');
+            const mapStats = document.getElementById('map-stats');
+
+            // Mapeamento de IDs para elementos do painel
+            const panelElements = {
+                'pools-found': document.getElementById('pools-found'),
+                'high-risk-sectors': document.getElementById('high-risk-sectors'),
+                'avg-ndvi': document.getElementById('avg-ndvi'),
+                'avg-temp': document.getElementById('avg-temp'),
+                'total-precip': document.getElementById('total-precip')
+            };
+
+            // Função para mostrar status
+            function showStatus(message, type = 'info') {
+                statusDiv.textContent = message;
+                statusDiv.className = `status-${type}`;
+            }
+
+            // Função para mostrar/ocultar elementos do mapa
+            function toggleMapElements(show) {
+                const elements = [mapLegend, mapStats];
+                elements.forEach(el => {
+                    if (el) {
+                        el.style.display = show ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // Event listener do botão
+            runBtn.addEventListener('click', () => {
+                const lat = latInput.value.trim();
+                const lon = lonInput.value.trim();
+
+                if (!lat || !lon) {
+                    showStatus('Por favor, insira latitude e longitude.', 'error');
+                    return;
+                }
+
+                // Valida coordenadas
+                const latNum = parseFloat(lat);
+                const lonNum = parseFloat(lon);
+
+                if (isNaN(latNum) || isNaN(lonNum)) {
+                    showStatus('Coordenadas inválidas. Use números decimais.', 'error');
+                    return;
+                }
+
+                if (latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
+                    showStatus('Coordenadas fora do range válido.', 'error');
+                    return;
+                }
+
+                // Inicia análise
+                showStatus('Iniciando análise... Isso pode levar vários minutos.', 'info');
+                runBtn.disabled = true;
+                loadingOverlay.style.display = 'flex';
+
+                fetch('/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lat: latNum, lon: lonNum })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.job_id) {
+                        showStatus('Análise em andamento... Verificando status.', 'info');
+                        checkStatus(data.job_id);
+                    } else {
+                        throw new Error('Job ID não retornado pelo servidor');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao iniciar análise:', error);
+                    showStatus(`Erro ao iniciar a análise: ${error.message}`, 'error');
+                    runBtn.disabled = false;
+                    loadingOverlay.style.display = 'none';
+                });
+            });
+
+            function checkStatus(jobId) {
+                let attempts = 0;
+                const maxAttempts = 120; // 10 minutos máximo
+
+                const interval = setInterval(() => {
+                    attempts++;
+                    
+                    if (attempts > maxAttempts) {
+                        clearInterval(interval);
+                        showStatus('Timeout: Análise demorou muito para completar.', 'error');
+                        runBtn.disabled = false;
+                        loadingOverlay.style.display = 'none';
+                        return;
+                    }
+
+                    fetch(`/status/${jobId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(`Status check ${attempts}:`, data);
+
+                            if (data.status === 'complete') {
+                                clearInterval(interval);
+                                showStatus('Análise concluída! Carregando resultados...', 'success');
+                                updateDashboard(data.result);
+                                runBtn.disabled = false;
+                                loadingOverlay.style.display = 'none';
+                            } else if (data.status === 'error') {
+                                clearInterval(interval);
+                                const errorMsg = data.message || 'Erro desconhecido na análise';
+                                showStatus(`Erro na análise: ${errorMsg}`, 'error');
+                                runBtn.disabled = false;
+                                loadingOverlay.style.display = 'none';
+                                console.error('Erro retornado pelo servidor:', data);
+                            } else if (data.status === 'not_found') {
+                                clearInterval(interval);
+                                showStatus('Job não encontrado no servidor.', 'error');
+                                runBtn.disabled = false;
+                                loadingOverlay.style.display = 'none';
+                            }
+                            // Se status === 'running', continua verificando
+                        })
+                        .catch(error => {
+                            console.error('Erro ao verificar status:', error);
+                            // Não para o interval por erro de rede, tenta novamente
+                        });
+                }, 5000); // Verifica a cada 5 segundos
+            }
+
+            function updateDashboard(summary) {
+                console.log('Atualizando dashboard com:', summary);
+
+                try {
+                    // Atualiza URL do mapa com cache bust
+                    const mapUrl = summary.map_url + '?t=' + Date.now();
+                    console.log('Carregando mapa de:', mapUrl);
+                    
+                    mapFrame.src = mapUrl;
+                    
+                    // Esconde placeholder e mostra mapa
+                    mapPlaceholder.style.display = 'none';
+                    mapFrame.style.display = 'block';
+                    
+                    // Mostra elementos do mapa
+                    toggleMapElements(true);
+
+                    // Atualiza métricas
+                    if (panelElements['pools-found']) {
+                        panelElements['pools-found'].textContent = summary.dirty_pools_found || 0;
+                    }
+
+                    if (panelElements['high-risk-sectors']) {
+                        const highRisk = (summary.risk_distribution?.['Alto'] || 0) + 
+                                        (summary.risk_distribution?.['Crítico'] || 0);
+                        panelElements['high-risk-sectors'].textContent = highRisk;
+                    }
+
+                    if (panelElements['avg-ndvi']) {
+                        panelElements['avg-ndvi'].textContent = summary.avg_ndvi || 'N/D';
+                    }
+
+                    if (panelElements['avg-temp']) {
+                        panelElements['avg-temp'].textContent = summary.avg_temp_celsius ? 
+                            `${summary.avg_temp_celsius}°C` : 'N/D';
+                    }
+
+                    if (panelElements['total-precip']) {
+                        panelElements['total-precip'].textContent = summary.total_precip_mm ? 
+                            `${summary.total_precip_mm} mm` : 'N/D';
+                    }
+
+                    showStatus('Resultados carregados com sucesso!', 'success');
+
+                    // Aguarda um pouco e verifica se o iframe carregou
+                    setTimeout(() => {
+                        mapFrame.onload = () => {
+                            console.log('Mapa carregado no iframe');
+                        };
+                        mapFrame.onerror = () => {
+                            console.error('Erro ao carregar mapa no iframe');
+                            showStatus('Mapa gerado, mas houve erro ao carregar na interface.', 'error');
+                        };
+                    }, 1000);
+
+                } catch (error) {
+                    console.error('Erro ao atualizar dashboard:', error);
+                    showStatus('Erro ao atualizar interface com os resultados.', 'error');
+                }
+            }
+
+            // Outras funcionalidades
+            document.querySelectorAll('.metrics-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.metrics-title').textContent;
+                    console.log(`Clicked on metric: ${title}`);
+                });
+            });
+
+            // WhatsApp button
+            document.querySelector('.whatsapp-btn').addEventListener('click', function() {
+                alert('Funcionalidade de WhatsApp será implementada em breve!');
+            });
+
+            // Coordenadas padrão para Indaiatuba (para testes)
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    latInput.value = '-22.818';
+                    lonInput.value = '-47.069';
+                    console.log('Coordenadas padrão inseridas (Ctrl+D)');
+                }
+            });
+
+            console.log('NAIA Dashboard inicializado');
+        });
+    </script> -->
+</body>
+</html>

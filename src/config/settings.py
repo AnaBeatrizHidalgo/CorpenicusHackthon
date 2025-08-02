@@ -21,7 +21,10 @@ SH_CLIENT_SECRET = os.getenv('CLIENT_SECRET_ID')
 # --- Parâmetros da Área de Estudo ---
 STUDY_AREA = {
     "name": "Barao_Geraldo_Campinas",
-    "bbox": [-47.10, -22.85, -47.03, -22.78], # [min_lon, min_lat, max_lon, max_lat]
+    # CORREÇÃO CRÍTICA: Coordenadas estavam invertidas!
+    # Formato correto: [min_lon, min_lat, max_lon, max_lat]
+    # Barão Geraldo está em: lat ~-22.81, lon ~-47.07
+    "bbox": [-47.11, -22.85, -47.03, -22.77], # [min_lon, min_lat, max_lon, max_lat] - CORRIGIDO
     "crs": "EPSG:4326",
     "tile_size": 512
 }

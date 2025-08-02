@@ -1,0 +1,214 @@
+.
+├── app.py
+├── arvore.txt
+├── assets
+│   └── Naia-Logo.svg
+├── data
+│   ├── area_prova_barao_map.html
+│   ├── area_prova_bbox (copy).txt
+│   ├── area_prova_map.html
+│   ├── campinas_all.geojson
+│   ├── campinas_all_map.html
+│   ├── ceb84503984455d1e2b19056dd4ab177
+│   │   └── request.json
+│   ├── d3b27fc8d5cba1b4a1fd3a5735938626
+│   │   └── request.json
+│   ├── dados geologicos
+│   │   ├── boundingbox.py
+│   │   ├── Dados IBGE
+│   │   │   ├── BR_setores_CD2022.cpg
+│   │   │   ├── BR_setores_CD2022.dbf
+│   │   │   ├── BR_setores_CD2022.prj
+│   │   │   ├── BR_setores_CD2022.shp
+│   │   │   ├── BR_setores_CD2022.shx
+│   │   │   └── BR_UF_2022.zip
+│   │   ├── edificacoes_unicamp.geojson
+│   │   ├── scripts_dev
+│   │   │   ├── area_prova_bbox.geojson
+│   │   │   ├── area_prova.geojson
+│   │   │   └── teste.py
+│   │   └── setores_unicamp.geojson
+│   ├── external
+│   ├── processed
+│   │   ├── climate_features.csv
+│   │   ├── climate_metrics.csv
+│   │   ├── data_0.nc
+│   │   ├── era5_climate (copy).zip
+│   │   ├── era5_climate.nc
+│   │   ├── final_features.csv
+│   │   ├── image_features.csv
+│   │   ├── images
+│   │   │   ├── s1_preview.png
+│   │   │   ├── sentinel-1
+│   │   │   │   ├── s1_2024-07-01_2024-07-30_sector_350950210000001.tiff
+│   │  
+│   │   │   │   └── s1_2024-07-01_2024-07-30_sector_350950210000194.tiff
+│   │   │   └── sentinel-2
+│   │   │       ├── s2_2024-07-01_2024-07-30_sector_350950210000001.tiff
+│   │   │       ├── s2_2024-07-01_2024-07-30_sector_350950210000002.tiff
+
+│   │   │       └── s2_2024-07-01_2024-07-30_sector_350950210000194.tiff
+│   │   ├── maps
+│   │   ├── metrics
+│   │   ├── metrics.csv
+│   │   ├── ndvi_histogram.png
+│   │   ├── ndvi_precip_correlation.png
+│   │   ├── ndvi_temp_correlation.png
+│   │   ├── s1_20250730.tiff
+│   │   ├── s1_bbox_validation.png
+│   │   ├── s1_preview_{date}.png
+│   │   ├── s1_sectors_validation.png
+│   │   ├── s1_validation.png
+│   │   ├── s2_20250730.tiff
+│   │   ├── s2_bbox_validation.png
+│   │   ├── s2_preview_{date}.png
+│   │   ├── s2_sectors_validation.png
+│   │   ├── s2_validation.png
+│   │   ├── spatial_maps.png
+│   │   ├── vh_histogram.png
+│   │   └── vv_histogram.png
+│  
+│   ├── setores_map.html
+│   └── temp
+│       ├── google_detected
+│       │   ├── 1001_detected.png
+│       │   └── 1002_detected.png
+│       └── google_raw
+│           ├── 1001_raw.png
+│           └── 1002_raw.png
+├── debug copy.py
+├── debug_image.py
+├── debug.py
+├── debug.txt
+├── docs
+│   └── user_guide.md
+├── main.py
+├── models
+│   └── swimming-pool-detector
+│       ├── gitattributes
+│       ├── model.pt
+│       ├── README.md
+│       └── val_batch0_pred.jpg
+├── naia-env
+
+│   
+├── naia_results
+│   ├── detected_pools.csv
+│   ├── risk_map.html
+│   └── statistics.json
+├── notebooks
+│   ├── 02_sentinel_ingestion.ipynb
+│   ├── 03_preprocessing.ipynb
+│   ├── 04_analysis.ipynb
+│   ├── 05_climate_integration.ipynb
+│   ├── 06_visualization.ipynb
+│   └── CopernicusAuth.ipynb
+├── output
+│   ├── analysis_-22.818_-47.069
+│   │   ├── area_of_interest.geojson
+│   │   ├── climate_features.csv
+│   │   ├── debug_map_data.csv
+│   │   ├── detected_pools.csv
+│   │   ├── detected_pools.geojson
+│   │   ├── final_features.csv
+│   │   ├── final_risk_data.geojson
+│   │   ├── google_detected_images
+│   │   │   ├── 350950205001472_detected.png
+│
+│   │   │   └── 350950210000181_detected.png
+│   │   ├── google_raw_images
+│   │   │   ├── 350950205001000_raw.png
+│   │   │   ├── 350950205001472_raw.png
+│   │
+│   │   │   └── 350950210000194_raw.png
+│   │   ├── image_features.csv
+│   │   ├── mapa_de_risco_e_priorizacao.html
+│   │   ├── processed_images
+│   │   │   ├── sentinel-1
+│   │   │   │   ├── analysis_-22.818_-47.069_s1_sector_350950205001000.tiff
+│   │   │
+│   │   └── summary.json
+│   ├── analysis_-22.818_-47.069_1754001737
+│   │   ├── area_of_interest.geojson
+│   │   ├── climate_features.csv
+│   │   ├── final_features.csv
+│   │   ├── google_detected_images
+│   │   │   ├── 350950210000102_dirty_pool_detected.png
+│   │   │   └── 350950210000135_dirty_pool_detected.png
+│   │   ├── google_raw_images
+│   │   │   ├── 350950205001000_raw.png
+│   │   │   ├── 350950205001472_raw.png
+│   
+│   ├── analysis_None_-47.069_1753986137
+│   ├── data_exports
+│   ├── maps
+│   └── reports
+├── __pycache__
+│   ├── auth.cpython-312.pyc
+│   └── run_analysis.cpython-312.pyc
+├── README.md
+├── requirements.txt
+├── run_analysis copy 2.py
+├── run_analysis copy.py
+├── run_analysis.py
+├── scripts
+│   ├── run_full_pipeline.py
+│   └── setup_environment.sh
+├── src
+│   ├── analysis
+│   │   ├── __init__.py
+│   │   ├── map_generator.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── map_generator.cpython-312.pyc
+│   │   │   └── risk_assessor.cpython-312.pyc
+│   │   └── risk_assessor.py
+│   ├── config
+│   │   ├── __pycache__
+│   │   │   └── settings.cpython-312.pyc
+│   │   └── settings.py
+│   ├── data
+│   │   ├── climate_downloader.py
+│   │   ├── climate_processor.py
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── climate_downloader.cpython-312.pyc
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── sentinel_downloader.cpython-312.pyc
+│   │   └── sentinel_downloader.py
+│   ├── features
+│   │   ├── climate_feature_builder.py
+│   │   ├── image_processor.py
+│   │   ├── __init__.py
+│   │   ├── metrics_calculator.py
+│   │   └── __pycache__
+│   │       ├── climate_feature_builder.cpython-312.pyc
+│   │       ├── image_processor.cpython-312.pyc
+│   │       ├── __init__.cpython-312.pyc
+│   │       └── metrics_calculator.cpython-312.pyc
+│   ├── __init__.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── pool_detector.py
+│   │   └── __pycache__
+│   │       ├── __init__.cpython-312.pyc
+│   │       └── pool_detector.cpython-312.pyc
+│   ├── __pycache__
+│   │   └── __init__.cpython-312.pyc
+│   └── utils
+│       ├── geoprocessing.py
+│       ├── __init__.py
+│       ├── paths.py
+│       └── __pycache__
+│           ├── geoprocessing.cpython-312.pyc
+│           ├── __init__.cpython-312.pyc
+│           └── paths.cpython-312.pyc
+├── static
+│   ├── script.js
+│   └── styles.css
+├── templates
+│   └── index.html
+├── tests
+
+
+485 directories, 2693 files
