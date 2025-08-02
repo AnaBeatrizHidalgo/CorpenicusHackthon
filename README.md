@@ -567,7 +567,7 @@ graph TD
 
 ## 📷 Exemplos de Resultado
 
-> 🚧 *Seção será atualizada com screenshots quando você fornecer mais arquivos da pipeline*
+> 🚧 *Seção será atualizada com screenshots"
 
 ---
 
