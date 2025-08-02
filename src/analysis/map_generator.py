@@ -1,6 +1,6 @@
 # src/analysis/map_generator.py
 """
-Módulo para gerar mapas interativos de risco e detecções - Versão com Porcentagem de Risco nos Popups.
+Módulo para gerar mapas interativos de risco e detecções - Versão CORRIGIDA com Consistência de Risco.
 """
 import logging
 import folium
@@ -200,26 +200,69 @@ def get_risk_color(risk_level, risk_score):
     }
     return color_map.get(risk_level, '#2196F3')  # Azul como fallback
 
-def format_risk_percentage(risk_score):
-    """Formata o risk_score como porcentagem com interpretação"""
+def calculate_risk_percentiles(sectors_gdf):
+    """
+    NOVA FUNÇÃO: Calcula os percentis de risco baseados nos dados reais.
+    Isso garante consistência com o risk_assessor.py
+    """
+    logger = logging.getLogger(__name__)
+    
+    if 'risk_score' not in sectors_gdf.columns:
+        logger.warning("Coluna risk_score não encontrada para calcular percentis")
+        return {'p90': 0.75, 'p70': 0.50}
+    
+    try:
+        # Calcula os mesmos percentis usados no risk_assessor.py
+        percentile_90 = sectors_gdf['risk_score'].quantile(0.90)  # Top 10%
+        percentile_70 = sectors_gdf['risk_score'].quantile(0.70)  # Top 30%
+        
+        logger.info(f"📊 Percentis calculados - P90: {percentile_90:.4f}, P70: {percentile_70:.4f}")
+        
+        return {
+            'p90': percentile_90,
+            'p70': percentile_70
+        }
+    except Exception as e:
+        logger.warning(f"Erro ao calcular percentis: {e}")
+        return {'p90': 0.75, 'p70': 0.50}  # Valores padrão
+
+def format_risk_percentage(risk_score, risk_level, percentiles):
+    """
+    FUNÇÃO CORRIGIDA: Formata o risk_score como porcentagem com interpretação CONSISTENTE.
+    Agora usa os percentils reais dos dados ao invés de valores fixos.
+    """
     if pd.isna(risk_score):
         return "N/A"
     
     percentage = risk_score * 100
     
-    # Adiciona interpretação baseada na porcentagem
-    if percentage >= 75:
-        interpretation = "🔴 Muito Alto"
-        bar_color = "#D32F2F"
-    elif percentage >= 50:
-        interpretation = "🟠 Alto"
+    # CORREÇÃO CRÍTICA: Usa o nível de risco já calculado pelo risk_assessor.py
+    # ao invés de recalcular com base em valores fixos
+    if risk_level == 'Alto':
+        interpretation = "🔴 Alto Risco"
         bar_color = "#FF5722"
-    elif percentage >= 25:
-        interpretation = "🟡 Médio"
+        description = f"Setor no top 10% de risco da região"
+    elif risk_level == 'Médio':
+        interpretation = "🟠 Risco Médio"
         bar_color = "#FF9800"
-    else:
-        interpretation = "🟢 Baixo"
+        description = f"Setor no top 30% de risco da região"
+    elif risk_level == 'Crítico':
+        interpretation = "🔴 Risco Crítico"
+        bar_color = "#D32F2F"
+        description = f"Setor de risco extremo"
+    else:  # Baixo
+        interpretation = "🟢 Baixo Risco"
         bar_color = "#4CAF50"
+        description = f"Setor com risco abaixo da média regional"
+    
+    # Adiciona informação sobre os percentis para transparência
+    percentil_info = ""
+    if risk_score >= percentiles['p90']:
+        percentil_info = f"(Top 10% - Acima de {percentiles['p90']*100:.1f}%)"
+    elif risk_score >= percentiles['p70']:
+        percentil_info = f"(Top 30% - Acima de {percentiles['p70']*100:.1f}%)"
+    else:
+        percentil_info = f"(Abaixo do percentil 70)"
     
     # Cria barra visual de porcentagem
     bar_width = int(percentage)
@@ -256,6 +299,18 @@ def format_risk_percentage(risk_score):
             font-weight: bold; 
             color: {bar_color};
         ">{interpretation}</p>
+        <p style="
+            margin: 2px 0; 
+            text-align: center; 
+            font-size: 10px; 
+            color: #cccccc;
+        ">{description}</p>
+        <p style="
+            margin: 2px 0; 
+            text-align: center; 
+            font-size: 9px; 
+            color: #aaaaaa;
+        ">{percentil_info}</p>
     </div>
     """
     
@@ -353,10 +408,10 @@ def create_priority_map(
     output_html_path: Path
 ):
     """
-    Cria um mapa interativo com design moderno e elegante, mostrando PORCENTAGEM DE RISCO nos popups dos setores.
+    Cria um mapa interativo com design moderno e elegante, mostrando PORCENTAGEM DE RISCO CONSISTENTE nos popups dos setores.
     """
     logger = logging.getLogger(__name__)
-    logger.info(f"Gerando mapa de priorização com porcentagem de risco para {output_html_path.name}...")
+    logger.info(f"Gerando mapa de priorização com porcentagem de risco CONSISTENTE para {output_html_path.name}...")
     
     try:
         # Determina diretório de imagens detectadas baseado no output_html_path
@@ -368,6 +423,10 @@ def create_priority_map(
         if clean_sectors is None:
             logger.error("Não foi possível preparar dados dos setores")
             return False
+        
+        # NOVA FUNCIONALIDADE: Calcula percentis reais dos dados
+        percentiles = calculate_risk_percentiles(clean_sectors)
+        logger.info(f"📊 Usando percentis para consistência: {percentiles}")
         
         # Log dos valores de risco para debug
         logger.info(f"Range de risk_score nos setores: {clean_sectors['risk_score'].min():.3f} - {clean_sectors['risk_score'].max():.3f}")
@@ -403,9 +462,9 @@ def create_priority_map(
             control=True
         ).add_to(m)
         
-        # --- Camada 1: Risco por Setor COM POPUPS DETALHADOS ---
+        # --- Camada 1: Risco por Setor COM POPUPS CORRIGIDOS ---
         try:
-            logger.info("Adicionando camada de setores com popups de porcentagem...")
+            logger.info("Adicionando camada de setores com popups de porcentagem CONSISTENTES...")
             
             # Cria FeatureGroup para os setores
             sectors_layer = folium.FeatureGroup(name='🎯 Setores de Risco')
@@ -414,14 +473,18 @@ def create_priority_map(
                 try:
                     risk_color = get_risk_color(row['final_risk_level'], row['risk_score'])
                     
-                    # NOVA FUNCIONALIDADE: Popup detalhado com PORCENTAGEM DE RISCO
-                    risk_percentage_html = format_risk_percentage(row['risk_score'])
+                    # CORREÇÃO CRÍTICA: Popup corrigido com percentis consistentes
+                    risk_percentage_html = format_risk_percentage(
+                        row['risk_score'], 
+                        row['final_risk_level'], 
+                        percentiles
+                    )
                     
                     # Dados adicionais do setor
                     popup_data = {
                         'Código do Setor': row['CD_SETOR'],
                         'Nível de Risco': f"<span style='color: {risk_color}; font-weight: bold; font-size: 14px;'>{row['final_risk_level']}</span>",
-                        'Porcentagem de Risco': risk_percentage_html,
+                        'Análise de Risco': risk_percentage_html,
                         'Piscinas Detectadas': f"<span style='color: #FF7C33; font-weight: bold;'>{int(row['dirty_pool_count'])}</span>",
                     }
                     
@@ -461,7 +524,7 @@ def create_priority_map(
                     continue
             
             sectors_layer.add_to(m)
-            logger.info("✅ Camada de setores com porcentagem de risco adicionada com sucesso")
+            logger.info("✅ Camada de setores com porcentagem de risco CONSISTENTE adicionada com sucesso")
             
         except Exception as e:
             logger.error(f"Erro ao adicionar camada de setores: {e}")
@@ -665,7 +728,7 @@ def create_priority_map(
         <script>
         // Adiciona funcionalidade de clique nos setores para mostrar mais detalhes
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎯 Mapa de Risco de Dengue carregado com funcionalidade de porcentagem');
+            console.log('🎯 Mapa de Risco de Dengue carregado com funcionalidade de porcentagem CONSISTENTE');
             
             // Adiciona evento para copiar coordenadas ao clicar
             document.addEventListener('click', function(e) {
@@ -682,11 +745,11 @@ def create_priority_map(
         """
         m.get_root().html.add_child(folium.Element(interactive_js))
         
-        # Adiciona legenda customizada
+        # CORREÇÃO NA LEGENDA: Agora mostra os percentis reais
         legend_html = f"""
         <div style="
             position: fixed; 
-            top: 10px; left: 10px; width: 200px; height: auto; 
+            top: 10px; left: 10px; width: 220px; height: auto; 
             background: rgba(26, 36, 68, 0.9); 
             border: 1px solid rgba(255, 124, 51, 0.3);
             border-radius: 10px; 
@@ -696,27 +759,26 @@ def create_priority_map(
             padding: 15px;
             color: white;
         ">
-        <h4 style="margin: 0 0 10px 0; color: #FF7C33;">📊 Legenda de Risco</h4>
+        <h4 style="margin: 0 0 10px 0; color: #FF7C33;">📊 Legenda de Risco (Baseada em Percentis)</h4>
         <div style="margin: 8px 0;">
             <span style="background: #4CAF50; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
-            Baixo (0-25%)
+            Baixo (< {percentiles['p70']*100:.1f}%)
         </div>
         <div style="margin: 8px 0;">
             <span style="background: #FF9800; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
-            Médio (25-50%)
+            Médio ({percentiles['p70']*100:.1f}% - {percentiles['p90']*100:.1f}%)
         </div>
         <div style="margin: 8px 0;">
             <span style="background: #FF5722; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
-            Alto (50-75%)
-        </div>
-        <div style="margin: 8px 0;">
-            <span style="background: #D32F2F; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
-            Muito Alto (75-100%)
+            Alto (≥ {percentiles['p90']*100:.1f}%)
         </div>
         <hr style="border: none; height: 1px; background: rgba(255, 124, 51, 0.3); margin: 10px 0;">
         <p style="margin: 5px 0; font-size: 10px; color: #cccccc;">
-            💡 Clique nos setores para ver porcentagem detalhada<br>
-            🏊 Círculos vermelhos = Piscinas detectadas<br>
+            💡 <strong>Classificação por Percentis:</strong><br>
+            • Alto = Top 10% da região<br>
+            • Médio = Top 30% da região<br>
+            • Baixo = Demais setores<br><br>
+            🏊 Círculos coloridos = Piscinas detectadas<br>
             ⌨️ Shift+Click = Copiar coordenadas
         </p>
         </div>
@@ -727,17 +789,21 @@ def create_priority_map(
         try:
             output_html_path.parent.mkdir(parents=True, exist_ok=True)
             m.save(str(output_html_path))
-            logger.info(f"✅ Mapa com porcentagem de risco salvo com sucesso em: {output_html_path}")
+            logger.info(f"✅ Mapa com porcentagem de risco CONSISTENTE salvo com sucesso em: {output_html_path}")
             
             # Log final das estatísticas
             total_sectors = len(clean_sectors)
-            high_risk_sectors = len(clean_sectors[clean_sectors['risk_score'] >= 0.5])
+            high_risk_sectors = len(clean_sectors[clean_sectors['final_risk_level'] == 'Alto'])
+            medium_risk_sectors = len(clean_sectors[clean_sectors['final_risk_level'] == 'Médio'])
             avg_risk = clean_sectors['risk_score'].mean() * 100
             
-            logger.info(f"📊 Estatísticas do mapa:")
+            logger.info(f"📊 Estatísticas CORRIGIDAS do mapa:")
             logger.info(f"   Total de setores: {total_sectors}")
-            logger.info(f"   Setores de alto risco (≥50%): {high_risk_sectors}")
+            logger.info(f"   Setores de alto risco (percentil ≥90%): {high_risk_sectors}")
+            logger.info(f"   Setores de médio risco (percentil 70-90%): {medium_risk_sectors}")
             logger.info(f"   Risco médio geral: {avg_risk:.1f}%")
+            logger.info(f"   Percentil 90% (Alto): {percentiles['p90']*100:.1f}%")
+            logger.info(f"   Percentil 70% (Médio): {percentiles['p70']*100:.1f}%")
             
             return True
             
