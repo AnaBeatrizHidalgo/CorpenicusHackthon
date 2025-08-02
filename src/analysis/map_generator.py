@@ -1,6 +1,6 @@
 # src/analysis/map_generator.py
 """
-Módulo para gerar mapas interativos de risco e detecções - Versão com Imagens nos Popups.
+Módulo para gerar mapas interativos de risco e detecções - Versão com Porcentagem de Risco nos Popups.
 """
 import logging
 import folium
@@ -102,19 +102,38 @@ def prepare_sectors_data(sectors_gdf):
     
     clean_gdf['CD_SETOR'] = clean_gdf['CD_SETOR'].astype(str)
     
-    # Garante que risk_score existe e é numérico
-    if 'risk_score' not in clean_gdf.columns:
-        logger.warning("Coluna risk_score não encontrada, usando valores padrão")
+    # CORREÇÃO: Verifica múltiplas colunas de risk_score possíveis
+    risk_score_columns = ['risk_score', 'amplified_risk_score', 'final_risk_score']
+    risk_score_col = None
+    
+    for col in risk_score_columns:
+        if col in clean_gdf.columns:
+            risk_score_col = col
+            logger.info(f"Usando coluna de risco: {col}")
+            break
+    
+    if risk_score_col is None:
+        logger.warning("Nenhuma coluna de risk_score encontrada, criando valores padrão")
         clean_gdf['risk_score'] = 0.5
+        risk_score_col = 'risk_score'
     else:
         # Limpa risk_score
-        clean_gdf['risk_score'] = pd.to_numeric(clean_gdf['risk_score'], errors='coerce')
+        clean_gdf['risk_score'] = pd.to_numeric(clean_gdf[risk_score_col], errors='coerce')
         clean_gdf['risk_score'] = clean_gdf['risk_score'].fillna(0.5)
         clean_gdf['risk_score'] = clean_gdf['risk_score'].clip(0, 1)
     
-    # Garante que final_risk_level existe
-    if 'final_risk_level' not in clean_gdf.columns:
-        logger.warning("Coluna final_risk_level não encontrada, criando baseada no risk_score")
+    # CORREÇÃO: Verifica múltiplas colunas de nível de risco possíveis
+    risk_level_columns = ['final_risk_level', 'risk_level', 'risk_category']
+    risk_level_col = None
+    
+    for col in risk_level_columns:
+        if col in clean_gdf.columns:
+            risk_level_col = col
+            logger.info(f"Usando coluna de nível: {col}")
+            break
+    
+    if risk_level_col is None:
+        logger.warning("Nenhuma coluna de nível de risco encontrada, criando baseada no risk_score")
         clean_gdf['final_risk_level'] = pd.cut(
             clean_gdf['risk_score'],
             bins=[0, 0.33, 0.66, 1.0],
@@ -122,7 +141,7 @@ def prepare_sectors_data(sectors_gdf):
             include_lowest=True
         ).astype(str)
     else:
-        clean_gdf['final_risk_level'] = clean_gdf['final_risk_level'].astype(str)
+        clean_gdf['final_risk_level'] = clean_gdf[risk_level_col].astype(str)
     
     # Adiciona contagem de piscinas se não existir
     if 'dirty_pool_count' not in clean_gdf.columns:
@@ -181,6 +200,67 @@ def get_risk_color(risk_level, risk_score):
     }
     return color_map.get(risk_level, '#2196F3')  # Azul como fallback
 
+def format_risk_percentage(risk_score):
+    """Formata o risk_score como porcentagem com interpretação"""
+    if pd.isna(risk_score):
+        return "N/A"
+    
+    percentage = risk_score * 100
+    
+    # Adiciona interpretação baseada na porcentagem
+    if percentage >= 75:
+        interpretation = "🔴 Muito Alto"
+        bar_color = "#D32F2F"
+    elif percentage >= 50:
+        interpretation = "🟠 Alto"
+        bar_color = "#FF5722"
+    elif percentage >= 25:
+        interpretation = "🟡 Médio"
+        bar_color = "#FF9800"
+    else:
+        interpretation = "🟢 Baixo"
+        bar_color = "#4CAF50"
+    
+    # Cria barra visual de porcentagem
+    bar_width = int(percentage)
+    progress_bar = f"""
+    <div style="margin: 10px 0;">
+        <div style="
+            background: rgba(255,255,255,0.2); 
+            border-radius: 10px; 
+            height: 20px; 
+            overflow: hidden;
+            position: relative;
+        ">
+            <div style="
+                background: {bar_color}; 
+                height: 100%; 
+                width: {bar_width}%; 
+                border-radius: 10px;
+                transition: width 0.3s ease;
+            "></div>
+            <span style="
+                position: absolute; 
+                top: 50%; 
+                left: 50%; 
+                transform: translate(-50%, -50%); 
+                color: white; 
+                font-weight: bold; 
+                font-size: 12px;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            ">{percentage:.1f}%</span>
+        </div>
+        <p style="
+            margin: 5px 0; 
+            text-align: center; 
+            font-weight: bold; 
+            color: {bar_color};
+        ">{interpretation}</p>
+    </div>
+    """
+    
+    return progress_bar
+
 def create_modern_popup_with_image(title, data_dict, image_base64=None, color="#FF7C33"):
     """Cria popup moderno com imagem incluída"""
     data_rows = ""
@@ -219,8 +299,8 @@ def create_modern_popup_with_image(title, data_dict, image_base64=None, color="#
         color: #ffffff;
         padding: 20px;
         border-radius: 15px;
-        min-width: 320px;
-        max-width: 400px;
+        min-width: 350px;
+        max-width: 450px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 124, 51, 0.3);
@@ -257,7 +337,7 @@ def create_modern_popup_with_image(title, data_dict, image_base64=None, color="#
             align-items: center;
         ">
             <i class="fas fa-clock" style="margin-right: 5px;"></i>
-            Dados atualizados em tempo real
+            Análise baseada em dados satelitais e climáticos
         </p>
     </div>
     """
@@ -273,10 +353,10 @@ def create_priority_map(
     output_html_path: Path
 ):
     """
-    Cria um mapa interativo com design moderno e elegante, incluindo imagens nos popups das piscinas.
+    Cria um mapa interativo com design moderno e elegante, mostrando PORCENTAGEM DE RISCO nos popups dos setores.
     """
     logger = logging.getLogger(__name__)
-    logger.info(f"Gerando mapa de priorização com imagens para {output_html_path.name}...")
+    logger.info(f"Gerando mapa de priorização com porcentagem de risco para {output_html_path.name}...")
     
     try:
         # Determina diretório de imagens detectadas baseado no output_html_path
@@ -288,6 +368,10 @@ def create_priority_map(
         if clean_sectors is None:
             logger.error("Não foi possível preparar dados dos setores")
             return False
+        
+        # Log dos valores de risco para debug
+        logger.info(f"Range de risk_score nos setores: {clean_sectors['risk_score'].min():.3f} - {clean_sectors['risk_score'].max():.3f}")
+        logger.info(f"Distribuição de níveis de risco: {clean_sectors['final_risk_level'].value_counts().to_dict()}")
         
         # Prepara dados das piscinas
         clean_pools = prepare_pools_data(dirty_pools_gdf)
@@ -319,119 +403,69 @@ def create_priority_map(
             control=True
         ).add_to(m)
         
-        # --- Camada 1: Risco por Setor (APENAS CORES, SEM MARCADORES) ---
+        # --- Camada 1: Risco por Setor COM POPUPS DETALHADOS ---
         try:
-            logger.info("Adicionando camada de setores...")
+            logger.info("Adicionando camada de setores com popups de porcentagem...")
             
-            # Verifica se há variação nos dados
-            if clean_sectors['risk_score'].nunique() <= 1:
-                logger.warning("Todos os valores de risk_score são iguais. Usando cores uniformes.")
-                # Usa cores baseadas no nível de risco
-                for idx, row in clean_sectors.iterrows():
-                    try:
-                        risk_color = get_risk_color(row['final_risk_level'], row['risk_score'])
-                        
-                        # Popup moderno
-                        popup_data = {
-                            'Setor': row['CD_SETOR'],
-                            'Nível de Risco': f"<span style='color: {risk_color}; font-weight: bold;'>{row['final_risk_level']}</span>",
-                            'Score de Risco': f"{row['risk_score']:.3f}",
-                            'Piscinas Detectadas': f"{int(row['dirty_pool_count'])}"
-                        }
-                        popup_html = create_modern_popup(
-                            f"📍 Setor Censitário", 
-                            popup_data, 
-                            risk_color
-                        )
-                        
-                        # Adiciona apenas o polígono colorido (SEM marcador)
-                        folium.GeoJson(
-                            row.geometry,
-                            style_function=lambda x, color=risk_color: {
-                                'fillColor': color,
-                                'color': color,
-                                'weight': 2,
-                                'fillOpacity': 0.6,
-                                'opacity': 0.8
-                            },
-                            popup=folium.Popup(popup_html, max_width=420),
-                            tooltip=f"Setor {row['CD_SETOR']} - {row['final_risk_level']}"
-                        ).add_to(m)
-                        
-                    except Exception as e:
-                        logger.warning(f"Erro ao processar setor {row.get('CD_SETOR', 'unknown')}: {e}")
-                        continue
-            else:
-                # Usa Choropleth para variação de cores
-                choropleth_data = clean_sectors[['CD_SETOR', 'risk_score']].copy()
-                choropleth_data['CD_SETOR'] = choropleth_data['CD_SETOR'].astype(str)
-                
-                folium.Choropleth(
-                    geo_data=clean_sectors.to_json(),
-                    name='Mapa de Risco Ambiental',
-                    data=choropleth_data,
-                    columns=['CD_SETOR', 'risk_score'],
-                    key_on='feature.properties.CD_SETOR',
-                    fill_color='YlOrRd',
-                    fill_opacity=0.7,
-                    line_opacity=0.8,
-                    line_weight=2,
-                    legend_name='Score de Risco (0-1)',
-                    highlight=True
-                ).add_to(m)
-                
-                # Adiciona APENAS popups (SEM marcadores de ícone)
-                for idx, row in clean_sectors.iterrows():
-                    try:
-                        centroid = row.geometry.centroid
-                        risk_color = get_risk_color(row['final_risk_level'], row['risk_score'])
-                        
-                        popup_data = {
-                            'Setor': row['CD_SETOR'],
-                            'Nível de Risco': f"<span style='color: {risk_color}; font-weight: bold;'>{row['final_risk_level']}</span>",
-                            'Score de Risco': f"{row['risk_score']:.3f}",
-                            'Piscinas Detectadas': f"{int(row['dirty_pool_count'])}"
-                        }
-                        popup_html = create_modern_popup(
-                            f"📍 Setor Censitário", 
-                            popup_data, 
-                            risk_color
-                        )
-                        
-                        # Marcador invisível apenas para o popup
-                        folium.CircleMarker(
-                            location=[centroid.y, centroid.x],
-                            radius=0.1,  # Muito pequeno, quase invisível
-                            color='transparent',
-                            fill=False,
-                            popup=folium.Popup(popup_html, max_width=420),
-                            tooltip=f"Setor {row['CD_SETOR']}"
-                        ).add_to(m)
-                        
-                    except Exception as e:
-                        logger.warning(f"Erro ao adicionar popup para setor {row.get('CD_SETOR', 'unknown')}: {e}")
-                        continue
+            # Cria FeatureGroup para os setores
+            sectors_layer = folium.FeatureGroup(name='🎯 Setores de Risco')
             
-            logger.info("Camada de setores adicionada com sucesso")
+            for idx, row in clean_sectors.iterrows():
+                try:
+                    risk_color = get_risk_color(row['final_risk_level'], row['risk_score'])
+                    
+                    # NOVA FUNCIONALIDADE: Popup detalhado com PORCENTAGEM DE RISCO
+                    risk_percentage_html = format_risk_percentage(row['risk_score'])
+                    
+                    # Dados adicionais do setor
+                    popup_data = {
+                        'Código do Setor': row['CD_SETOR'],
+                        'Nível de Risco': f"<span style='color: {risk_color}; font-weight: bold; font-size: 14px;'>{row['final_risk_level']}</span>",
+                        'Porcentagem de Risco': risk_percentage_html,
+                        'Piscinas Detectadas': f"<span style='color: #FF7C33; font-weight: bold;'>{int(row['dirty_pool_count'])}</span>",
+                    }
+                    
+                    # Adiciona dados climáticos se disponíveis
+                    if 't2m_mean' in row and pd.notna(row['t2m_mean']):
+                        popup_data['Temperatura Média'] = f"{row['t2m_mean']:.1f}°C"
+                    
+                    if 'tp_mean' in row and pd.notna(row['tp_mean']):
+                        precip_mm = row['tp_mean'] * 1000 * 30  # Converte para mm/mês
+                        popup_data['Precipitação'] = f"{precip_mm:.1f} mm/mês"
+                    
+                    if 'ndvi_mean' in row and pd.notna(row['ndvi_mean']):
+                        popup_data['Índice de Vegetação'] = f"{row['ndvi_mean']:.3f}"
+                    
+                    popup_html = create_modern_popup(
+                        f"🎯 Análise de Risco - Setor {row['CD_SETOR']}", 
+                        popup_data, 
+                        risk_color
+                    )
+                    
+                    # Adiciona polígono colorido com popup interativo
+                    folium.GeoJson(
+                        row.geometry,
+                        style_function=lambda x, color=risk_color: {
+                            'fillColor': color,
+                            'color': color,
+                            'weight': 2,
+                            'fillOpacity': 0.7,
+                            'opacity': 0.9
+                        },
+                        popup=folium.Popup(popup_html, max_width=500),
+                        tooltip=f"🎯 Setor {row['CD_SETOR']} - Risco: {row['risk_score']*100:.1f}% ({row['final_risk_level']})"
+                    ).add_to(sectors_layer)
+                    
+                except Exception as e:
+                    logger.warning(f"Erro ao processar setor {row.get('CD_SETOR', 'unknown')}: {e}")
+                    continue
+            
+            sectors_layer.add_to(m)
+            logger.info("✅ Camada de setores com porcentagem de risco adicionada com sucesso")
             
         except Exception as e:
             logger.error(f"Erro ao adicionar camada de setores: {e}")
-            # Fallback simples
-            try:
-                folium.GeoJson(
-                    clean_sectors.to_json(),
-                    name='Setores (Fallback)',
-                    style_function=lambda x: {
-                        'fillColor': '#FF7C33',
-                        'color': '#FF7C33',
-                        'weight': 2,
-                        'fillOpacity': 0.5,
-                        'opacity': 0.8
-                    }
-                ).add_to(m)
-                logger.info("Camada fallback adicionada")
-            except Exception as e2:
-                logger.error(f"Falha também no fallback: {e2}")
+            return False
         
         # --- Camada 2: Piscinas com Imagens nos Popups ---
         if clean_pools is not None and not clean_pools.empty:
@@ -533,7 +567,7 @@ def create_priority_map(
                         folium.Marker(
                             location=[lat, lon],
                             icon=custom_icon,
-                            popup=folium.Popup(popup_html, max_width=420),
+                            popup=folium.Popup(popup_html, max_width=500),
                             tooltip=f"Piscina - Setor {sector_id} ({risk_level})"
                         ).add_to(pools_layer)
                         
@@ -614,15 +648,97 @@ def create_priority_map(
             opacity: 0.8;
             transform: scale(1.02);
         }
+        /* Estilo para as barras de progresso */
+        .risk-progress-bar {
+            animation: fillBar 1s ease-in-out;
+        }
+        @keyframes fillBar {
+            from { width: 0%; }
+            to { width: var(--target-width); }
+        }
         </style>
         """
         m.get_root().html.add_child(folium.Element(custom_css))
+        
+        # Adiciona JavaScript para interatividade extra
+        interactive_js = """
+        <script>
+        // Adiciona funcionalidade de clique nos setores para mostrar mais detalhes
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Mapa de Risco de Dengue carregado com funcionalidade de porcentagem');
+            
+            // Adiciona evento para copiar coordenadas ao clicar
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.leaflet-popup-content')) {
+                    const coordElement = e.target.closest('.leaflet-popup-content').querySelector('[data-coords]');
+                    if (coordElement && e.shiftKey) {
+                        navigator.clipboard.writeText(coordElement.textContent);
+                        alert('Coordenadas copiadas: ' + coordElement.textContent);
+                    }
+                }
+            });
+        });
+        </script>
+        """
+        m.get_root().html.add_child(folium.Element(interactive_js))
+        
+        # Adiciona legenda customizada
+        legend_html = f"""
+        <div style="
+            position: fixed; 
+            top: 10px; left: 10px; width: 200px; height: auto; 
+            background: rgba(26, 36, 68, 0.9); 
+            border: 1px solid rgba(255, 124, 51, 0.3);
+            border-radius: 10px; 
+            z-index: 9999; 
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            color: white;
+        ">
+        <h4 style="margin: 0 0 10px 0; color: #FF7C33;">📊 Legenda de Risco</h4>
+        <div style="margin: 8px 0;">
+            <span style="background: #4CAF50; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
+            Baixo (0-25%)
+        </div>
+        <div style="margin: 8px 0;">
+            <span style="background: #FF9800; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
+            Médio (25-50%)
+        </div>
+        <div style="margin: 8px 0;">
+            <span style="background: #FF5722; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
+            Alto (50-75%)
+        </div>
+        <div style="margin: 8px 0;">
+            <span style="background: #D32F2F; width: 15px; height: 15px; display: inline-block; border-radius: 3px; margin-right: 8px;"></span>
+            Muito Alto (75-100%)
+        </div>
+        <hr style="border: none; height: 1px; background: rgba(255, 124, 51, 0.3); margin: 10px 0;">
+        <p style="margin: 5px 0; font-size: 10px; color: #cccccc;">
+            💡 Clique nos setores para ver porcentagem detalhada<br>
+            🏊 Círculos vermelhos = Piscinas detectadas<br>
+            ⌨️ Shift+Click = Copiar coordenadas
+        </p>
+        </div>
+        """
+        m.get_root().html.add_child(folium.Element(legend_html))
         
         # Salva o mapa
         try:
             output_html_path.parent.mkdir(parents=True, exist_ok=True)
             m.save(str(output_html_path))
-            logger.info(f"✅ Mapa com imagens salvo com sucesso em: {output_html_path}")
+            logger.info(f"✅ Mapa com porcentagem de risco salvo com sucesso em: {output_html_path}")
+            
+            # Log final das estatísticas
+            total_sectors = len(clean_sectors)
+            high_risk_sectors = len(clean_sectors[clean_sectors['risk_score'] >= 0.5])
+            avg_risk = clean_sectors['risk_score'].mean() * 100
+            
+            logger.info(f"📊 Estatísticas do mapa:")
+            logger.info(f"   Total de setores: {total_sectors}")
+            logger.info(f"   Setores de alto risco (≥50%): {high_risk_sectors}")
+            logger.info(f"   Risco médio geral: {avg_risk:.1f}%")
+            
             return True
             
         except Exception as e:

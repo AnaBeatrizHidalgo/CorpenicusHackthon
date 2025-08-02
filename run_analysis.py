@@ -1,4 +1,4 @@
-# run_analysis.py - VERSÃO CORRIGIDA COM ÁREA CLIMÁTICA GRANDE
+# run_analysis.py - VERSÃO CORRIGIDA COM PRESERVAÇÃO DO RISK SCORE
 import json
 from pathlib import Path
 import os
@@ -94,7 +94,7 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
     CONFIDENCE_THRESHOLD = 0.3
     RISK_AMPLIFICATION_FACTOR = 0.2
     SKIP_DOWNLOADS_AND_PROCESSING = False
-    SKIP_POOL_DETECTION = True
+    SKIP_POOL_DETECTION = False
 
     output_dir = paths.OUTPUT_DIR / job_id
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -233,16 +233,34 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         if features_df.empty:
             raise ValueError("Arquivo de features está vazio")
         print(f"✅ [PIPELINE-INFO] Arquivo de features carregado com sucesso. Shape: {features_df.shape}")
+        print(f"📊 [PIPELINE-INFO] Colunas disponíveis: {list(features_df.columns)}")
     except Exception as e:
         error_msg = f"Erro ao carregar arquivo de features {final_features_path}: {str(e)}"
         print(f"❌ [PIPELINE-ERROR] {error_msg}")
         raise Exception(error_msg)
 
     # --- Baseline Risk Calculation ---
+    print("\n🎯 === CALCULANDO SCORES DE RISCO ===")
     baseline_risk_df = safe_execute(calculate_risk_score, "Cálculo do score de risco base", features_df)
     if baseline_risk_df is None:
         print("❌ Falha no cálculo do score de risco. Encerrando pipeline.")
         return None
+    
+    # Debug dos valores de risco calculados
+    if 'risk_score' in baseline_risk_df.columns:
+        risk_stats = baseline_risk_df['risk_score'].describe()
+        print(f"📊 [PIPELINE-DEBUG] Estatísticas do risk_score:")
+        print(f"   Min: {risk_stats['min']:.4f}")
+        print(f"   Max: {risk_stats['max']:.4f}")
+        print(f"   Média: {risk_stats['mean']:.4f}")
+        print(f"   Mediana: {risk_stats['50%']:.4f}")
+    
+    if 'final_risk_level' in baseline_risk_df.columns:
+        risk_distribution = baseline_risk_df['final_risk_level'].value_counts()
+        print(f"📊 [PIPELINE-DEBUG] Distribuição de níveis de risco:")
+        for level, count in risk_distribution.items():
+            percentage = (count / len(baseline_risk_df)) * 100
+            print(f"   {level}: {count} setores ({percentage:.1f}%)")
 
     # --- Pool Detection ---
     detected_pools = []
@@ -257,58 +275,138 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
     else:
         print("\n⏭️ [PIPELINE] Pulando etapa de DETECÇÃO DE PISCINAS (SKIP_POOL_DETECTION=True).")
     
-    # --- Consolidation and Map Generation ---
+    # --- CORREÇÃO CRÍTICA: Consolidação preservando o risk_score original ---
+    print("\n🔗 === CONSOLIDANDO DADOS PARA O MAPA ===")
+    
+    # Merge dos dados de risco com os setores geográficos
     final_risk_gdf = study_area_gdf.merge(baseline_risk_df, on='CD_SETOR', how='left')
+    print(f"📊 [PIPELINE-DEBUG] Merge realizado. Shape final: {final_risk_gdf.shape}")
+    
+    # Processa dados das piscinas
     pools_df = pd.DataFrame(detected_pools)
-
+    
     if not pools_df.empty:
         pool_counts = pools_df.groupby('sector_id').size().reset_index(name='dirty_pool_count')
         pool_counts['sector_id'] = pool_counts['sector_id'].astype(np.int64)
         final_risk_gdf = final_risk_gdf.merge(pool_counts, left_on='CD_SETOR', right_on='sector_id', how='left')
+        print(f"✅ [PIPELINE-INFO] Piscinas processadas e adicionadas ao GeoDataFrame")
     
+    # Garante que dirty_pool_count existe
     if 'dirty_pool_count' not in final_risk_gdf.columns:
         final_risk_gdf['dirty_pool_count'] = 0
-
     final_risk_gdf['dirty_pool_count'] = final_risk_gdf['dirty_pool_count'].fillna(0)
-    final_risk_gdf['risk_score'] = final_risk_gdf['risk_score'].fillna(0)
-    final_risk_gdf['amplified_risk_score'] = final_risk_gdf['risk_score'] + (final_risk_gdf['dirty_pool_count'] * RISK_AMPLIFICATION_FACTOR)
     
-    conditions = [final_risk_gdf['amplified_risk_score'] > 0.75, final_risk_gdf['amplified_risk_score'] > 0.50]
+    # CORREÇÃO: Preserva o risk_score original e cria amplified_risk_score separadamente
+    if 'risk_score' not in final_risk_gdf.columns:
+        print("⚠️ [PIPELINE-WARNING] Coluna risk_score não encontrada no GeoDataFrame final")
+        final_risk_gdf['risk_score'] = 0.5  # Valor padrão
+    
+    final_risk_gdf['risk_score'] = final_risk_gdf['risk_score'].fillna(0.5)
+    
+    # Cria amplified_risk_score (pode ser usado para priorização)
+    final_risk_gdf['amplified_risk_score'] = (
+        final_risk_gdf['risk_score'] + 
+        (final_risk_gdf['dirty_pool_count'] * RISK_AMPLIFICATION_FACTOR)
+    ).clip(0, 1)
+    
+    # CORREÇÃO: Usa risk_score original para classificação (não amplified)
+    # Isso mantém a porcentagem de risco "pura" baseada apenas nos fatores ambientais
+    conditions = [
+        final_risk_gdf['risk_score'] > 0.75, 
+        final_risk_gdf['risk_score'] > 0.50
+    ]
     choices = ['Alto', 'Médio']
     final_risk_gdf['risk_level'] = np.select(conditions, choices, default='Baixo')
+    
+    # CORREÇÃO: Preserva final_risk_level se já existir
+    if 'final_risk_level' not in final_risk_gdf.columns:
+        final_risk_gdf['final_risk_level'] = final_risk_gdf['risk_level']
+    
+    # Debug final dos dados
+    print(f"🎯 [PIPELINE-FINAL-DEBUG] Dados finais preparados:")
+    print(f"   Total de setores: {len(final_risk_gdf)}")
+    print(f"   Range risk_score: {final_risk_gdf['risk_score'].min():.3f} - {final_risk_gdf['risk_score'].max():.3f}")
+    print(f"   Média risk_score: {final_risk_gdf['risk_score'].mean():.3f}")
+    
+    if 'final_risk_level' in final_risk_gdf.columns:
+        final_distribution = final_risk_gdf['final_risk_level'].value_counts()
+        print(f"   Distribuição final:")
+        for level, count in final_distribution.items():
+            print(f"      {level}: {count} setores")
 
+    # Prepara dados das piscinas para o mapa
     pools_gdf = None
     if not pools_df.empty:
         pools_gdf = gpd.GeoDataFrame(pools_df, geometry=gpd.points_from_xy(pools_df.pool_lon, pools_df.pool_lat), crs="EPSG:4326")
-        pools_gdf = pools_gdf.merge(final_risk_gdf[['CD_SETOR', 'risk_level']], left_on='sector_id', right_on='CD_SETOR', how='left')
+        pools_gdf = pools_gdf.merge(final_risk_gdf[['CD_SETOR', 'final_risk_level']], left_on='sector_id', right_on='CD_SETOR', how='left')
 
+    # --- Geração do Mapa com Porcentagem de Risco ---
+    print("\n🗺️ === GERANDO MAPA INTERATIVO ===")
     map_path = output_dir / "mapa_de_risco_e_priorizacao.html"
-    safe_execute(create_priority_map, "Geração do mapa interativo final",
+    map_success = safe_execute(create_priority_map, "Geração do mapa interativo final",
                  sectors_risk_gdf=final_risk_gdf, dirty_pools_gdf=pools_gdf, output_html_path=map_path)
+    
+    if not map_success:
+        print("⚠️ [PIPELINE-WARNING] Falha na geração do mapa, mas continuando...")
 
     # --- Summary Generation for Frontend ---
+    print("\n📋 === GERANDO RESUMO FINAL ===")
     summary_path = output_dir / "summary.json"
     
+    # Calcula estatísticas para o resumo
     avg_ndvi = final_risk_gdf['ndvi_mean'].mean() if 'ndvi_mean' in final_risk_gdf.columns else np.nan
     avg_temp_k = final_risk_gdf['t2m_mean'].mean() if 't2m_mean' in final_risk_gdf.columns else np.nan
     avg_precip_m = final_risk_gdf['tp_mean'].mean() if 'tp_mean' in final_risk_gdf.columns else np.nan
+    
+    # CORREÇÃO: Usa final_risk_level para distribuição
+    risk_distribution = {}
+    if 'final_risk_level' in final_risk_gdf.columns:
+        risk_distribution = final_risk_gdf['final_risk_level'].value_counts().to_dict()
+    
+    # Calcula estatísticas de risco
+    avg_risk_percentage = final_risk_gdf['risk_score'].mean() * 100 if 'risk_score' in final_risk_gdf.columns else 0
+    max_risk_percentage = final_risk_gdf['risk_score'].max() * 100 if 'risk_score' in final_risk_gdf.columns else 0
     
     summary_data = {
         "map_url": str(Path(map_path).relative_to(Path.cwd())).replace('\\', '/'),
         "summary_url": str(Path(summary_path).relative_to(Path.cwd())).replace('\\', '/'),
         "total_sectors": int(len(final_risk_gdf)),
         "dirty_pools_found": int(len(detected_pools)),
-        "risk_distribution": {k: int(v) for k, v in final_risk_gdf['risk_level'].value_counts().to_dict().items()},
+        "risk_distribution": {k: int(v) for k, v in risk_distribution.items()},
+        "avg_risk_percentage": f"{avg_risk_percentage:.1f}%",
+        "max_risk_percentage": f"{max_risk_percentage:.1f}%", 
         "avg_ndvi": f"{avg_ndvi:.3f}" if pd.notna(avg_ndvi) else "N/D",
         "avg_temp_celsius": f"{avg_temp_k:.1f}" if pd.notna(avg_temp_k) else "N/D",
         "total_precip_mm": f"{avg_precip_m * 1000 * 30:.1f}" if pd.notna(avg_precip_m) else "N/D",
+        # Informações adicionais para debug
+        "risk_score_stats": {
+            "min": float(final_risk_gdf['risk_score'].min()) if 'risk_score' in final_risk_gdf.columns else 0,
+            "max": float(final_risk_gdf['risk_score'].max()) if 'risk_score' in final_risk_gdf.columns else 0,
+            "mean": float(final_risk_gdf['risk_score'].mean()) if 'risk_score' in final_risk_gdf.columns else 0
+        }
     }
     
+    # Salva o resumo
     with open(summary_path, 'w') as f:
         json.dump(summary_data, f, indent=4)
     
     print(f"🎉 [PIPELINE-FINAL] Pipeline concluído com sucesso!")
     print(f"📊 [PIPELINE-FINAL] Resumo: {len(final_risk_gdf)} setores, {len(detected_pools)} piscinas detectadas")
+    print(f"🎯 [PIPELINE-FINAL] Risco médio: {avg_risk_percentage:.1f}% (máximo: {max_risk_percentage:.1f}%)")
     print(f"🗺️ [PIPELINE-FINAL] Mapa salvo em: {map_path}")
+    
+    # Salva dados finais para debug (opcional)
+    debug_data_path = output_dir / "debug_map_data.csv"
+    try:
+        # Salva apenas colunas essenciais para debug
+        debug_columns = ['CD_SETOR', 'risk_score', 'final_risk_level', 'dirty_pool_count']
+        available_columns = [col for col in debug_columns if col in final_risk_gdf.columns]
+        
+        debug_df = final_risk_gdf[available_columns].copy()
+        debug_df.to_csv(debug_data_path, index=False)
+        print(f"🔍 [PIPELINE-DEBUG] Dados de debug salvos em: {debug_data_path}")
+        
+    except Exception as e:
+        print(f"⚠️ [PIPELINE-WARNING] Erro ao salvar dados de debug: {e}")
         
     return summary_data
