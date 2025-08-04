@@ -104,7 +104,6 @@ def download_era5_land_data(
         
         print("📡 Enviando requisição para a API do CDS...")
         
-        # CORREÇÃO PRINCIPAL: Adicionar parâmetro 'grid' obrigatório
         request_data = {
             'variable': variables,
             'year': year,
@@ -170,7 +169,6 @@ if __name__ == '__main__':
     sys.path.insert(0, str(project_root))
     
     try:
-        # CORREÇÃO: Imports corrigidos para a estrutura real do projeto
         from src.config import settings
         from src.utils import paths
         from calendar import monthrange

@@ -93,7 +93,6 @@ def is_pool_dirty_hsv(image: np.ndarray, box: list) -> bool: # <<< NOVO >>>
     return False
 
 def fetch_Maps_image(api_key, lat, lon, output_path, zoom=19, size="640x640"):
-    # (sem alterações)
     base_url = "https://maps.googleapis.com/maps/api/staticmap?"
     params = {"center": f"{lat},{lon}", "zoom": zoom, "size": size, "maptype": "satellite", "key": api_key}
     response = requests.get(base_url, params=params)
@@ -108,7 +107,7 @@ def find_pools_in_sectors(
     raw_images_dir: Path,
     detected_images_dir: Path,
     confidence_threshold: float = 0.25
-): # <<< ALTERADO >>>
+): 
     if MODEL is None:
         logging.error("Modelo YOLO não carregado. Abortando detecção de piscinas.")
         return []
@@ -116,7 +115,7 @@ def find_pools_in_sectors(
     raw_images_dir.mkdir(parents=True, exist_ok=True)
     detected_images_dir.mkdir(parents=True, exist_ok=True)
 
-    dirty_pools_detections = [] # <<< ALTERADO: Agora só salvamos piscinas sujas
+    dirty_pools_detections = [] 
     logging.info(f"Iniciando busca por piscinas em {len(risk_sectors_gdf)} setores de risco.")
 
     for index, sector in risk_sectors_gdf.iterrows():
@@ -163,7 +162,6 @@ def find_pools_in_sectors(
     return dirty_pools_detections
 # --- Bloco de Teste (Permanece o mesmo) ---
 if __name__ == '__main__':
-    # ... (código sem alterações)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logging.info("--- MODO DE TESTE: Executando pool_detector.py de forma isolada ---")
     try:

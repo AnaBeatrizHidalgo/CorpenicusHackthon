@@ -227,10 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalPrecip.textContent = summary.total_precip_mm ? `${summary.total_precip_mm} mm` : 'N/D';
             }
             
-            // === NOVA FUNCIONALIDADE: MOSTRAR ESTATÍSTICAS DE RISCO ===
             showRiskStatistics(summary);
             
-            // === NOVA FUNCIONALIDADE: CRIAR NOTIFICAÇÃO DE SUCESSO ===
             createSuccessNotification(summary);
             
             showStatus('✅ Dashboard atualizado com análise de risco!', 'success');
@@ -241,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // === NOVA FUNÇÃO: MOSTRAR ESTATÍSTICAS DE RISCO ===
     function showRiskStatistics(summary) {
         try {
             // Cria ou atualiza painel de estatísticas de risco
@@ -315,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // === NOVA FUNÇÃO: CRIAR NOTIFICAÇÃO DE SUCESSO ===
     function createSuccessNotification(summary) {
         try {
             // Remove notificação anterior se existir

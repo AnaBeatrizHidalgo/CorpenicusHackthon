@@ -70,12 +70,10 @@ def aggregate_climate_by_sector(
     print("🌡️ Iniciando agregação de dados climáticos por setor censitário.")
     
     try:
-        # 1. Carregar os dados geográficos primeiro para validar área
         print(f"📂 Lendo dados geográficos de: {geodata_path}")
         sectors = gpd.read_file(geodata_path)
         sectors = sectors.to_crs(epsg=4326)
         
-        # Calcular tamanho da área de estudo
         bounds = sectors.total_bounds  # [min_lon, min_lat, max_lon, max_lat]
         area_width_km = haversine_distance(bounds[1], bounds[0], bounds[1], bounds[2])
         area_height_km = haversine_distance(bounds[1], bounds[0], bounds[3], bounds[0])
@@ -84,8 +82,7 @@ def aggregate_climate_by_sector(
         print(f"📏 Tamanho da área de estudo: {area_size_km:.2f} km")
         print(f"📡 Resolução do ERA5-Land: ~9-11 km por pixel")
         
-        # Verificar se a área precisa ser expandida para dados climáticos
-        MIN_AREA_SIZE_KM = 15  # Área mínima recomendada para ERA5-Land
+        MIN_AREA_SIZE_KM = 15  
         
         if area_size_km < MIN_AREA_SIZE_KM:
             print(f"⚠️  ÁREA PEQUENA PARA ERA5-LAND DETECTADA!")
@@ -93,25 +90,20 @@ def aggregate_climate_by_sector(
             print(f"   📐 Mínimo recomendado: {MIN_AREA_SIZE_KM} km")
             print(f"   ℹ️  Os dados foram baixados com área expandida automaticamente")
         
-        # 2. Carregar os dados climáticos
         print(f"📡 Lendo dados climáticos de: {netcdf_path}")
         climate_data = xr.open_dataset(netcdf_path)
         
-        # Debug: Print dataset info
         print(f"📊 Dataset dimensions: {dict(climate_data.dims)}")
         print(f"🗂️ Dataset coordinates: {list(climate_data.coords)}")
         
-        # Get climate variables
         climate_vars = list(climate_data.data_vars)
         print(f"🌡️ Variáveis climáticas encontradas: {climate_vars}")
 
-        # CORREÇÃO: Conversão de temperatura de Kelvin para Celsius
         if 't2m' in climate_data.variables:
             print("🌡️ Variável 't2m' encontrada. Convertendo de Kelvin para Celsius...")
             climate_data['t2m'] = climate_data['t2m'] - 273.15
             print("✅ Conversão de temperatura para Celsius concluída.")
         
-        # CORREÇÃO: Determinar coordenadas corretamente
         if 'latitude' in climate_data.coords:
             lat_coord = 'latitude'
             lon_coord = 'longitude'
@@ -121,7 +113,6 @@ def aggregate_climate_by_sector(
         else:
             raise ValueError("❌ Não foi possível encontrar coordenadas latitude/longitude nos dados climáticos")
         
-        # CORREÇÃO: Obter extent espacial dos dados climáticos de forma mais robusta
         try:
             lats = climate_data[lat_coord].values
             lons = climate_data[lon_coord].values
@@ -138,11 +129,9 @@ def aggregate_climate_by_sector(
         
         print(f"🌍 Climate data bounds: {climate_bounds}")
         
-        # Get sectors bounds
         sectors_bounds = list(sectors.total_bounds)
         print(f"🏘️ Sectors bounds: {sectors_bounds}")
 
-        # CORREÇÃO: Verificação melhorada de sobreposição
         overlap_exists = not (
             sectors_bounds[2] < climate_bounds[0] or  # sectors max_lon < climate min_lon
             sectors_bounds[0] > climate_bounds[2] or  # sectors min_lon > climate max_lon
@@ -156,7 +145,6 @@ def aggregate_climate_by_sector(
             print(f"   Clima: {climate_bounds}")
             return _apply_climate_fallback_minimal(sectors, output_path)
 
-        # 3. CORREÇÃO: Método alternativo de agregação sem dependência do rasterio.rio
         print("🔄 Iniciando agregação espacial...")
         results = []
         processed_count = 0
@@ -166,7 +154,6 @@ def aggregate_climate_by_sector(
             sector_id = sector['CD_SETOR'] 
             
             try:
-                # CORREÇÃO: Verificar se o setor intersecta com os dados climáticos
                 sector_bounds = sector.geometry.bounds
                 if (sector_bounds[2] < climate_bounds[0] or  
                     sector_bounds[0] > climate_bounds[2] or  
@@ -180,7 +167,6 @@ def aggregate_climate_by_sector(
                     results.append(sector_metrics)
                     continue
 
-                # MÉTODO ALTERNATIVO: Usar seleção por coordenadas mais próximas
                 sector_center = sector.geometry.centroid
                 sector_lat = sector_center.y
                 sector_lon = sector_center.x
@@ -197,7 +183,6 @@ def aggregate_climate_by_sector(
                 
                 for var in climate_vars:
                     try:
-                        # CORREÇÃO: Extrair dados do pixel mais próximo
                         if 'valid_time' in climate_data[var].dims:
                             # Dados temporais - calcular média ao longo do tempo
                             pixel_data = climate_data[var].isel({lat_coord: lat_idx, lon_coord: lon_idx})
@@ -235,7 +220,6 @@ def aggregate_climate_by_sector(
         # Criar DataFrame dos resultados
         results_df = pd.DataFrame(results)
         
-        # Estatísticas de processamento
         print(f"📊 Processamento concluído:")
         print(f"  - Total de setores: {len(sectors)}")
         print(f"  - Setores processados com sucesso: {processed_count}")
@@ -270,27 +254,18 @@ def aggregate_climate_by_sector(
         return _apply_climate_fallback_minimal(sectors, output_path)
 
 def _apply_climate_fallback_minimal(sectors_gdf, output_path):
-    """
-    Aplica valores médios mínimos quando dados climáticos não estão disponíveis.
-    """
+
     print("🔄 Aplicando fallback climático com valores médios regionais...")
     
-    # Valores médios para Campinas em julho
     FALLBACK_VALUES = {
-        't2m_mean': 19.5,      # Temperatura média em °C
-        'tp_mean': 0.0015,     # Precipitação média em m/dia
+        't2m_mean': 0.666,      # Temperatura média em °C
+        'tp_mean': 0.666,     # Precipitação média em m/dia
     }
     
     results = []
     for index, sector in sectors_gdf.iterrows():
         sector_data = {'CD_SETOR': sector['CD_SETOR']}
         
-        # Adiciona pequena variação aleatória
-        np.random.seed(int(str(sector['CD_SETOR'])[-3:]) if str(sector['CD_SETOR']).isdigit() else 42)
-        
-        for var, base_value in FALLBACK_VALUES.items():
-            variation = np.random.uniform(-0.05, 0.05)  # ±5% de variação
-            sector_data[var] = base_value * (1 + variation)
         
         results.append(sector_data)
     

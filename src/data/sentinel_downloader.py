@@ -155,7 +155,6 @@ def download_and_save_sentinel_data(
         logging.error(f"Falha durante o download para {sensor}: {str(e)}", exc_info=True)
         return None
 
-# Bloco de teste (inalterado)
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     try:

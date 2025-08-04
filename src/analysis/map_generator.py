@@ -102,7 +102,6 @@ def prepare_sectors_data(sectors_gdf):
     
     clean_gdf['CD_SETOR'] = clean_gdf['CD_SETOR'].astype(str)
     
-    # CORREÇÃO: Verifica múltiplas colunas de risk_score possíveis
     risk_score_columns = ['risk_score', 'amplified_risk_score', 'final_risk_score']
     risk_score_col = None
     
@@ -122,7 +121,6 @@ def prepare_sectors_data(sectors_gdf):
         clean_gdf['risk_score'] = clean_gdf['risk_score'].fillna(0.5)
         clean_gdf['risk_score'] = clean_gdf['risk_score'].clip(0, 1)
     
-    # CORREÇÃO: Verifica múltiplas colunas de nível de risco possíveis
     risk_level_columns = ['final_risk_level', 'risk_level', 'risk_category']
     risk_level_col = None
     
@@ -143,7 +141,6 @@ def prepare_sectors_data(sectors_gdf):
     else:
         clean_gdf['final_risk_level'] = clean_gdf[risk_level_col].astype(str)
     
-    # Adiciona contagem de piscinas se não existir
     if 'dirty_pool_count' not in clean_gdf.columns:
         clean_gdf['dirty_pool_count'] = 0
     else:
@@ -201,10 +198,6 @@ def get_risk_color(risk_level, risk_score):
     return color_map.get(risk_level, '#2196F3')  # Azul como fallback
 
 def calculate_risk_percentiles(sectors_gdf):
-    """
-    NOVA FUNÇÃO: Calcula os percentis de risco baseados nos dados reais.
-    Isso garante consistência com o risk_assessor.py
-    """
     logger = logging.getLogger(__name__)
     
     if 'risk_score' not in sectors_gdf.columns:
@@ -212,7 +205,6 @@ def calculate_risk_percentiles(sectors_gdf):
         return {'p90': 0.75, 'p70': 0.50}
     
     try:
-        # Calcula os mesmos percentis usados no risk_assessor.py
         percentile_90 = sectors_gdf['risk_score'].quantile(0.90)  # Top 10%
         percentile_70 = sectors_gdf['risk_score'].quantile(0.70)  # Top 30%
         
@@ -227,17 +219,12 @@ def calculate_risk_percentiles(sectors_gdf):
         return {'p90': 0.75, 'p70': 0.50}  # Valores padrão
 
 def format_risk_percentage(risk_score, risk_level, percentiles):
-    """
-    FUNÇÃO CORRIGIDA: Formata o risk_score como porcentagem com interpretação CONSISTENTE.
-    Agora usa os percentils reais dos dados ao invés de valores fixos.
-    """
+ 
     if pd.isna(risk_score):
         return "N/A"
     
     percentage = risk_score * 100
     
-    # CORREÇÃO CRÍTICA: Usa o nível de risco já calculado pelo risk_assessor.py
-    # ao invés de recalcular com base em valores fixos
     if risk_level == 'Alto':
         interpretation = "🔴 Alto Risco"
         bar_color = "#FF5722"
@@ -255,7 +242,6 @@ def format_risk_percentage(risk_score, risk_level, percentiles):
         bar_color = "#4CAF50"
         description = f"Setor com risco abaixo da média regional"
     
-    # Adiciona informação sobre os percentis para transparência
     percentil_info = ""
     if risk_score >= percentiles['p90']:
         percentil_info = f"(Top 10% - Acima de {percentiles['p90']*100:.1f}%)"
@@ -264,7 +250,6 @@ def format_risk_percentage(risk_score, risk_level, percentiles):
     else:
         percentil_info = f"(Abaixo do percentil 70)"
     
-    # Cria barra visual de porcentagem
     bar_width = int(percentage)
     progress_bar = f"""
     <div style="margin: 10px 0;">
@@ -317,12 +302,10 @@ def format_risk_percentage(risk_score, risk_level, percentiles):
     return progress_bar
 
 def create_modern_popup_with_image(title, data_dict, image_base64=None, color="#FF7C33"):
-    """Cria popup moderno com imagem incluída"""
     data_rows = ""
     for key, value in data_dict.items():
         data_rows += f"<p style='margin: 5px 0;'><strong>{key}:</strong> {value}</p>"
     
-    # Adiciona seção da imagem se disponível
     image_section = ""
     if image_base64:
         image_section = f"""
@@ -399,7 +382,6 @@ def create_modern_popup_with_image(title, data_dict, image_base64=None, color="#
     return popup_html
 
 def create_modern_popup(title, data_dict, color="#FF7C33"):
-    """Cria popup moderno sem imagem (versão original)"""
     return create_modern_popup_with_image(title, data_dict, None, color)
 
 def create_priority_map(
@@ -407,35 +389,27 @@ def create_priority_map(
     dirty_pools_gdf: gpd.GeoDataFrame | None,
     output_html_path: Path
 ):
-    """
-    Cria um mapa interativo com design moderno e elegante, mostrando PORCENTAGEM DE RISCO CONSISTENTE nos popups dos setores.
-    """
+
     logger = logging.getLogger(__name__)
     logger.info(f"Gerando mapa de priorização com porcentagem de risco CONSISTENTE para {output_html_path.name}...")
     
     try:
-        # Determina diretório de imagens detectadas baseado no output_html_path
         detected_images_dir = output_html_path.parent / "google_detected_images"
         logger.info(f"Diretório de imagens detectadas: {detected_images_dir}")
         
-        # Prepara dados dos setores
         clean_sectors = prepare_sectors_data(sectors_risk_gdf)
         if clean_sectors is None:
             logger.error("Não foi possível preparar dados dos setores")
             return False
         
-        # NOVA FUNCIONALIDADE: Calcula percentis reais dos dados
         percentiles = calculate_risk_percentiles(clean_sectors)
         logger.info(f"📊 Usando percentis para consistência: {percentiles}")
         
-        # Log dos valores de risco para debug
         logger.info(f"Range de risk_score nos setores: {clean_sectors['risk_score'].min():.3f} - {clean_sectors['risk_score'].max():.3f}")
         logger.info(f"Distribuição de níveis de risco: {clean_sectors['final_risk_level'].value_counts().to_dict()}")
         
-        # Prepara dados das piscinas
         clean_pools = prepare_pools_data(dirty_pools_gdf)
         
-        # Calcula centro do mapa
         try:
             bounds = clean_sectors.total_bounds
             center_lat = (bounds[1] + bounds[3]) / 2
@@ -446,14 +420,12 @@ def create_priority_map(
             logger.warning(f"Erro ao calcular centro do mapa: {e}. Usando centro padrão.")
             map_center = [-22.818, -47.069]
         
-        # Cria o mapa base com tema dark
         m = folium.Map(
             location=map_center, 
             zoom_start=15, 
-            tiles=None  # Vamos adicionar tiles customizados
+            tiles=None  
         )
         
-        # Adiciona tile layer dark similar ao index_old.html
         folium.TileLayer(
             'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
             attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -462,25 +434,21 @@ def create_priority_map(
             control=True
         ).add_to(m)
         
-        # --- Camada 1: Risco por Setor COM POPUPS CORRIGIDOS ---
         try:
             logger.info("Adicionando camada de setores com popups de porcentagem CONSISTENTES...")
             
-            # Cria FeatureGroup para os setores
             sectors_layer = folium.FeatureGroup(name='🎯 Setores de Risco')
             
             for idx, row in clean_sectors.iterrows():
                 try:
                     risk_color = get_risk_color(row['final_risk_level'], row['risk_score'])
                     
-                    # CORREÇÃO CRÍTICA: Popup corrigido com percentis consistentes
                     risk_percentage_html = format_risk_percentage(
                         row['risk_score'], 
                         row['final_risk_level'], 
                         percentiles
                     )
                     
-                    # Dados adicionais do setor
                     popup_data = {
                         'Código do Setor': row['CD_SETOR'],
                         'Nível de Risco': f"<span style='color: {risk_color}; font-weight: bold; font-size: 14px;'>{row['final_risk_level']}</span>",
@@ -488,7 +456,6 @@ def create_priority_map(
                         'Piscinas Detectadas': f"<span style='color: #FF7C33; font-weight: bold;'>{int(row['dirty_pool_count'])}</span>",
                     }
                     
-                    # Adiciona dados climáticos se disponíveis
                     if 't2m_mean' in row and pd.notna(row['t2m_mean']):
                         popup_data['Temperatura Média'] = f"{row['t2m_mean']:.1f}°C"
                     
@@ -505,7 +472,6 @@ def create_priority_map(
                         risk_color
                     )
                     
-                    # Adiciona polígono colorido com popup interativo
                     folium.GeoJson(
                         row.geometry,
                         style_function=lambda x, color=risk_color: {
@@ -575,7 +541,6 @@ def create_priority_map(
                         }
                         status = status_map.get(risk_level, 'Ativo')
                         
-                        # NOVA FUNCIONALIDADE: Busca a imagem da piscina
                         pool_image_base64 = find_pool_image(sector_id, detected_images_dir)
                         
                         # Popup moderno com imagem
@@ -745,7 +710,6 @@ def create_priority_map(
         """
         m.get_root().html.add_child(folium.Element(interactive_js))
         
-        # CORREÇÃO NA LEGENDA: Agora mostra os percentis reais
         legend_html = f"""
         <div style="
             position: fixed; 
@@ -791,7 +755,6 @@ def create_priority_map(
             m.save(str(output_html_path))
             logger.info(f"✅ Mapa com porcentagem de risco CONSISTENTE salvo com sucesso em: {output_html_path}")
             
-            # Log final das estatísticas
             total_sectors = len(clean_sectors)
             high_risk_sectors = len(clean_sectors[clean_sectors['final_risk_level'] == 'Alto'])
             medium_risk_sectors = len(clean_sectors[clean_sectors['final_risk_level'] == 'Médio'])
@@ -817,26 +780,21 @@ def create_priority_map(
         return False
 
 def create_simple_map(sectors_gdf: gpd.GeoDataFrame, output_path: Path):
-    """Cria um mapa simples apenas com os setores (fallback)"""
     logger = logging.getLogger(__name__)
     logger.info("Criando mapa simples (fallback)...")
     
     try:
-        # Calcula centro
         bounds = sectors_gdf.total_bounds
         center = [(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2]
         
-        # Cria mapa básico com tema dark
         m = folium.Map(location=center, zoom_start=15, tiles=None)
         
-        # Adiciona tema dark
         folium.TileLayer(
             'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
             attr='&copy; OpenStreetMap &copy; CARTO',
             name='Dark Theme'
         ).add_to(m)
         
-        # Adiciona setores
         folium.GeoJson(
             sectors_gdf.to_json(),
             style_function=lambda x: {

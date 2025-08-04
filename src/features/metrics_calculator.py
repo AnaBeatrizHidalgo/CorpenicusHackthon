@@ -190,7 +190,6 @@ def merge_features(
         final_df.to_csv(output_path, index=False)
         print(f"💾 Arquivo de features final salvo com sucesso em: {output_path}")
         
-        # CORREÇÃO CRÍTICA: Retornar o DataFrame final
         return final_df
         
     except Exception as e:

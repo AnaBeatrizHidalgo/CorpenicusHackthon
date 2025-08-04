@@ -4,19 +4,8 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calculates a normalized risk score with CORRECTED weights based on scientific literature.
-    
-    Args:
-        features_df (pd.DataFrame): DataFrame com features climáticas e de imagem
-        
-    Returns:
-        pd.DataFrame: DataFrame com risk_score e final_risk_level adicionados
-    """
     print("🎯 Calculando score de risco para cada setor censitário...")
     
-    # PESOS CORRIGIDOS BASEADOS NA LITERATURA CIENTÍFICA
-    # Referências: PMC9767811, PMC7007072, Science Advances 2024
     risk_factors = {
         'tp_mean': 0.40,      # Precipitação - FATOR CRÍTICO (r=0.38 na literatura)
         't2m_mean': 0.35,     # Temperatura - MUITO IMPORTANTE (r=0.28-0.30)
@@ -29,7 +18,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
     
     df = features_df.copy()
     
-    # Usar CD_SETOR como índice temporário se existir
     if 'CD_SETOR' in df.columns:
         df.set_index('CD_SETOR', inplace=True)
     
@@ -39,7 +27,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
     # --- NORMALIZAÇÃO MAIS RIGOROSA ---
     print("🔄 Iniciando limpeza e normalização RIGOROSA dos dados...")
     
-    # CORREÇÃO 1: Definir faixas ideais para cada variável baseadas na literatura
     OPTIMAL_RANGES = {
         'tp_mean': (0.002, 0.008),    # 60-240mm/mês convertido para m/dia
         't2m_mean': (20, 28),         # Temperatura ótima para Aedes aegypti (°C)
@@ -56,7 +43,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
             df[f'{col}_norm'] = 0
             continue
         
-        # Preencher NaN com mediana (mais robusto que média)
         if df[col].isnull().any():
             nan_count = df[col].isnull().sum()
             print(f"   🔧 Encontrados {nan_count} valores NaN em '{col}'")
@@ -70,7 +56,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
                 df[f'{col}_norm'] = 0
                 continue
 
-        # CORREÇÃO 2: Normalização baseada em faixas ótimas conhecidas
         if col in OPTIMAL_RANGES:
             min_val, max_val = OPTIMAL_RANGES[col]
             
@@ -84,7 +69,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
                 # Para outras variáveis: normalização linear
                 df[f'{col}_norm'] = np.clip((df[col] - min_val) / (max_val - min_val), 0, 1)
         else:
-            # Normalização padrão MinMax
             try:
                 scaler = MinMaxScaler()
                 df[f'{col}_norm'] = scaler.fit_transform(df[[col]]).flatten()
@@ -97,7 +81,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
         norm_mean = df[f'{col}_norm'].mean()
         print(f"   ✅ {col}: min={norm_min:.3f}, max={norm_max:.3f}, mean={norm_mean:.3f}")
 
-    # --- CÁLCULO DE RISCO MAIS RIGOROSO ---
     print("\n🧮 Calculando score de risco com critérios RIGOROSOS...")
     df['risk_score'] = 0
     
@@ -110,11 +93,8 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
             avg_contribution = contribution.mean()
             print(f"   📊 {col}: peso {weight}, contribuição média: {avg_contribution:.4f}")
     
-    # CORREÇÃO 3: Aplicar limiar mais restritivo
-    # Apenas valores acima de 0.4 serão considerados risco significativo
     df['risk_score'] = np.clip(df['risk_score'], 0, 1)
     
-    # Estatísticas do risk_score
     risk_min = df['risk_score'].min()
     risk_max = df['risk_score'].max()
     risk_mean = df['risk_score'].mean()
@@ -122,11 +102,7 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
     print(f"   📊 Risk Score - Min: {risk_min:.4f}, Max: {risk_max:.4f}")
     print(f"   📊 Média: {risk_mean:.4f}, Desvio: {risk_std:.4f}")
     
-    # --- CLASSIFICAÇÃO MAIS RESTRITIVA ---
-    print("\n🏷️ Criando classificação MAIS RESTRITIVA de nível de risco...")
     
-    # CORREÇÃO 4: Usar percentis mais restritivos
-    # Apenas top 10% = alto risco, próximos 20% = médio risco
     try:
         percentile_90 = df['risk_score'].quantile(0.90)  # Top 10%
         percentile_70 = df['risk_score'].quantile(0.70)  # Top 30%
@@ -143,7 +119,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
         
     except Exception as e:
         print(f"   ⚠️ Erro na classificação: {str(e)}")
-        # Fallback com limites fixos mais restritivos
         conditions = [
             df['risk_score'] > 0.75,  # Apenas > 75% = Alto
             df['risk_score'] > 0.55   # Apenas > 55% = Médio
@@ -151,7 +126,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
         choices = ['Alto', 'Médio']
         df['final_risk_level'] = np.select(conditions, choices, default='Baixo')
 
-    # Mostrar distribuição final
     if 'final_risk_level' in df.columns:
         risk_distribution = df['final_risk_level'].value_counts()
         print(f"   📊 Distribuição CORRIGIDA de risco:")
@@ -163,7 +137,6 @@ def calculate_risk_score(features_df: pd.DataFrame) -> pd.DataFrame:
     
     result_df = df.reset_index()
     
-    # Convert any remaining categorical columns to string
     for col in result_df.columns:
         if hasattr(result_df[col], 'cat'):
             result_df[col] = result_df[col].astype(str)
