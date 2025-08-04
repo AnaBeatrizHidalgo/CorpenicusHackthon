@@ -1,8 +1,5 @@
 # src/features/image_processor_fixed.py
-"""
-Versão CORRIGIDA do módulo para processar imagens de satélite.
-Inclui diagnóstico automático, localização inteligente de arquivos e tratamento robusto de erros.
-"""
+
 import logging
 from pathlib import Path
 import geopandas as gpd
@@ -56,7 +53,7 @@ def find_raster_file(raster_path: Path, job_id: str = None) -> Path:
         for pattern in patterns:
             found_files = list(search_dir.glob(pattern))
             if found_files:
-                found_file = found_files[0]  # Pega o primeiro encontrado
+                found_file = found_files[0]  #
                 logging.info(f"  ✅ Arquivo encontrado: {found_file}")
                 return found_file
     
@@ -110,16 +107,7 @@ def clip_raster_by_sectors(
     output_dir: Path,
     job_id: str = None
 ):
-    """
-    Versão ROBUSTA da função de recorte com localização automática de arquivos
-    e tratamento inteligente de erros.
-    
-    Args:
-        raster_path (Path): Caminho para o arquivo raster (será localizado automaticamente se não existir)
-        geodata_path (Path): Caminho para o arquivo GeoJSON dos setores
-        output_dir (Path): Diretório de saída para os recortes
-        job_id (str): ID do job (usado para localização automática de arquivos)
-    """
+
     logging.info(f"🚀 Iniciando recorte ROBUSTO do raster '{raster_path.name}' por setores.")
     
     try:
@@ -324,11 +312,8 @@ def clip_raster_by_sectors(
         raise
 
 
-# Função wrapper para manter compatibilidade com o código existente
 def clip_raster_by_sectors_original_signature(raster_path, geodata_path, output_dir):
-    """
-    Wrapper para manter compatibilidade com a assinatura original da função.
-    """
+
     return clip_raster_by_sectors(
         raster_path=Path(raster_path) if not isinstance(raster_path, Path) else raster_path,
         geodata_path=Path(geodata_path) if not isinstance(geodata_path, Path) else geodata_path,
@@ -337,7 +322,6 @@ def clip_raster_by_sectors_original_signature(raster_path, geodata_path, output_
     )
 
 
-# Bloco para execução standalone (para testes)
 if __name__ == '__main__':
     import sys
     

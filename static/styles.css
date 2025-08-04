@@ -111,7 +111,6 @@
             font-size: 0.9rem;
         }
 
-        /* Map Container - CORREÇÃO CRÍTICA */
         #map-frame {
             width: 100%;
             height: calc(100% - 80px);

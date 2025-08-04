@@ -34,7 +34,6 @@ def create_study_area_geojson(
 
     print(f"🗺️ Criando área de estudo de {size_km}x{size_km} km centrada em ({center_lat}, {center_lon}).")
 
-    # CORREÇÃO: Cálculo mais preciso da conversão km -> graus
     # 1 grau de latitude ≈ 111.32 km (constante)
     # 1 grau de longitude ≈ 111.32 * cos(latitude) km (varia com latitude)
     lat_degree_km = 111.32
@@ -43,7 +42,6 @@ def create_study_area_geojson(
     half_size_lat_deg = (size_km / 2) / lat_degree_km
     half_size_lon_deg = (size_km / 2) / lon_degree_km
 
-    # CORREÇÃO: Cálculo correto do bounding box
     min_lon = center_lon - half_size_lon_deg
     max_lon = center_lon + half_size_lon_deg
     min_lat = center_lat - half_size_lat_deg
@@ -59,7 +57,6 @@ def create_study_area_geojson(
     study_bbox = (min_lon, min_lat, max_lon, max_lat)
     print(f"📍 Bounding Box calculado: [{min_lon:.6f}, {min_lat:.6f}, {max_lon:.6f}, {max_lat:.6f}]")
     
-    # CORREÇÃO: Verificar tamanhos reais em km
     actual_width_km = (max_lon - min_lon) * lon_degree_km
     actual_height_km = (max_lat - min_lat) * lat_degree_km
     print(f"📏 Dimensões reais: {actual_width_km:.2f} km (largura) x {actual_height_km:.2f} km (altura)")
@@ -67,7 +64,6 @@ def create_study_area_geojson(
     try:
         print("📂 Lendo e recortando o shapefile nacional (isso pode levar um momento)...")
         
-        # CORREÇÃO: Usar bbox tupla ao invés de lista
         study_gdf = gpd.read_file(national_shapefile_path, bbox=study_bbox)
         
         if study_gdf.empty:
@@ -76,13 +72,11 @@ def create_study_area_geojson(
             print(f"   Bbox usado: {study_bbox}")
             return None
 
-        # CORREÇÃO: Garantir que as colunas necessárias existem
         if 'CD_SETOR' not in study_gdf.columns:
             print("❌ ERRO: Coluna 'CD_SETOR' não encontrada no shapefile.")
             print(f"   Colunas disponíveis: {list(study_gdf.columns)}")
             return None
 
-        # CORREÇÃO: Converter CD_SETOR para string para evitar problemas de tipo
         study_gdf['CD_SETOR'] = study_gdf['CD_SETOR'].astype(str)
         
         # Garantir que o GeoDataFrame está no CRS correto

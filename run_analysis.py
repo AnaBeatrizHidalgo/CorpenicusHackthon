@@ -41,7 +41,6 @@ def _calculate_climate_download_area(study_area_gdf, min_size_km=60):
     """
     Calcula uma área MUITO MAIOR para download de dados climáticos.
     Garante cobertura completa expandindo significativamente a área.
-    CORREÇÃO: Agora usa 60km como mínimo + margem de segurança de 50%
     """
     bounds = study_area_gdf.total_bounds  # [min_lon, min_lat, max_lon, max_lat]
     center_lat = (bounds[1] + bounds[3]) / 2
@@ -59,7 +58,6 @@ def _calculate_climate_download_area(study_area_gdf, min_size_km=60):
     print(f"📡 Tamanho mínimo para ERA5-Land: {min_size_km} km")
     
     # SEMPRE expandir para área maior, independente do tamanho atual
-    # Adicionar margem de segurança de 50% para garantir cobertura completa
     safety_margin = 1.5  # 50% de margem extra
     expanded_size_km = max(min_size_km, current_size_km * 2) * safety_margin
     
@@ -108,10 +106,8 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         print("❌ Falha na criação da área de estudo. Encerrando pipeline.")
         return None
     
-    # CORREÇÃO CRÍTICA: Converter CD_SETOR para int64 corretamente
     study_area_gdf['CD_SETOR'] = pd.to_numeric(study_area_gdf['CD_SETOR'], errors='coerce').astype(np.int64)
 
-    # --- CORREÇÃO: Detecção inteligente de primeira execução ---
     final_features_path = output_dir / "final_features.csv"
     
     if SKIP_DOWNLOADS_AND_PROCESSING and not final_features_path.exists():
@@ -124,7 +120,6 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
     if not SKIP_DOWNLOADS_AND_PROCESSING:
         print("\n🚀 [PIPELINE] Executando pipeline COMPLETO de download e processamento de dados.")
         
-        # --- CORREÇÃO CRÍTICA: Cálculo correto da área para downloads ---
         print("\n📊 === CALCULANDO ÁREAS PARA DOWNLOAD ===")
         
         # Área para Sentinel (pode usar área original)
@@ -135,7 +130,6 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         climate_bbox = _calculate_climate_download_area(study_area_gdf, min_size_km=60)
         print(f"🌡️ Área Clima: {climate_bbox}")
         
-        # CORREÇÃO: Conversão correta para formato CDS (Norte, Oeste, Sul, Leste)
         area_cds = [climate_bbox[3], climate_bbox[0], climate_bbox[1], climate_bbox[2]]  # [max_lat, min_lon, min_lat, max_lon]
         print(f"📡 Área CDS (N,O,S,L): {area_cds}")
         
@@ -275,7 +269,6 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
     else:
         print("\n⏭️ [PIPELINE] Pulando etapa de DETECÇÃO DE PISCINAS (SKIP_POOL_DETECTION=True).")
     
-    # --- CORREÇÃO CRÍTICA: Consolidação preservando o risk_score original ---
     print("\n🔗 === CONSOLIDANDO DADOS PARA O MAPA ===")
     
     # Merge dos dados de risco com os setores geográficos
@@ -296,7 +289,6 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         final_risk_gdf['dirty_pool_count'] = 0
     final_risk_gdf['dirty_pool_count'] = final_risk_gdf['dirty_pool_count'].fillna(0)
     
-    # CORREÇÃO: Preserva o risk_score original e cria amplified_risk_score separadamente
     if 'risk_score' not in final_risk_gdf.columns:
         print("⚠️ [PIPELINE-WARNING] Coluna risk_score não encontrada no GeoDataFrame final")
         final_risk_gdf['risk_score'] = 0.5  # Valor padrão
@@ -309,7 +301,6 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
         (final_risk_gdf['dirty_pool_count'] * RISK_AMPLIFICATION_FACTOR)
     ).clip(0, 1)
     
-    # CORREÇÃO: Usa risk_score original para classificação (não amplified)
     # Isso mantém a porcentagem de risco "pura" baseada apenas nos fatores ambientais
     conditions = [
         final_risk_gdf['risk_score'] > 0.75, 
@@ -318,7 +309,6 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
     choices = ['Alto', 'Médio']
     final_risk_gdf['risk_level'] = np.select(conditions, choices, default='Baixo')
     
-    # CORREÇÃO: Preserva final_risk_level se já existir
     if 'final_risk_level' not in final_risk_gdf.columns:
         final_risk_gdf['final_risk_level'] = final_risk_gdf['risk_level']
     
@@ -358,7 +348,6 @@ def execute_pipeline(center_lat, center_lon, area_size_km, job_id):
     avg_temp_k = final_risk_gdf['t2m_mean'].mean() if 't2m_mean' in final_risk_gdf.columns else np.nan
     avg_precip_m = final_risk_gdf['tp_mean'].mean() if 'tp_mean' in final_risk_gdf.columns else np.nan
     
-    # CORREÇÃO: Usa final_risk_level para distribuição
     risk_distribution = {}
     if 'final_risk_level' in final_risk_gdf.columns:
         risk_distribution = final_risk_gdf['final_risk_level'].value_counts().to_dict()
